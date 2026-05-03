@@ -12,20 +12,28 @@ export default function POS({ user }) {
     p.DESCRIPCION ||
     "Sin nombre";
 
-  const precio = (p) =>
-    Number(
-      p.precio ||
-      p.valor ||
-      p.PRECIO ||
-      p.VALOR ||
-      p["Valor Venta"] ||
-      p["Vr Venta"] ||
-      p["Precio Venta"] ||
-      p.vr_venta ||
-      p.precio_venta ||
-      p.vr_unitario ||
-      0
-    );
+ const precio = (p) => {
+  const valor =
+    p.precio ||
+    p.valor ||
+    p.PRECIO ||
+    p.VALOR ||
+    p["Valor Venta"] ||
+    p["Vr Venta"] ||
+    p["Precio Venta"] ||
+    p.vr_venta ||
+    p.precio_venta ||
+    p.vr_unitario ||
+    "0";
+
+  return Number(
+    String(valor)
+      .replace(/\$/g, "")
+      .replace(/\./g, "")
+      .replace(/,/g, "")
+      .replace(/\s/g, "")
+  ) || 0;
+};
 
   const stock = (p) =>
     Number(
