@@ -1,5 +1,3 @@
-// src/POS.jsx REAL
-
 import React, { useState } from "react";
 import productos from "./data";
 
@@ -7,24 +5,31 @@ export default function POS({ user }) {
   const [busqueda, setBusqueda] = useState("");
   const [carrito, setCarrito] = useState([]);
 
-  const lista = productos.filter((p) => {
-    const texto = (p.nombre || "").toLowerCase();
-    return texto.includes(busqueda.toLowerCase());
-  });
+  const obtenerPrecio = (p) =>
+    Number(
+      p.precio ||
+      p.valor ||
+      p.precioVenta ||
+      p.precio_venta ||
+      p.vr_venta ||
+      0
+    );
+
+  const obtenerNombre = (p) =>
+    p.nombre || p.producto || p.descripcion || "Sin nombre";
+
+  const lista = productos.filter((p) =>
+    obtenerNombre(p).toLowerCase().includes(busqueda.toLowerCase())
+  );
 
   const agregar = (producto) => {
     setCarrito([...carrito, producto]);
   };
 
   const total = carrito.reduce(
-    (sum, item) => sum + Number(item.precio || 0),
+    (sum, item) => sum + obtenerPrecio(item),
     0
   );
-
-  const cobrar = () => {
-    alert("Venta registrada por " + user);
-    setCarrito([]);
-  };
 
   return (
     <div className="pos-layout">
@@ -33,15 +38,15 @@ export default function POS({ user }) {
 
         <input
           type="text"
-          placeholder="Buscar entre 2331 productos..."
+          placeholder="Buscar producto..."
           value={busqueda}
           onChange={(e) => setBusqueda(e.target.value)}
         />
 
         <div className="productos-lista">
-          {lista.slice(0, 80).map((p, i) => (
-            <button key={i} onClick={() => agregar(p)}>
-              {p.nombre} - ${p.precio}
+          {lista.slice(0,80).map((p,i)=>(
+            <button key={i} onClick={()=>agregar(p)}>
+              {obtenerNombre(p)} - ${obtenerPrecio(p)}
             </button>
           ))}
         </div>
@@ -50,15 +55,15 @@ export default function POS({ user }) {
       <div className="carrito-panel">
         <h2>📦 Carrito</h2>
 
-        {carrito.map((item, i) => (
+        {carrito.map((item,i)=>(
           <div key={i} className="item-carrito">
-            {item.nombre} - ${item.precio}
+            {obtenerNombre(item)} - ${obtenerPrecio(item)}
           </div>
         ))}
 
         <h3>Total: ${total}</h3>
 
-        <button className="btn-cobrar" onClick={cobrar}>
+        <button className="btn-cobrar">
           Cobrar
         </button>
       </div>
