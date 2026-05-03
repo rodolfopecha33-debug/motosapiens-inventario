@@ -1,4 +1,4 @@
-// src/App.jsx ADMIN FINAL
+// src/App.jsx ROLES FINAL
 
 import React, { useEffect, useState } from "react";
 
@@ -9,20 +9,17 @@ import CargadorFirebase from "./CargadorFirebase";
 
 export default function App() {
   const [user, setUser] = useState(
-    localStorage.getItem("user") || ""
+    JSON.parse(localStorage.getItem("user")) || null
   );
 
-  const [vista, setVista] =
-    useState("pos");
+  const [vista, setVista] = useState("pos");
 
   useEffect(() => {
     let timer;
 
     if (user) {
       timer = setTimeout(() => {
-        alert(
-          "Sesión cerrada por inactividad"
-        );
+        alert("Sesión cerrada por inactividad");
         salir();
       }, 15 * 60 * 1000);
     }
@@ -30,29 +27,30 @@ export default function App() {
     return () => clearTimeout(timer);
   }, [user]);
 
-  const entrar = (nombre) => {
+  const entrar = (usuario) => {
     localStorage.setItem(
       "user",
-      nombre
+      JSON.stringify(usuario)
     );
-    setUser(nombre);
+
+    setUser(usuario);
   };
 
   const salir = () => {
-    localStorage.removeItem(
-      "user"
-    );
-    setUser("");
+    localStorage.removeItem("user");
+    setUser(null);
   };
 
   if (!user) {
-    return (
-      <Login onLogin={entrar} />
-    );
+    return <Login onLogin={entrar} />;
   }
+
+  const esAdmin =
+    user.rol === "admin";
 
   return (
     <div>
+      {/* TOPBAR */}
       <div
         style={{
           background:"#111",
@@ -70,7 +68,7 @@ export default function App() {
             fontWeight:"bold"
           }}
         >
-          👤 {user}
+          👤 {user.nombre} ({user.rol})
         </div>
 
         <div
@@ -89,27 +87,31 @@ export default function App() {
             🛒 POS
           </button>
 
-          <button
-            onClick={() =>
-              setVista(
-                "dashboard"
-              )
-            }
-            style={btn()}
-          >
-            📊 Dashboard
-          </button>
+          {esAdmin && (
+            <button
+              onClick={() =>
+                setVista(
+                  "dashboard"
+                )
+              }
+              style={btn()}
+            >
+              📊 Dashboard
+            </button>
+          )}
 
-          <button
-            onClick={() =>
-              setVista(
-                "cargar"
-              )
-            }
-            style={btn()}
-          >
-            ☁️ Inventario
-          </button>
+          {esAdmin && (
+            <button
+              onClick={() =>
+                setVista(
+                  "inventario"
+                )
+              }
+              style={btn()}
+            >
+              ☁️ Inventario
+            </button>
+          )}
 
           <button
             onClick={salir}
@@ -130,18 +132,21 @@ export default function App() {
         </div>
       </div>
 
+      {/* VISTAS */}
       {vista === "pos" && (
-        <POS user={user} />
+        <POS user={user.nombre} />
       )}
 
       {vista ===
-        "dashboard" && (
-        <Dashboard />
+        "dashboard" &&
+        esAdmin && (
+          <Dashboard />
       )}
 
       {vista ===
-        "cargar" && (
-        <CargadorFirebase />
+        "inventario" &&
+        esAdmin && (
+          <CargadorFirebase />
       )}
     </div>
   );
