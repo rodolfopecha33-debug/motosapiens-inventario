@@ -1,21 +1,21 @@
-// src/POS.jsx INVENTARIO REAL
+// src/POS.jsx CLOUD LIVE
 
 import React, { useEffect, useState } from "react";
-import dataInicial from "./data";
 import { db } from "./firebase";
 
 import {
   collection,
+  getDocs,
   addDoc,
   doc,
-  setDoc,
-  getDocs
+  updateDoc
 } from "firebase/firestore";
 
 export default function POS({ user }) {
   const [busqueda, setBusqueda] = useState("");
   const [carrito, setCarrito] = useState([]);
   const [lista, setLista] = useState([]);
+  const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
     cargarInventario();
@@ -26,17 +26,17 @@ export default function POS({ user }) {
       collection(db, "inventario")
     );
 
-    if (!snap.empty) {
-      const datos = [];
+    const datos = [];
 
-      snap.forEach((d) =>
-        datos.push(d.data())
-      );
+    snap.forEach((d) => {
+      datos.push({
+        id: d.id,
+        ...d.data()
+      });
+    });
 
-      setLista(datos);
-    } else {
-      setLista(dataInicial);
-    }
+    setLista(datos);
+    setCargando(false);
   };
 
   const nombre = (p) =>
@@ -74,35 +74,19 @@ export default function POS({ user }) {
   const cobrar = async () => {
     if (carrito.length === 0) return;
 
-    const nuevaLista = [...lista];
-
-    carrito.forEach((item) => {
-      const i = nuevaLista.findIndex(
-        (x) =>
-          x.codigo === item.codigo
+    for (const item of carrito) {
+      const ref = doc(
+        db,
+        "inventario",
+        item.id
       );
 
-      if (i !== -1) {
-        nuevaLista[i].stock =
-          stock(nuevaLista[i]) - 1;
-      }
-    });
-
-    setLista(nuevaLista);
-
-    // GUARDAR INVENTARIO CLOUD
-    for (const item of nuevaLista) {
-      await setDoc(
-        doc(
-          db,
-          "inventario",
-          item.codigo
-        ),
-        item
-      );
+      await updateDoc(ref, {
+        stock:
+          stock(item) - 1
+      });
     }
 
-    // GUARDAR VENTA
     await addDoc(
       collection(db, "ventas"),
       {
@@ -114,22 +98,33 @@ export default function POS({ user }) {
       }
     );
 
-    localStorage.setItem(
-      "inventario",
-      JSON.stringify(nuevaLista)
+    alert(
+      "Venta realizada correctamente"
     );
 
     setCarrito([]);
-
-    alert(
-      "Venta guardada e inventario actualizado"
-    );
+    cargarInventario();
   };
+
+  if (cargando) {
+    return (
+      <div
+        style={{
+          padding:"30px",
+          color:"white"
+        }}
+      >
+        Cargando inventario...
+      </div>
+    );
+  }
 
   return (
     <div className="pos-layout">
       <div className="productos-panel">
-        <h2>🛒 POS INVENTARIO REAL</h2>
+        <h2>
+          🛒 POS CLOUD LIVE
+        </h2>
 
         <input
           placeholder="Buscar..."
@@ -143,8 +138,8 @@ export default function POS({ user }) {
 
         <div className="productos-lista">
           {productosFiltrados
-            .slice(0, 80)
-            .map((p, i) => (
+            .slice(0,80)
+            .map((p,i)=>(
               <button
                 key={i}
                 onClick={() =>
@@ -163,7 +158,7 @@ export default function POS({ user }) {
       <div className="carrito-panel">
         <h2>📦 Carrito</h2>
 
-        {carrito.map((x, i) => (
+        {carrito.map((x,i)=>(
           <div
             key={i}
             className="item-carrito"
