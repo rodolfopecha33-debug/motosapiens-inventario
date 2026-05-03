@@ -1,25 +1,29 @@
-// src/App.jsx MENU FINAL
+// src/App.jsx ADMIN FINAL
 
 import React, { useEffect, useState } from "react";
 
 import Login from "./Login";
 import POS from "./POS";
 import Dashboard from "./Dashboard";
+import CargadorFirebase from "./CargadorFirebase";
 
 export default function App() {
   const [user, setUser] = useState(
     localStorage.getItem("user") || ""
   );
 
-  const [vista, setVista] = useState("pos");
+  const [vista, setVista] =
+    useState("pos");
 
   useEffect(() => {
     let timer;
 
     if (user) {
       timer = setTimeout(() => {
-        alert("Sesión cerrada por inactividad");
-        cerrarSesion();
+        alert(
+          "Sesión cerrada por inactividad"
+        );
+        salir();
       }, 15 * 60 * 1000);
     }
 
@@ -27,37 +31,43 @@ export default function App() {
   }, [user]);
 
   const entrar = (nombre) => {
-    localStorage.setItem("user", nombre);
+    localStorage.setItem(
+      "user",
+      nombre
+    );
     setUser(nombre);
   };
 
-  const cerrarSesion = () => {
-    localStorage.removeItem("user");
+  const salir = () => {
+    localStorage.removeItem(
+      "user"
+    );
     setUser("");
   };
 
   if (!user) {
-    return <Login onLogin={entrar} />;
+    return (
+      <Login onLogin={entrar} />
+    );
   }
 
   return (
     <div>
-      {/* TOPBAR */}
       <div
         style={{
-          background: "#111",
-          padding: "14px 20px",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          flexWrap: "wrap",
-          gap: "10px"
+          background:"#111",
+          padding:"14px 20px",
+          display:"flex",
+          justifyContent:"space-between",
+          alignItems:"center",
+          flexWrap:"wrap",
+          gap:"10px"
         }}
       >
         <div
           style={{
-            color: "white",
-            fontWeight: "bold"
+            color:"white",
+            fontWeight:"bold"
           }}
         >
           👤 {user}
@@ -65,34 +75,54 @@ export default function App() {
 
         <div
           style={{
-            display: "flex",
-            gap: "10px",
-            flexWrap: "wrap"
+            display:"flex",
+            gap:"10px",
+            flexWrap:"wrap"
           }}
         >
           <button
-            onClick={() => setVista("pos")}
-            style={boton(vista === "pos")}
+            onClick={() =>
+              setVista("pos")
+            }
+            style={btn()}
           >
             🛒 POS
           </button>
 
           <button
-            onClick={() => setVista("dashboard")}
-            style={boton(vista === "dashboard")}
+            onClick={() =>
+              setVista(
+                "dashboard"
+              )
+            }
+            style={btn()}
           >
             📊 Dashboard
           </button>
 
           <button
-            onClick={cerrarSesion}
+            onClick={() =>
+              setVista(
+                "cargar"
+              )
+            }
+            style={btn()}
+          >
+            ☁️ Inventario
+          </button>
+
+          <button
+            onClick={salir}
             style={{
-              background: "#ff2a2a",
-              color: "white",
-              border: "none",
-              padding: "10px 16px",
-              borderRadius: "8px",
-              cursor: "pointer"
+              background:
+                "#ff2a2a",
+              color:"white",
+              border:"none",
+              padding:
+                "10px 16px",
+              borderRadius:
+                "8px",
+              cursor:"pointer"
             }}
           >
             Salir
@@ -100,20 +130,30 @@ export default function App() {
         </div>
       </div>
 
-      {/* CONTENIDO */}
-      {vista === "pos" && <POS user={user} />}
-      {vista === "dashboard" && <Dashboard />}
+      {vista === "pos" && (
+        <POS user={user} />
+      )}
+
+      {vista ===
+        "dashboard" && (
+        <Dashboard />
+      )}
+
+      {vista ===
+        "cargar" && (
+        <CargadorFirebase />
+      )}
     </div>
   );
 }
 
-function boton(activo) {
+function btn() {
   return {
-    background: activo ? "#16b84e" : "#222",
-    color: "white",
-    border: "none",
-    padding: "10px 16px",
-    borderRadius: "8px",
-    cursor: "pointer"
+    background:"#16b84e",
+    color:"white",
+    border:"none",
+    padding:"10px 16px",
+    borderRadius:"8px",
+    cursor:"pointer"
   };
 }
