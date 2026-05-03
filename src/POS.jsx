@@ -1,27 +1,25 @@
-// src/POS.jsx
+// src/POS.jsx REAL
 
 import React, { useState } from "react";
+import productos from "./data";
 
 export default function POS({ user }) {
-  const productos = [
-    { nombre: "ACEITE MOBIL", precio: 35000 },
-    { nombre: "FILTRO FZ", precio: 28000 },
-    { nombre: "PASTILLAS PULSAR 180", precio: 45000 },
-    { nombre: "BALINERA 6300 KOYO", precio: 14500 }
-  ];
-
   const [busqueda, setBusqueda] = useState("");
   const [carrito, setCarrito] = useState([]);
 
-  const filtrados = productos.filter((p) =>
-    p.nombre.toLowerCase().includes(busqueda.toLowerCase())
-  );
+  const lista = productos.filter((p) => {
+    const texto = (p.nombre || "").toLowerCase();
+    return texto.includes(busqueda.toLowerCase());
+  });
 
   const agregar = (producto) => {
     setCarrito([...carrito, producto]);
   };
 
-  const total = carrito.reduce((sum, item) => sum + item.precio, 0);
+  const total = carrito.reduce(
+    (sum, item) => sum + Number(item.precio || 0),
+    0
+  );
 
   const cobrar = () => {
     alert("Venta registrada por " + user);
@@ -35,13 +33,13 @@ export default function POS({ user }) {
 
         <input
           type="text"
-          placeholder="Buscar producto..."
+          placeholder="Buscar entre 2331 productos..."
           value={busqueda}
           onChange={(e) => setBusqueda(e.target.value)}
         />
 
         <div className="productos-lista">
-          {filtrados.map((p, i) => (
+          {lista.slice(0, 80).map((p, i) => (
             <button key={i} onClick={() => agregar(p)}>
               {p.nombre} - ${p.precio}
             </button>
