@@ -1,4 +1,4 @@
-// src/App.jsx PRO MENU
+// src/App.jsx MENU FINAL
 
 import React, { useEffect, useState } from "react";
 
@@ -19,7 +19,7 @@ export default function App() {
     if (user) {
       timer = setTimeout(() => {
         alert("Sesión cerrada por inactividad");
-        salir();
+        cerrarSesion();
       }, 15 * 60 * 1000);
     }
 
@@ -31,7 +31,7 @@ export default function App() {
     setUser(nombre);
   };
 
-  const salir = () => {
+  const cerrarSesion = () => {
     localStorage.removeItem("user");
     setUser("");
   };
@@ -42,37 +42,78 @@ export default function App() {
 
   return (
     <div>
-      <div className="topbar">
-        <div>
+      {/* TOPBAR */}
+      <div
+        style={{
+          background: "#111",
+          padding: "14px 20px",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexWrap: "wrap",
+          gap: "10px"
+        }}
+      >
+        <div
+          style={{
+            color: "white",
+            fontWeight: "bold"
+          }}
+        >
           👤 {user}
         </div>
 
-        <div style={{ display:"flex", gap:"10px" }}>
+        <div
+          style={{
+            display: "flex",
+            gap: "10px",
+            flexWrap: "wrap"
+          }}
+        >
           <button
             onClick={() => setVista("pos")}
+            style={boton(vista === "pos")}
           >
-            POS
+            🛒 POS
           </button>
 
           <button
             onClick={() => setVista("dashboard")}
+            style={boton(vista === "dashboard")}
           >
-            Dashboard
+            📊 Dashboard
           </button>
 
-          <button onClick={salir}>
+          <button
+            onClick={cerrarSesion}
+            style={{
+              background: "#ff2a2a",
+              color: "white",
+              border: "none",
+              padding: "10px 16px",
+              borderRadius: "8px",
+              cursor: "pointer"
+            }}
+          >
             Salir
           </button>
         </div>
       </div>
 
-      {vista === "pos" && (
-        <POS user={user} />
-      )}
-
-      {vista === "dashboard" && (
-        <Dashboard />
-      )}
+      {/* CONTENIDO */}
+      {vista === "pos" && <POS user={user} />}
+      {vista === "dashboard" && <Dashboard />}
     </div>
   );
+}
+
+function boton(activo) {
+  return {
+    background: activo ? "#16b84e" : "#222",
+    color: "white",
+    border: "none",
+    padding: "10px 16px",
+    borderRadius: "8px",
+    cursor: "pointer"
+  };
 }
