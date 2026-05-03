@@ -1,0 +1,1 @@
+export default [{nombre:"ACEITE MOBIL SUPER 20W50",categoria:"Aceites",precio:35000,stock:12},{nombre:"LLANTA KONTROL 611 90/90-17",categoria:"Llantas",precio:180000,stock:4},{nombre:"PASTILLAS FRENO PULSAR 180",categoria:"Frenos",precio:45000,stock:0},{nombre:"FILTRO AIRE FZ 2.0",categoria:"Filtros",precio:28000,stock:7}];
