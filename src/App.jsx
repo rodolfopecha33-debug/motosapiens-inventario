@@ -1,38 +1,32 @@
-// src/App.jsx ROLES FINAL
+// src/App.jsx ROLES SAFE
 
 import React, { useEffect, useState } from "react";
-
 import Login from "./Login";
 import POS from "./POS";
 import Dashboard from "./Dashboard";
 import CargadorFirebase from "./CargadorFirebase";
 
 export default function App() {
-  const [user, setUser] = useState(
-    JSON.parse(localStorage.getItem("user")) || null
-  );
-
+  const [user, setUser] = useState(null);
   const [vista, setVista] = useState("pos");
 
   useEffect(() => {
-    let timer;
+    const guardado = localStorage.getItem("user");
 
-    if (user) {
-      timer = setTimeout(() => {
-        alert("Sesión cerrada por inactividad");
-        salir();
-      }, 15 * 60 * 1000);
+    if (guardado) {
+      try {
+        setUser(JSON.parse(guardado));
+      } catch {
+        localStorage.removeItem("user");
+      }
     }
-
-    return () => clearTimeout(timer);
-  }, [user]);
+  }, []);
 
   const entrar = (usuario) => {
     localStorage.setItem(
       "user",
       JSON.stringify(usuario)
     );
-
     setUser(usuario);
   };
 
@@ -79,22 +73,20 @@ export default function App() {
           }}
         >
           <button
+            style={btn()}
             onClick={() =>
               setVista("pos")
             }
-            style={btn()}
           >
             🛒 POS
           </button>
 
           {esAdmin && (
             <button
-              onClick={() =>
-                setVista(
-                  "dashboard"
-                )
-              }
               style={btn()}
+              onClick={() =>
+                setVista("dashboard")
+              }
             >
               📊 Dashboard
             </button>
@@ -102,12 +94,10 @@ export default function App() {
 
           {esAdmin && (
             <button
-              onClick={() =>
-                setVista(
-                  "inventario"
-                )
-              }
               style={btn()}
+              onClick={() =>
+                setVista("inventario")
+              }
             >
               ☁️ Inventario
             </button>
@@ -116,14 +106,11 @@ export default function App() {
           <button
             onClick={salir}
             style={{
-              background:
-                "#ff2a2a",
+              background:"#ff2a2a",
               color:"white",
               border:"none",
-              padding:
-                "10px 16px",
-              borderRadius:
-                "8px",
+              padding:"10px 16px",
+              borderRadius:"8px",
               cursor:"pointer"
             }}
           >
@@ -132,19 +119,17 @@ export default function App() {
         </div>
       </div>
 
-      {/* VISTAS */}
+      {/* CONTENIDO */}
       {vista === "pos" && (
         <POS user={user.nombre} />
       )}
 
-      {vista ===
-        "dashboard" &&
+      {vista === "dashboard" &&
         esAdmin && (
           <Dashboard />
       )}
 
-      {vista ===
-        "inventario" &&
+      {vista === "inventario" &&
         esAdmin && (
           <CargadorFirebase />
       )}
