@@ -1,1 +1,0 @@
-import React from "react";import Inventario from "./Inventario";import "./styles.css";export default function App(){return <div><header className="topbar"><h1>MOTOSAPIENS INVENTARIO PRO</h1><input placeholder="Buscar global..." /></header><Inventario/></div>}
