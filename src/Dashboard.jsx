@@ -1,4 +1,4 @@
-// src/Dashboard.jsx PRO MAX
+// src/Dashboard.jsx GANANCIAS PRO
 
 import React, { useEffect, useState } from "react";
 import { db } from "./firebase";
@@ -16,13 +16,13 @@ export default function Dashboard() {
   }, []);
 
   const cargarVentas = async () => {
-    const querySnapshot = await getDocs(
+    const snap = await getDocs(
       collection(db, "ventas")
     );
 
     const datos = [];
 
-    querySnapshot.forEach((doc) => {
+    snap.forEach((doc) => {
       datos.push({
         id: doc.id,
         ...doc.data()
@@ -32,19 +32,45 @@ export default function Dashboard() {
     setVentas(datos.reverse());
   };
 
-  const total = ventas.reduce(
+  const totalVentas = ventas.reduce(
     (sum, v) => sum + Number(v.total || 0),
     0
   );
 
-  const cantidadVentas = ventas.length;
+  const totalItems = ventas.reduce(
+    (sum, v) =>
+      sum + (v.productos?.length || 0),
+    0
+  );
+
+  const totalGanancia = ventas.reduce(
+    (sum, venta) =>
+      sum +
+      (venta.productos || []).reduce(
+        (g, p) =>
+          g +
+          (Number(p.venta || 0) -
+            Number(p.compra || 0)),
+        0
+      ),
+    0
+  );
 
   const exportarCSV = () => {
     let csv =
-      "Fecha,Usuario,Total,Productos\n";
+      "Fecha,Usuario,Total,Ganancia,Items\n";
 
     ventas.forEach((v) => {
-      csv += `${v.fecha},${v.usuario},${v.total},${v.productos?.length || 0}\n`;
+      const gan =
+        (v.productos || []).reduce(
+          (g, p) =>
+            g +
+            (Number(p.venta || 0) -
+              Number(p.compra || 0)),
+          0
+        );
+
+      csv += `${v.fecha},${v.usuario},${v.total},${gan},${v.productos?.length || 0}\n`;
     });
 
     const blob = new Blob([csv], {
@@ -52,23 +78,22 @@ export default function Dashboard() {
     });
 
     const url =
-      window.URL.createObjectURL(blob);
+      URL.createObjectURL(blob);
 
     const a =
       document.createElement("a");
 
     a.href = url;
-    a.download = "ventas.csv";
+    a.download =
+      "ganancias.csv";
     a.click();
-  };
-
-  const imprimir = () => {
-    window.print();
   };
 
   return (
     <div style={{ padding:"25px", color:"white" }}>
-      <h1>📊 Dashboard PRO MAX</h1>
+      <h1>
+        📊 Dashboard Ganancias PRO
+      </h1>
 
       <br />
 
@@ -80,58 +105,36 @@ export default function Dashboard() {
         }}
       >
         <Card
-          titulo="💰 Total Ventas"
-          valor={`$${total}`}
+          titulo="💰 Ventas"
+          valor={`$${totalVentas}`}
         />
 
         <Card
-          titulo="🧾 Cantidad"
-          valor={cantidadVentas}
+          titulo="📈 Ganancia"
+          valor={`$${totalGanancia}`}
         />
 
         <Card
-          titulo="📦 Productos"
-          valor={ventas.reduce(
-            (sum,v)=>
-              sum +
-              (v.productos?.length || 0),
-            0
-          )}
+          titulo="📦 Items"
+          valor={totalItems}
+        />
+
+        <Card
+          titulo="🧾 Ventas"
+          valor={ventas.length}
         />
       </div>
 
       <br />
 
-      <div
-        style={{
-          display:"flex",
-          gap:"10px",
-          flexWrap:"wrap"
-        }}
+      <button
+        onClick={exportarCSV}
+        style={btn()}
       >
-        <button
-          onClick={exportarCSV}
-          style={btn()}
-        >
-          📥 Exportar Excel
-        </button>
+        📥 Exportar Excel
+      </button>
 
-        <button
-          onClick={imprimir}
-          style={btn()}
-        >
-          🖨️ Imprimir PDF
-        </button>
-
-        <button
-          onClick={cargarVentas}
-          style={btn()}
-        >
-          🔄 Actualizar
-        </button>
-      </div>
-
-      <br />
+      <br /><br />
 
       <table
         style={{
@@ -145,21 +148,30 @@ export default function Dashboard() {
             <th>Fecha</th>
             <th>Usuario</th>
             <th>Total</th>
-            <th>Items</th>
+            <th>Ganancia</th>
           </tr>
         </thead>
 
         <tbody>
-          {ventas.map((v,i)=>(
-            <tr key={i}>
-              <td>{v.fecha}</td>
-              <td>{v.usuario}</td>
-              <td>${v.total}</td>
-              <td>
-                {v.productos?.length || 0}
-              </td>
-            </tr>
-          ))}
+          {ventas.map((v,i)=>{
+            const gan =
+              (v.productos || []).reduce(
+                (g,p)=>
+                  g +
+                  (Number(p.venta||0) -
+                   Number(p.compra||0)),
+                0
+              );
+
+            return (
+              <tr key={i}>
+                <td>{v.fecha}</td>
+                <td>{v.usuario}</td>
+                <td>${v.total}</td>
+                <td>${gan}</td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
