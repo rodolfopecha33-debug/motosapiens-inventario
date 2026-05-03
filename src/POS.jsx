@@ -5,6 +5,9 @@ export default function POS({ user }) {
   const [busqueda, setBusqueda] = useState("");
   const [carrito, setCarrito] = useState([]);
 
+  const obtenerNombre = (p) =>
+    p.nombre || p.producto || p.descripcion || "Sin nombre";
+
   const obtenerPrecio = (p) =>
     Number(
       p.precio ||
@@ -15,8 +18,16 @@ export default function POS({ user }) {
       0
     );
 
-  const obtenerNombre = (p) =>
-    p.nombre || p.producto || p.descripcion || "Sin nombre";
+  const obtenerStock = (p) =>
+    Number(
+      p.stock ||
+      p.cantidad ||
+      p.existencia ||
+      p.saldo ||
+      p.inventario ||
+      p.disponible ||
+      0
+    );
 
   const lista = productos.filter((p) =>
     obtenerNombre(p).toLowerCase().includes(busqueda.toLowerCase())
@@ -46,7 +57,7 @@ export default function POS({ user }) {
         <div className="productos-lista">
           {lista.slice(0,80).map((p,i)=>(
             <button key={i} onClick={()=>agregar(p)}>
-              {obtenerNombre(p)} - ${obtenerPrecio(p)}
+              {obtenerNombre(p)} - ${obtenerPrecio(p)} | Stock: {obtenerStock(p)}
             </button>
           ))}
         </div>
