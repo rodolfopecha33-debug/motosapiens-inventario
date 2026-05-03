@@ -5,42 +5,45 @@ export default function POS({ user }) {
   const [busqueda, setBusqueda] = useState("");
   const [carrito, setCarrito] = useState([]);
 
-  const obtenerNombre = (p) =>
-    p.nombre || p.producto || p.descripcion || "Sin nombre";
+  const nombre = (p) =>
+    p.nombre ||
+    p.producto ||
+    p.descripcion ||
+    p.DESCRIPCION ||
+    "Sin nombre";
 
-  const obtenerPrecio = (p) =>
+  const precio = (p) =>
     Number(
       p.precio ||
       p.valor ||
-      p.precioVenta ||
-      p.precio_venta ||
+      p.PRECIO ||
+      p.VALOR ||
+      p["Valor Venta"] ||
+      p["Vr Venta"] ||
+      p["Precio Venta"] ||
       p.vr_venta ||
+      p.precio_venta ||
+      p.vr_unitario ||
       0
     );
 
-  const obtenerStock = (p) =>
+  const stock = (p) =>
     Number(
       p.stock ||
       p.cantidad ||
       p.existencia ||
       p.saldo ||
       p.inventario ||
-      p.disponible ||
       0
     );
 
   const lista = productos.filter((p) =>
-    obtenerNombre(p).toLowerCase().includes(busqueda.toLowerCase())
+    nombre(p).toLowerCase().includes(busqueda.toLowerCase())
   );
 
-  const agregar = (producto) => {
-    setCarrito([...carrito, producto]);
-  };
+  const agregar = (item) => setCarrito([...carrito, item]);
 
-  const total = carrito.reduce(
-    (sum, item) => sum + obtenerPrecio(item),
-    0
-  );
+  const total = carrito.reduce((sum, i) => sum + precio(i), 0);
 
   return (
     <div className="pos-layout">
@@ -48,7 +51,6 @@ export default function POS({ user }) {
         <h2>🛒 Caja de Ventas</h2>
 
         <input
-          type="text"
           placeholder="Buscar producto..."
           value={busqueda}
           onChange={(e) => setBusqueda(e.target.value)}
@@ -57,7 +59,7 @@ export default function POS({ user }) {
         <div className="productos-lista">
           {lista.slice(0,80).map((p,i)=>(
             <button key={i} onClick={()=>agregar(p)}>
-              {obtenerNombre(p)} - ${obtenerPrecio(p)} | Stock: {obtenerStock(p)}
+              {nombre(p)} - ${precio(p)} | Stock: {stock(p)}
             </button>
           ))}
         </div>
@@ -66,9 +68,9 @@ export default function POS({ user }) {
       <div className="carrito-panel">
         <h2>📦 Carrito</h2>
 
-        {carrito.map((item,i)=>(
+        {carrito.map((x,i)=>(
           <div key={i} className="item-carrito">
-            {obtenerNombre(item)} - ${obtenerPrecio(item)}
+            {nombre(x)} - ${precio(x)}
           </div>
         ))}
 
