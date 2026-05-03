@@ -1,0 +1,1 @@
+import React from "react"; export default function App(){return <div style={{padding:20,background:"#111",color:"#fff",minHeight:"100vh"}}><h1 style={{color:"#f00"}}>MOTOSAPIENS INVENTARIO PRO</h1><p>Evoluciona tu moto</p></div>}
