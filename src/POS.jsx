@@ -1,8 +1,69 @@
-import React,{useState} from 'react';
-export default function POS(){
-const [cart,setCart]=useState([]);
-const products=[{n:'ACEITE MOBIL',p:35000},{n:'FILTRO FZ',p:28000},{n:'PASTILLAS P180',p:45000}];
-const add=(x)=>setCart([...cart,x]);
-const total=cart.reduce((a,b)=>a+b.p,0);
-return <div className='pos'><div className='left'><h1>POS PRO</h1>{products.map((x,i)=><button key={i} onClick={()=>add(x)}>{x.n} - ${x.p}</button>)}</div><div className='right'><h2>Carrito</h2>{cart.map((x,i)=><div key={i}>{x.n} ${x.p}</div>)}<h3>Total ${total}</h3><button>Cobrar</button></div></div>
+// src/POS.jsx
+
+import React, { useState } from "react";
+
+export default function POS({ user }) {
+  const productos = [
+    { nombre: "ACEITE MOBIL", precio: 35000 },
+    { nombre: "FILTRO FZ", precio: 28000 },
+    { nombre: "PASTILLAS PULSAR 180", precio: 45000 },
+    { nombre: "BALINERA 6300 KOYO", precio: 14500 }
+  ];
+
+  const [busqueda, setBusqueda] = useState("");
+  const [carrito, setCarrito] = useState([]);
+
+  const filtrados = productos.filter((p) =>
+    p.nombre.toLowerCase().includes(busqueda.toLowerCase())
+  );
+
+  const agregar = (producto) => {
+    setCarrito([...carrito, producto]);
+  };
+
+  const total = carrito.reduce((sum, item) => sum + item.precio, 0);
+
+  const cobrar = () => {
+    alert("Venta registrada por " + user);
+    setCarrito([]);
+  };
+
+  return (
+    <div className="pos-layout">
+      <div className="productos-panel">
+        <h2>🛒 Caja de Ventas</h2>
+
+        <input
+          type="text"
+          placeholder="Buscar producto..."
+          value={busqueda}
+          onChange={(e) => setBusqueda(e.target.value)}
+        />
+
+        <div className="productos-lista">
+          {filtrados.map((p, i) => (
+            <button key={i} onClick={() => agregar(p)}>
+              {p.nombre} - ${p.precio}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="carrito-panel">
+        <h2>📦 Carrito</h2>
+
+        {carrito.map((item, i) => (
+          <div key={i} className="item-carrito">
+            {item.nombre} - ${item.precio}
+          </div>
+        ))}
+
+        <h3>Total: ${total}</h3>
+
+        <button className="btn-cobrar" onClick={cobrar}>
+          Cobrar
+        </button>
+      </div>
+    </div>
+  );
 }
