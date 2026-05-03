@@ -1,11 +1,17 @@
-// src/App.jsx
+// src/App.jsx PRO MENU
 
 import React, { useEffect, useState } from "react";
+
 import Login from "./Login";
 import POS from "./POS";
+import Dashboard from "./Dashboard";
 
 export default function App() {
-  const [user, setUser] = useState(localStorage.getItem("user") || "");
+  const [user, setUser] = useState(
+    localStorage.getItem("user") || ""
+  );
+
+  const [vista, setVista] = useState("pos");
 
   useEffect(() => {
     let timer;
@@ -13,7 +19,7 @@ export default function App() {
     if (user) {
       timer = setTimeout(() => {
         alert("Sesión cerrada por inactividad");
-        cerrarSesion();
+        salir();
       }, 15 * 60 * 1000);
     }
 
@@ -25,7 +31,7 @@ export default function App() {
     setUser(nombre);
   };
 
-  const cerrarSesion = () => {
+  const salir = () => {
     localStorage.removeItem("user");
     setUser("");
   };
@@ -37,11 +43,36 @@ export default function App() {
   return (
     <div>
       <div className="topbar">
-        <span>👤 {user}</span>
-        <button onClick={cerrarSesion}>Salir</button>
+        <div>
+          👤 {user}
+        </div>
+
+        <div style={{ display:"flex", gap:"10px" }}>
+          <button
+            onClick={() => setVista("pos")}
+          >
+            POS
+          </button>
+
+          <button
+            onClick={() => setVista("dashboard")}
+          >
+            Dashboard
+          </button>
+
+          <button onClick={salir}>
+            Salir
+          </button>
+        </div>
       </div>
 
-      <POS user={user} />
+      {vista === "pos" && (
+        <POS user={user} />
+      )}
+
+      {vista === "dashboard" && (
+        <Dashboard />
+      )}
     </div>
   );
 }
