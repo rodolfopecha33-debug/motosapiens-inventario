@@ -141,3 +141,64 @@ button {
     grid-template-columns: 1fr;
   }
 }
+
+/* CARD PRODUCTO */
+.producto-card {
+  width: 100%;
+  border: none;
+  border-radius: 14px;
+  padding: 15px;
+  margin-bottom: 10px;
+  background: #111;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* HOVER */
+.producto-card:hover {
+  background: #1a1a1a;
+  transform: scale(1.02);
+  box-shadow: 0 0 10px rgba(255, 42, 42, 0.2);
+}
+
+/* NOMBRE */
+.producto-nombre {
+  font-weight: bold;
+  font-size: 15px;
+}
+
+/* PRECIO */
+.producto-precio {
+  color: #00ff88;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+/* FILA SUPERIOR */
+.producto-info {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* FILA INFERIOR */
+.producto-extra {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+}
+
+/* STOCK */
+.producto-stock {
+  color: #aaa;
+}
+
+/* ALERTA */
+.producto-alerta {
+  color: #ff2a2a;
+  font-weight: bold;
+}
