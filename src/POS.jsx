@@ -1,5 +1,3 @@
-// src/POS.jsx WHATSAPP PRO
-
 import React, { useEffect, useState } from "react";
 import { db } from "./firebase";
 
@@ -40,9 +38,11 @@ export default function POS({ user }) {
   const nombre = (p) => p.nombre || "Sin nombre";
   const precio = (p) => Number(p.venta || 0);
   const stock = (p) => Number(p.stock || 0);
+  const codigo = (p) => String(p.codigo || p.barras || "");
 
   const productosFiltrados = lista.filter((p) =>
-    nombre(p).toLowerCase().includes(busqueda.toLowerCase())
+    nombre(p).toLowerCase().includes(busqueda.toLowerCase()) ||
+    codigo(p).includes(busqueda)
   );
 
   const agregar = (p) => {
@@ -60,15 +60,14 @@ export default function POS({ user }) {
   );
 
   const generarMensaje = () => {
-    let mensaje = `🏍️ *MOTOSAPIENS*\n`;
-    mensaje += `🧾 Factura\n\n`;
+    let mensaje = `🏍️ *MOTOSAPIENS*\n🧾 Factura\n\n`;
 
     carrito.forEach((p) => {
       mensaje += `• ${nombre(p)} - $${precio(p)}\n`;
     });
 
     mensaje += `\n💰 Total: $${total}\n`;
-    mensaje += `👤 Atendido por: ${user}\n`;
+    mensaje += `👤 Vendedor: ${user}\n`;
     mensaje += `📅 ${new Date().toLocaleString()}\n`;
     mensaje += `\nGracias por su compra 🙌`;
 
@@ -76,16 +75,38 @@ export default function POS({ user }) {
   };
 
   const enviarWhatsApp = () => {
-    if (!telefono) {
-      alert("Ingresa número cliente");
-      return;
-    }
+    if (!telefono) return;
 
-    const msg = generarMensaje();
-
-    const url = `https://wa.me/57${telefono}?text=${msg}`;
-
+    const url = `https://wa.me/57${telefono}?text=${generarMensaje()}`;
     window.open(url, "_blank");
+  };
+
+  const imprimirFactura = () => {
+    const items = carrito
+      .map(
+        (p) =>
+          `<tr><td>${nombre(p)}</td><td>$${precio(p)}</td></tr>`
+      )
+      .join("");
+
+    const html = `
+    <html>
+    <body style="font-family:Arial;padding:20px">
+      <h1 style="color:red">🏍️ MOTOSAPIENS</h1>
+      <p>${new Date().toLocaleString()}</p>
+      <p>Vendedor: ${user}</p>
+      <table border="1" width="100%" style="border-collapse:collapse">
+        <tr><th>Producto</th><th>Valor</th></tr>
+        ${items}
+      </table>
+      <h2>Total: $${total}</h2>
+    </body>
+    </html>
+    `;
+
+    const win = window.open("", "", "width=800,height=900");
+    win.document.write(html);
+    win.print();
   };
 
   const cobrar = async () => {
@@ -104,6 +125,7 @@ export default function POS({ user }) {
       total: total
     });
 
+    imprimirFactura();
     enviarWhatsApp();
 
     setCarrito([]);
@@ -112,23 +134,29 @@ export default function POS({ user }) {
   };
 
   if (cargando) {
-    return (
-      <div style={{ padding: "30px", color: "white" }}>
-        Cargando...
-      </div>
-    );
+    return <div style={{ padding: 30 }}>Cargando...</div>;
   }
 
   return (
     <div className="pos-layout">
       <div className="productos-panel">
-        <h2>📲 POS WHATSAPP PRO</h2>
+        <h2>🔥 POS FINAL TODO</h2>
 
-        <input
-          placeholder="Buscar..."
-          value={busqueda}
-          onChange={(e) => setBusqueda(e.target.value)}
-        />
+        <div style={{ display: "flex", gap: 10 }}>
+          <input
+            placeholder="Buscar o escanear código..."
+            value={busqueda}
+            onChange={(e) => setBusqueda(e.target.value)}
+          />
+
+          <button
+            onClick={() =>
+              alert("Escanea con lector físico o escribe código")
+            }
+          >
+            📷
+          </button>
+        </div>
 
         <div className="productos-lista">
           {productosFiltrados.slice(0, 80).map((p, i) => (
@@ -143,7 +171,7 @@ export default function POS({ user }) {
         <h2>📦 Carrito</h2>
 
         {carrito.map((x, i) => (
-          <div key={i} className="item-carrito">
+          <div key={i}>
             {nombre(x)} - ${precio(x)}
           </div>
         ))}
@@ -151,22 +179,13 @@ export default function POS({ user }) {
         <h3>Total: ${total}</h3>
 
         <input
-          placeholder="Número cliente (ej: 3001234567)"
+          placeholder="Cliente WhatsApp (300...)"
           value={telefono}
           onChange={(e) => setTelefono(e.target.value)}
-          style={{
-            width: "100%",
-            padding: "10px",
-            marginBottom: "10px",
-            borderRadius: "8px"
-          }}
         />
 
-        <button
-          className="btn-cobrar"
-          onClick={cobrar}
-        >
-          Cobrar + WhatsApp
+        <button className="btn-cobrar" onClick={cobrar}>
+          Cobrar + Factura + WhatsApp
         </button>
       </div>
     </div>
