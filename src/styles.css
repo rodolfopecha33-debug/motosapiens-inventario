@@ -1,3 +1,4 @@
+/* ===== BASE ===== */
 body {
   margin: 0;
   font-family: 'Segoe UI', sans-serif;
@@ -5,14 +6,20 @@ body {
   color: white;
 }
 
+/* ===== LAYOUT ===== */
 .pos-layout {
   display: grid;
   grid-template-columns: 2fr 1fr;
   height: 100vh;
 }
 
+/* ===== PANEL PRODUCTOS ===== */
 .productos-panel {
   padding: 20px;
+}
+
+.productos-panel h2 {
+  color: #ff2a2a;
 }
 
 .productos-panel input {
@@ -25,20 +32,28 @@ body {
   margin-bottom: 15px;
 }
 
-/* PRODUCTO APP */
+/* ===== PRODUCTO NIVEL APP ===== */
 .producto-card-pro {
-  position: relative;
   display: flex;
   justify-content: space-between;
   align-items: center;
+
   background: #121212;
   padding: 14px;
   border-radius: 14px;
   margin-bottom: 10px;
+
   border: 1px solid #1f1f1f;
+  transition: 0.2s;
   cursor: pointer;
 }
 
+.producto-card-pro:hover {
+  background: #1a1a1a;
+  transform: scale(1.01);
+}
+
+/* IZQUIERDA */
 .producto-left {
   display: flex;
   gap: 10px;
@@ -53,10 +68,17 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 20px;
+}
+
+.producto-text {
+  display: flex;
+  flex-direction: column;
 }
 
 .producto-nombre {
   font-weight: bold;
+  font-size: 14px;
 }
 
 .producto-sub {
@@ -64,49 +86,75 @@ body {
   color: #888;
 }
 
+/* DERECHA (FIX PRINCIPAL) */
+.producto-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  min-width: 90px;
+}
+
+/* PRECIO */
 .producto-precio {
   color: #00ff88;
   font-weight: bold;
+  font-size: 15px;
 }
 
+/* STOCK */
 .producto-stock {
   font-size: 12px;
   color: #aaa;
 }
 
-.btn-add {
-  position: absolute;
-  right: 10px;
-  bottom: 10px;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
+/* ALERTA */
+.badge-stock {
   background: #ff2a2a;
   color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.badge-stock {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  background: #ff2a2a;
   font-size: 10px;
-  padding: 2px 6px;
+  padding: 3px 6px;
   border-radius: 6px;
 }
 
-/* CARRITO */
+/* BOTÓN + (CORREGIDO) */
+.btn-add {
+  background: #ff2a2a;
+  color: white;
+  border: none;
+  border-radius: 50%;
+
+  width: 30px;
+  height: 30px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 16px;
+  font-weight: bold;
+
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-add:hover {
+  background: #ff4444;
+  transform: scale(1.1);
+}
+
+/* ===== PANEL CARRITO ===== */
 .carrito-panel {
   padding: 20px;
   background: #0f0f0f;
 }
 
+/* ITEM CARRITO */
 .carrito-item {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+
   background: #121212;
   padding: 10px;
   border-radius: 10px;
@@ -115,12 +163,39 @@ body {
 
 .precio-mini {
   color: #00ff88;
+  font-size: 13px;
 }
 
+/* BOTONES */
 .acciones button {
   margin-left: 5px;
   background: #1f1f1f;
   color: white;
+  border: none;
+  padding: 5px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.acciones button:hover {
+  background: #333;
+}
+
+/* INPUTS */
+.carrito-panel input,
+.carrito-panel select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  background: #111;
+  color: white;
+  margin-top: 10px;
+}
+
+/* TOTAL */
+.carrito-panel h3 {
+  color: #00ff88;
 }
 
 /* BOTÓN COBRAR */
@@ -132,8 +207,22 @@ body {
   padding: 12px;
   border-radius: 10px;
   border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn-cobrar:hover {
+  background: #13a344;
 }
 
 .btn-cobrar:disabled {
   background: #444;
+  cursor: not-allowed;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+  .pos-layout {
+    grid-template-columns: 1fr;
+  }
 }
