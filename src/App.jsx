@@ -6,6 +6,8 @@ import POS from "./POS";
 import Dashboard from "./Dashboard";
 import CargadorFirebase from "./CargadorFirebase";
 import InventarioAdmin from "./InventarioAdmin";
+import Compras from "./Compras";
+import Kardex from "./Kardex";
 
 
 export default function App() {
@@ -105,6 +107,14 @@ export default function App() {
             </button>
           )}
 
+           {esAdmin && (
+           <button onClick={() => setVista("compras")}>🛒 Compras</button>
+          )}
+
+           {esAdmin && (
+           <button onClick={() => setVista("kardex")}>📊 Kardex</button>
+          )}
+
           <button
             onClick={salir}
             style={{
@@ -134,6 +144,8 @@ export default function App() {
      {vista === "inventario" && esAdmin && (
   <InventarioAdmin />
 )}
+      {vista === "compras" && esAdmin && <Compras />}
+{vista === "kardex" && esAdmin && <Kardex />}
     </div>
   );
 }
