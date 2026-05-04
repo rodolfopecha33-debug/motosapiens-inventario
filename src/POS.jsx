@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { db } from "./firebase";
+import ConfirmModal from "./ConfirmModal";
 
 import {
   collection,
@@ -15,6 +16,7 @@ export default function POS({ user }) {
   const [lista, setLista] = useState([]);
   const [telefono, setTelefono] = useState("");
   const [cargando, setCargando] = useState(true);
+  const [mostrarConfirm, setMostrarConfirm] = useState(false);
 
   useEffect(() => {
     cargarInventario();
@@ -54,10 +56,7 @@ export default function POS({ user }) {
     setCarrito([...carrito, p]);
   };
 
-  const total = carrito.reduce(
-    (sum, i) => sum + precio(i),
-    0
-  );
+  const total = carrito.reduce((sum, i) => sum + precio(i), 0);
 
   const generarMensaje = () => {
     let mensaje = `🏍️ *MOTOSAPIENS*\n🧾 Factura\n\n`;
@@ -109,28 +108,19 @@ export default function POS({ user }) {
     win.print();
   };
 
-  const cobrar = async () => {
-  if (carrito.length === 0) return;
-
-  const confirmar = window.confirm(
-    "¿Está seguro de realizar esta venta?"
-  );
-
-  if (!confirmar) return;
-
-
+  const ejecutarVenta = async () => {
     for (const item of carrito) {
       await updateDoc(doc(db, "inventario", item.id), {
         stock: stock(item) - 1
       });
-    }
 
-    await addDoc(collection(db, "movimientos"), {
-  tipo: "venta",
-  producto: item.nombre,
-  cantidad: 1,
-  fecha: new Date().toLocaleString()
-});
+      await addDoc(collection(db, "movimientos"), {
+        tipo: "venta",
+        producto: item.nombre,
+        cantidad: 1,
+        fecha: new Date().toLocaleString()
+      });
+    }
 
     await addDoc(collection(db, "ventas"), {
       fecha: new Date().toLocaleString(),
@@ -154,7 +144,7 @@ export default function POS({ user }) {
   return (
     <div className="pos-layout">
       <div className="productos-panel">
-        <h2>🔥 POS FINAL TODO</h2>
+        <h2>🔥 POS FINAL PRO</h2>
 
         <div style={{ display: "flex", gap: 10 }}>
           <input
@@ -163,11 +153,7 @@ export default function POS({ user }) {
             onChange={(e) => setBusqueda(e.target.value)}
           />
 
-          <button
-            onClick={() =>
-              alert("Escanea con lector físico o escribe código")
-            }
-          >
+          <button onClick={() => alert("Escanea o escribe código")}>
             📷
           </button>
         </div>
@@ -175,12 +161,12 @@ export default function POS({ user }) {
         <div className="productos-lista">
           {productosFiltrados.slice(0, 80).map((p, i) => (
             <button key={i} onClick={() => agregar(p)}>
-             {nombre(p)} - ${precio(p)} | Stock:{stock(p)}
-{stock(p) <= 5 && (
-  <span style={{ color: "red", marginLeft: "10px" }}>
-    ⚠️ Bajo
-  </span>
-)}
+              {nombre(p)} - ${precio(p)} | Stock:{stock(p)}
+              {stock(p) <= 5 && (
+                <span style={{ color: "red", marginLeft: 10 }}>
+                  ⚠️ Bajo
+                </span>
+              )}
             </button>
           ))}
         </div>
@@ -203,10 +189,25 @@ export default function POS({ user }) {
           onChange={(e) => setTelefono(e.target.value)}
         />
 
-        <button className="btn-cobrar" onClick={cobrar}>
+        <button
+          className="btn-cobrar"
+          onClick={() => setMostrarConfirm(true)}
+        >
           Cobrar + Factura + WhatsApp
         </button>
       </div>
+
+      <ConfirmModal
+        open={mostrarConfirm}
+        title="Confirmar venta"
+        message="¿Desea finalizar esta venta?"
+        total={total}
+        onCancel={() => setMostrarConfirm(false)}
+        onConfirm={async () => {
+          setMostrarConfirm(false);
+          await ejecutarVenta();
+        }}
+      />
     </div>
   );
 }
