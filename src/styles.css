@@ -1,4 +1,3 @@
-/* RESET */
 body {
   margin: 0;
   font-family: 'Segoe UI', sans-serif;
@@ -6,24 +5,16 @@ body {
   color: white;
 }
 
-/* LAYOUT */
 .pos-layout {
   display: grid;
   grid-template-columns: 2fr 1fr;
   height: 100vh;
 }
 
-/* PANEL PRODUCTOS */
 .productos-panel {
   padding: 20px;
-  border-right: 1px solid #222;
 }
 
-.productos-panel h2 {
-  color: #ff2a2a;
-}
-
-/* BUSCADOR */
 .productos-panel input {
   width: 100%;
   padding: 12px;
@@ -34,171 +25,115 @@ body {
   margin-bottom: 15px;
 }
 
-/* LISTA PRODUCTOS */
-.productos-lista button {
-  width: 100%;
-  text-align: left;
-  padding: 15px;
+/* PRODUCTO APP */
+.producto-card-pro {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #121212;
+  padding: 14px;
+  border-radius: 14px;
   margin-bottom: 10px;
-  border-radius: 12px;
-  border: none;
-  background: #111;
-  color: white;
+  border: 1px solid #1f1f1f;
   cursor: pointer;
-  transition: 0.2s;
 }
 
-.productos-lista button:hover {
-  background: #1a1a1a;
-  transform: scale(1.01);
+.producto-left {
+  display: flex;
+  gap: 10px;
+  align-items: center;
 }
 
-/* STOCK BAJO */
-.productos-lista span {
-  color: #ff2a2a;
+.producto-img {
+  width: 45px;
+  height: 45px;
+  background: #1f1f1f;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.producto-nombre {
   font-weight: bold;
 }
 
-/* PANEL CARRITO */
+.producto-sub {
+  font-size: 12px;
+  color: #888;
+}
+
+.producto-precio {
+  color: #00ff88;
+  font-weight: bold;
+}
+
+.producto-stock {
+  font-size: 12px;
+  color: #aaa;
+}
+
+.btn-add {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #ff2a2a;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.badge-stock {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: #ff2a2a;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
+/* CARRITO */
 .carrito-panel {
   padding: 20px;
   background: #0f0f0f;
 }
 
-/* ITEMS CARRITO */
-.carrito-panel div {
+.carrito-item {
+  display: flex;
+  justify-content: space-between;
+  background: #121212;
+  padding: 10px;
+  border-radius: 10px;
   margin-bottom: 10px;
 }
 
-/* ITEM */
-.item-carrito {
-  display: flex;
-  justify-content: space-between;
-  background: #111;
-  padding: 10px;
-  border-radius: 10px;
-}
-
-/* BOTONES */
-button {
-  border: none;
-  padding: 10px;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-/* BOTONES ACCIONES */
-.item-carrito button {
-  background: #222;
-  color: white;
-}
-
-.item-carrito button:hover {
-  background: #333;
-}
-
-/* TOTAL */
-.carrito-panel h3 {
-  margin-top: 20px;
+.precio-mini {
   color: #00ff88;
 }
 
-/* INPUT */
-.carrito-panel input,
-.carrito-panel select {
-  width: 100%;
-  padding: 10px;
-  border-radius: 8px;
-  border: none;
-  background: #111;
+.acciones button {
+  margin-left: 5px;
+  background: #1f1f1f;
   color: white;
-  margin-top: 10px;
 }
 
-/* BOTON COBRAR */
+/* BOTÓN COBRAR */
 .btn-cobrar {
   width: 100%;
   margin-top: 15px;
   background: #16b84e;
   color: white;
-  font-weight: bold;
-  font-size: 16px;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
 }
 
-.btn-cobrar:hover {
-  background: #13a344;
-}
-
-/* DESHABILITADO */
 .btn-cobrar:disabled {
   background: #444;
-  cursor: not-allowed;
-}
-
-/* RESPONSIVE */
-@media (max-width: 900px) {
-  .pos-layout {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* CARD PRODUCTO */
-.producto-card {
-  width: 100%;
-  border: none;
-  border-radius: 14px;
-  padding: 15px;
-  margin-bottom: 10px;
-  background: #111;
-  color: white;
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-/* HOVER */
-.producto-card:hover {
-  background: #1a1a1a;
-  transform: scale(1.02);
-  box-shadow: 0 0 10px rgba(255, 42, 42, 0.2);
-}
-
-/* NOMBRE */
-.producto-nombre {
-  font-weight: bold;
-  font-size: 15px;
-}
-
-/* PRECIO */
-.producto-precio {
-  color: #00ff88;
-  font-size: 16px;
-  font-weight: bold;
-}
-
-/* FILA SUPERIOR */
-.producto-info {
-  display: flex;
-  justify-content: space-between;
-}
-
-/* FILA INFERIOR */
-.producto-extra {
-  display: flex;
-  justify-content: space-between;
-  font-size: 13px;
-}
-
-/* STOCK */
-.producto-stock {
-  color: #aaa;
-}
-
-/* ALERTA */
-.producto-alerta {
-  color: #ff2a2a;
-  font-weight: bold;
 }
