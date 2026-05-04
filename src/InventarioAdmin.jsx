@@ -117,25 +117,40 @@ export default function InventarioAdmin() {
           }}
         >
           <input
-            value={p.nombre}
-            onChange={(e) =>
-              (p.nombre = e.target.value)
-            }
-          />
+  value={p.nombre}
+  onChange={(e) => {
+    const nuevaLista = lista.map((item) =>
+      item.id === p.id
+        ? { ...item, nombre: e.target.value }
+        : item
+    );
+    setLista(nuevaLista);
+  }}
+/>
 
-          <input
-            value={p.venta}
-            onChange={(e) =>
-              (p.venta = e.target.value)
-            }
-          />
+         <input
+  value={p.venta}
+  onChange={(e) => {
+    const nuevaLista = lista.map((item) =>
+      item.id === p.id
+        ? { ...item, venta: e.target.value }
+        : item
+    );
+    setLista(nuevaLista);
+  }}
+/>
 
-          <input
-            value={p.stock}
-            onChange={(e) =>
-              (p.stock = e.target.value)
-            }
-          />
+        <input
+  value={p.stock}
+  onChange={(e) => {
+    const nuevaLista = lista.map((item) =>
+      item.id === p.id
+        ? { ...item, stock: e.target.value }
+        : item
+    );
+    setLista(nuevaLista);
+  }}
+/>
 
           <button onClick={() => guardar(p)}>
             Guardar
