@@ -5,6 +5,8 @@ import Login from "./Login";
 import POS from "./POS";
 import Dashboard from "./Dashboard";
 import CargadorFirebase from "./CargadorFirebase";
+import InventarioAdmin from "./InventarioAdmin";
+
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -129,10 +131,9 @@ export default function App() {
           <Dashboard />
       )}
 
-      {vista === "inventario" &&
-        esAdmin && (
-          <CargadorFirebase />
-      )}
+     {vista === "inventario" && esAdmin && (
+  <InventarioAdmin />
+)}
     </div>
   );
 }
