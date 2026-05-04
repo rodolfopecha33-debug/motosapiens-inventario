@@ -18,7 +18,6 @@ export default function POS({ user }) {
   const [cargando, setCargando] = useState(true);
   const [mostrarConfirm, setMostrarConfirm] = useState(false);
 
-  // 💳 PAGO PRO
   const [metodoPago, setMetodoPago] = useState("efectivo");
   const [recibido, setRecibido] = useState("");
 
@@ -39,14 +38,14 @@ export default function POS({ user }) {
   const nombre = (p) => p.nombre || "Sin nombre";
   const precio = (p) => Number(p.venta || 0);
   const stock = (p) => Number(p.stock || 0);
-  const codigo = (p) => String(p.codigo || p.barras || "");
+  const codigo = (p) => String(p.codigo || "");
 
   const productosFiltrados = lista.filter((p) =>
     nombre(p).toLowerCase().includes(busqueda.toLowerCase()) ||
     codigo(p).includes(busqueda)
   );
 
-  // 🛒 AGREGAR CON CANTIDAD
+  // 🛒 AGREGAR PRODUCTO
   const agregar = (p) => {
     if (stock(p) <= 0) {
       alert("Sin stock");
@@ -104,7 +103,6 @@ export default function POS({ user }) {
     0
   );
 
-  // 💰 CAMBIO
   const cambio =
     metodoPago === "efectivo"
       ? Number(recibido || 0) - total
@@ -119,65 +117,51 @@ export default function POS({ user }) {
 
     mensaje += `\n💰 Total: $${total}\n`;
     mensaje += `💳 Pago: ${metodoPago}\n`;
-    mensaje += `👤 Vendedor: ${user}\n`;
-    mensaje += `📅 ${new Date().toLocaleString()}\n`;
+    mensaje += `👤 ${user}\n`;
 
     return encodeURIComponent(mensaje);
   };
 
   const enviarWhatsApp = () => {
     if (!telefono) return;
-    const url = `https://wa.me/57${telefono}?text=${generarMensaje()}`;
-    window.open(url, "_blank");
+    window.open(`https://wa.me/57${telefono}?text=${generarMensaje()}`, "_blank");
   };
 
   const imprimirFactura = () => {
-    const items = carrito
-      .map(
-        (p) =>
-          `<tr>
-            <td>${nombre(p)}</td>
-            <td>${p.cantidad}</td>
-            <td>$${precio(p) * p.cantidad}</td>
-          </tr>`
-      )
-      .join("");
+    const items = carrito.map((p) =>
+      `<tr>
+        <td>${nombre(p)}</td>
+        <td>${p.cantidad}</td>
+        <td>$${precio(p) * p.cantidad}</td>
+      </tr>`
+    ).join("");
 
     const html = `
     <html>
-    <body style="font-family:Arial;padding:20px">
-      <h1 style="color:red">🏍️ MOTOSAPIENS</h1>
-      <p>${new Date().toLocaleString()}</p>
-      <p>Vendedor: ${user}</p>
-      <table border="1" width="100%">
-        <tr><th>Producto</th><th>Cant</th><th>Total</th></tr>
-        ${items}
-      </table>
-      <h2>Total: $${total}</h2>
-      <p>Pago: ${metodoPago}</p>
-      ${
-        metodoPago === "efectivo"
-          ? `<p>Recibido: $${recibido} | Cambio: $${cambio}</p>`
-          : ""
-      }
-    </body>
+      <body style="font-family:Arial;padding:20px">
+        <h1 style="color:red">MOTOSAPIENS</h1>
+        <p>${new Date().toLocaleString()}</p>
+        <table border="1" width="100%">
+          <tr><th>Producto</th><th>Cant</th><th>Total</th></tr>
+          ${items}
+        </table>
+        <h2>Total: $${total}</h2>
+      </body>
     </html>
     `;
 
     const win = window.open("", "", "width=800,height=900");
     win.document.write(html);
+    win.document.close();
     win.print();
   };
 
   const ejecutarVenta = async () => {
     if (carrito.length === 0) return;
 
-    // 💳 VALIDACIÓN EFECTIVO
-    if (metodoPago === "efectivo") {
-      if (Number(recibido) < total) {
-        alert("Dinero insuficiente");
-        return;
-      }
+    if (metodoPago === "efectivo" && Number(recibido) < total) {
+      alert("Dinero insuficiente");
+      return;
     }
 
     for (const item of carrito) {
@@ -197,10 +181,10 @@ export default function POS({ user }) {
       fecha: new Date().toLocaleString(),
       usuario: user,
       productos: carrito,
-      total: total,
-      metodoPago: metodoPago,
+      total,
+      metodoPago,
       recibido: Number(recibido || 0),
-      cambio: cambio
+      cambio
     });
 
     imprimirFactura();
@@ -231,36 +215,32 @@ export default function POS({ user }) {
         />
 
         <div className="productos-lista">
-  {productosFiltrados.slice(0, 80).map((p, i) => (
-    <button
-      key={i}
-      onClick={() => agregar(p)}
-      className="producto-card"
-    >
-      <div className="producto-info">
-        <span className="producto-nombre">
-          {nombre(p)}
-        </span>
+          {productosFiltrados.slice(0, 80).map((p, i) => (
+            <button
+              key={i}
+              onClick={() => agregar(p)}
+              className="producto-card"
+            >
+              <div className="producto-info">
+                <span>{nombre(p)}</span>
+                <span style={{ color: "#00ff88" }}>
+                  ${precio(p)}
+                </span>
+              </div>
 
-        <span className="producto-precio">
-          ${precio(p)}
-        </span>
+              <div className="producto-extra">
+                <span>Stock: {stock(p)}</span>
+
+                {stock(p) <= 5 && (
+                  <span style={{ color: "red" }}>
+                    ⚠ Bajo
+                  </span>
+                )}
+              </div>
+            </button>
+          ))}
+        </div>
       </div>
-
-      <div className="producto-extra">
-        <span className="producto-stock">
-          Stock: {stock(p)}
-        </span>
-
-        {stock(p) <= 5 && (
-          <span className="producto-alerta">
-            ⚠ Bajo
-          </span>
-        )}
-      </div>
-    </button>
-  ))}
-</div>
 
       {/* CARRITO */}
       <div className="carrito-panel">
@@ -268,7 +248,7 @@ export default function POS({ user }) {
 
         {carrito.length === 0 && (
           <p style={{ color: "#aaa" }}>
-            🛒 No hay productos en el carrito
+            🛒 No hay productos
           </p>
         )}
 
@@ -289,18 +269,15 @@ export default function POS({ user }) {
 
         <h3>Total: ${total}</h3>
 
-        {/* 💳 MÉTODO DE PAGO */}
         <select
           value={metodoPago}
           onChange={(e) => setMetodoPago(e.target.value)}
         >
           <option value="efectivo">Efectivo</option>
           <option value="nequi">Nequi</option>
-          <option value="daviplata">Daviplata</option>
           <option value="tarjeta">Tarjeta</option>
         </select>
 
-        {/* 💵 EFECTIVO */}
         {metodoPago === "efectivo" && (
           <>
             <input
@@ -326,16 +303,12 @@ export default function POS({ user }) {
         <button
           onClick={() => setMostrarConfirm(true)}
           disabled={carrito.length === 0}
-          style={{
-            background: carrito.length === 0 ? "#555" : "#16b84e",
-            cursor: carrito.length === 0 ? "not-allowed" : "pointer"
-          }}
+          className="btn-cobrar"
         >
-          Cobrar + Factura + WhatsApp
+          Cobrar + Factura
         </button>
       </div>
 
-      {/* CONFIRMACIÓN */}
       <ConfirmModal
         open={mostrarConfirm}
         total={total}
