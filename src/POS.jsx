@@ -25,14 +25,9 @@ export default function POS({ user }) {
   const cargarInventario = async () => {
     const snap = await getDocs(collection(db, "inventario"));
     const datos = [];
-
-    snap.forEach((d) => {
-      datos.push({
-        id: d.id,
-        ...d.data()
-      });
-    });
-
+    snap.forEach((d) =>
+      datos.push({ id: d.id, ...d.data() })
+    );
     setLista(datos);
     setCargando(false);
   };
@@ -47,35 +42,80 @@ export default function POS({ user }) {
     codigo(p).includes(busqueda)
   );
 
+  // 🛒 AGREGAR CON CANTIDAD
   const agregar = (p) => {
     if (stock(p) <= 0) {
       alert("Sin stock");
       return;
     }
 
-    setCarrito([...carrito, p]);
+    const existe = carrito.find((i) => i.id === p.id);
+
+    if (existe) {
+      setCarrito(
+        carrito.map((i) =>
+          i.id === p.id
+            ? { ...i, cantidad: i.cantidad + 1 }
+            : i
+        )
+      );
+    } else {
+      setCarrito([...carrito, { ...p, cantidad: 1 }]);
+    }
   };
 
-  const total = carrito.reduce((sum, i) => sum + precio(i), 0);
+  const aumentar = (id) => {
+    setCarrito(
+      carrito.map((i) =>
+        i.id === id
+          ? { ...i, cantidad: i.cantidad + 1 }
+          : i
+      )
+    );
+  };
+
+  const disminuir = (id) => {
+    const item = carrito.find((i) => i.id === id);
+
+    if (item.cantidad === 1) {
+      eliminar(id);
+      return;
+    }
+
+    setCarrito(
+      carrito.map((i) =>
+        i.id === id
+          ? { ...i, cantidad: i.cantidad - 1 }
+          : i
+      )
+    );
+  };
+
+  const eliminar = (id) => {
+    setCarrito(carrito.filter((i) => i.id !== id));
+  };
+
+  const total = carrito.reduce(
+    (sum, i) => sum + precio(i) * i.cantidad,
+    0
+  );
 
   const generarMensaje = () => {
     let mensaje = `🏍️ *MOTOSAPIENS*\n🧾 Factura\n\n`;
 
     carrito.forEach((p) => {
-      mensaje += `• ${nombre(p)} - $${precio(p)}\n`;
+      mensaje += `• ${nombre(p)} x${p.cantidad} - $${precio(p) * p.cantidad}\n`;
     });
 
     mensaje += `\n💰 Total: $${total}\n`;
     mensaje += `👤 Vendedor: ${user}\n`;
     mensaje += `📅 ${new Date().toLocaleString()}\n`;
-    mensaje += `\nGracias por su compra 🙌`;
 
     return encodeURIComponent(mensaje);
   };
 
   const enviarWhatsApp = () => {
     if (!telefono) return;
-
     const url = `https://wa.me/57${telefono}?text=${generarMensaje()}`;
     window.open(url, "_blank");
   };
@@ -84,7 +124,7 @@ export default function POS({ user }) {
     const items = carrito
       .map(
         (p) =>
-          `<tr><td>${nombre(p)}</td><td>$${precio(p)}</td></tr>`
+          `<tr><td>${nombre(p)}</td><td>${p.cantidad}</td><td>$${precio(p) * p.cantidad}</td></tr>`
       )
       .join("");
 
@@ -94,8 +134,8 @@ export default function POS({ user }) {
       <h1 style="color:red">🏍️ MOTOSAPIENS</h1>
       <p>${new Date().toLocaleString()}</p>
       <p>Vendedor: ${user}</p>
-      <table border="1" width="100%" style="border-collapse:collapse">
-        <tr><th>Producto</th><th>Valor</th></tr>
+      <table border="1" width="100%">
+        <tr><th>Producto</th><th>Cant</th><th>Total</th></tr>
         ${items}
       </table>
       <h2>Total: $${total}</h2>
@@ -109,15 +149,17 @@ export default function POS({ user }) {
   };
 
   const ejecutarVenta = async () => {
+    if (carrito.length === 0) return;
+
     for (const item of carrito) {
       await updateDoc(doc(db, "inventario", item.id), {
-        stock: stock(item) - 1
+        stock: stock(item) - item.cantidad
       });
 
       await addDoc(collection(db, "movimientos"), {
         tipo: "venta",
         producto: item.nombre,
-        cantidad: 1,
+        cantidad: item.cantidad,
         fecha: new Date().toLocaleString()
       });
     }
@@ -146,17 +188,11 @@ export default function POS({ user }) {
       <div className="productos-panel">
         <h2>🔥 POS FINAL PRO</h2>
 
-        <div style={{ display: "flex", gap: 10 }}>
-          <input
-            placeholder="Buscar o escanear código..."
-            value={busqueda}
-            onChange={(e) => setBusqueda(e.target.value)}
-          />
-
-          <button onClick={() => alert("Escanea o escribe código")}>
-            📷
-          </button>
-        </div>
+        <input
+          placeholder="Buscar o escanear..."
+          value={busqueda}
+          onChange={(e) => setBusqueda(e.target.value)}
+        />
 
         <div className="productos-lista">
           {productosFiltrados.slice(0, 80).map((p, i) => (
@@ -164,7 +200,7 @@ export default function POS({ user }) {
               {nombre(p)} - ${precio(p)} | Stock:{stock(p)}
               {stock(p) <= 5 && (
                 <span style={{ color: "red", marginLeft: 10 }}>
-                  ⚠️ Bajo
+                  ⚠ Bajo
                 </span>
               )}
             </button>
@@ -175,23 +211,42 @@ export default function POS({ user }) {
       <div className="carrito-panel">
         <h2>📦 Carrito</h2>
 
+        {carrito.length === 0 && (
+          <p style={{ color: "#aaa" }}>
+            🛒 No hay productos en el carrito
+          </p>
+        )}
+
         {carrito.map((x, i) => (
-          <div key={i}>
-            {nombre(x)} - ${precio(x)}
+          <div key={i} style={itemStyle}>
+            <div>
+              {nombre(x)} <br />
+              ${precio(x)} x {x.cantidad}
+            </div>
+
+            <div>
+              <button onClick={() => disminuir(x.id)}>➖</button>
+              <button onClick={() => aumentar(x.id)}>➕</button>
+              <button onClick={() => eliminar(x.id)}>🗑</button>
+            </div>
           </div>
         ))}
 
         <h3>Total: ${total}</h3>
 
         <input
-          placeholder="Cliente WhatsApp (300...)"
+          placeholder="Cliente WhatsApp"
           value={telefono}
           onChange={(e) => setTelefono(e.target.value)}
         />
 
         <button
-          className="btn-cobrar"
           onClick={() => setMostrarConfirm(true)}
+          disabled={carrito.length === 0}
+          style={{
+            background: carrito.length === 0 ? "#555" : "#16b84e",
+            cursor: carrito.length === 0 ? "not-allowed" : "pointer"
+          }}
         >
           Cobrar + Factura + WhatsApp
         </button>
@@ -199,9 +254,8 @@ export default function POS({ user }) {
 
       <ConfirmModal
         open={mostrarConfirm}
-        title="Confirmar venta"
-        message="¿Desea finalizar esta venta?"
         total={total}
+        message="¿Confirmar venta?"
         onCancel={() => setMostrarConfirm(false)}
         onConfirm={async () => {
           setMostrarConfirm(false);
@@ -211,3 +265,12 @@ export default function POS({ user }) {
     </div>
   );
 }
+
+const itemStyle = {
+  display: "flex",
+  justifyContent: "space-between",
+  marginBottom: "10px",
+  background: "#111",
+  padding: "10px",
+  borderRadius: "8px"
+};
