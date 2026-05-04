@@ -118,6 +118,13 @@ export default function POS({ user }) {
       });
     }
 
+    await addDoc(collection(db, "movimientos"), {
+  tipo: "venta",
+  producto: item.nombre,
+  cantidad: 1,
+  fecha: new Date().toLocaleString()
+});
+
     await addDoc(collection(db, "ventas"), {
       fecha: new Date().toLocaleString(),
       usuario: user,
