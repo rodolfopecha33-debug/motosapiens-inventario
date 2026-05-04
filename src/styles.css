@@ -1,172 +1,143 @@
-/* src/styles.css */
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
+/* RESET */
 body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
   background: #0b0b0b;
   color: white;
-  font-family: Arial, Helvetica, sans-serif;
 }
 
-/* LOGIN */
-
-.login-screen {
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+/* LAYOUT */
+.pos-layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  height: 100vh;
 }
 
-.login-box {
-  background: #151515;
-  padding: 35px;
-  border-radius: 16px;
-  width: 320px;
-  text-align: center;
-  border: 1px solid #222;
+/* PANEL PRODUCTOS */
+.productos-panel {
+  padding: 20px;
+  border-right: 1px solid #222;
 }
 
-.login-box h1 {
+.productos-panel h2 {
   color: #ff2a2a;
+}
+
+/* BUSCADOR */
+.productos-panel input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background: #111;
+  color: white;
+  margin-bottom: 15px;
+}
+
+/* LISTA PRODUCTOS */
+.productos-lista button {
+  width: 100%;
+  text-align: left;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 12px;
+  border: none;
+  background: #111;
+  color: white;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.productos-lista button:hover {
+  background: #1a1a1a;
+  transform: scale(1.01);
+}
+
+/* STOCK BAJO */
+.productos-lista span {
+  color: #ff2a2a;
+  font-weight: bold;
+}
+
+/* PANEL CARRITO */
+.carrito-panel {
+  padding: 20px;
+  background: #0f0f0f;
+}
+
+/* ITEMS CARRITO */
+.carrito-panel div {
   margin-bottom: 10px;
 }
 
-.login-box p {
-  color: #999;
-  margin-bottom: 20px;
-}
-
-.login-box input {
-  width: 100%;
-  padding: 12px;
-  border: none;
-  border-radius: 10px;
-  margin-bottom: 14px;
-  font-size: 18px;
-  text-align: center;
-}
-
-.login-box button {
-  width: 100%;
-  padding: 12px;
-  background: #ff2a2a;
-  color: white;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-}
-
-.login-box small {
-  color: #ff4a4a;
-  display: block;
-  margin-top: 10px;
-}
-
-/* TOPBAR */
-
-.topbar {
-  background: #111;
-  padding: 14px 20px;
+/* ITEM */
+.item-carrito {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  background: #111;
+  padding: 10px;
+  border-radius: 10px;
 }
 
-.topbar button {
-  background: #ff2a2a;
-  color: white;
+/* BOTONES */
+button {
   border: none;
-  padding: 10px 14px;
+  padding: 10px;
   border-radius: 8px;
   cursor: pointer;
 }
 
-/* POS */
-
-.pos-layout {
-  display: grid;
-  grid-template-columns: 1fr 380px;
-  min-height: calc(100vh - 60px);
-}
-
-.productos-panel,
-.carrito-panel {
-  padding: 22px;
-}
-
-.productos-panel h2,
-.carrito-panel h2 {
-  margin-bottom: 18px;
-}
-
-.productos-panel input {
-  width: 100%;
-  padding: 12px;
-  border: none;
-  border-radius: 10px;
-  margin-bottom: 18px;
-}
-
-.productos-lista {
-  display: grid;
-  gap: 10px;
-}
-
-.productos-lista button {
-  background: #181818;
+/* BOTONES ACCIONES */
+.item-carrito button {
+  background: #222;
   color: white;
-  border: 1px solid #222;
-  padding: 14px;
-  border-radius: 12px;
-  text-align: left;
-  cursor: pointer;
 }
 
-.productos-lista button:hover {
-  border-color: #ff2a2a;
+.item-carrito button:hover {
+  background: #333;
 }
 
-.carrito-panel {
-  background: #111;
-  border-left: 1px solid #222;
-}
-
-.item-carrito {
-  padding: 12px;
-  background: #1a1a1a;
-  border-radius: 10px;
-  margin-bottom: 10px;
-}
-
+/* TOTAL */
 .carrito-panel h3 {
   margin-top: 20px;
-  margin-bottom: 15px;
+  color: #00ff88;
 }
 
+/* INPUT */
+.carrito-panel input,
+.carrito-panel select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  background: #111;
+  color: white;
+  margin-top: 10px;
+}
+
+/* BOTON COBRAR */
 .btn-cobrar {
   width: 100%;
-  padding: 14px;
+  margin-top: 15px;
   background: #16b84e;
   color: white;
-  border: none;
-  border-radius: 12px;
+  font-weight: bold;
   font-size: 16px;
-  cursor: pointer;
+}
+
+.btn-cobrar:hover {
+  background: #13a344;
+}
+
+/* DESHABILITADO */
+.btn-cobrar:disabled {
+  background: #444;
+  cursor: not-allowed;
 }
 
 /* RESPONSIVE */
-
 @media (max-width: 900px) {
   .pos-layout {
     grid-template-columns: 1fr;
-  }
-
-  .carrito-panel {
-    border-left: none;
-    border-top: 1px solid #222;
   }
 }
