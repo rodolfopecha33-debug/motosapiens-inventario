@@ -233,30 +233,31 @@ export default function POS({ user }) {
               </div>
 
               {/* DERECHA */}
-              <div className="producto-right">
-                <div className="producto-precio">
-                  ${precio(p)}
-                </div>
-                <div className="producto-stock">
-                  Stock: {stock(p)}
-                </div>
-              </div>
+         <div className="producto-right">
+  <div className="producto-precio">
+    ${precio(p)}
+  </div>
 
-              {/* BOTÓN + */}
-              <div
-                className="btn-add"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  agregar(p);
-                }}
-              >
-                +
-              </div>
+  <div className="producto-stock">
+    Stock: {stock(p)}
+  </div>
 
-              {/* ALERTA */}
-              {stock(p) <= 5 && (
-                <div className="badge-stock">Bajo</div>
-              )}
+  {stock(p) <= 5 && (
+    <div className="badge-stock">
+      Bajo
+    </div>
+  )}
+
+  <button
+    className="btn-add"
+    onClick={(e) => {
+      e.stopPropagation();
+      agregar(p);
+    }}
+  >
+    +
+  </button>
+</div>
             </div>
           ))}
         </div>
