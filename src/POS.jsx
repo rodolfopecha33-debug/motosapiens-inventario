@@ -18,6 +18,10 @@ export default function POS({ user }) {
   const [cargando, setCargando] = useState(true);
   const [mostrarConfirm, setMostrarConfirm] = useState(false);
 
+  // 💳 PAGO PRO
+  const [metodoPago, setMetodoPago] = useState("efectivo");
+  const [recibido, setRecibido] = useState("");
+
   useEffect(() => {
     cargarInventario();
   }, []);
@@ -100,6 +104,12 @@ export default function POS({ user }) {
     0
   );
 
+  // 💰 CAMBIO
+  const cambio =
+    metodoPago === "efectivo"
+      ? Number(recibido || 0) - total
+      : 0;
+
   const generarMensaje = () => {
     let mensaje = `🏍️ *MOTOSAPIENS*\n🧾 Factura\n\n`;
 
@@ -108,6 +118,7 @@ export default function POS({ user }) {
     });
 
     mensaje += `\n💰 Total: $${total}\n`;
+    mensaje += `💳 Pago: ${metodoPago}\n`;
     mensaje += `👤 Vendedor: ${user}\n`;
     mensaje += `📅 ${new Date().toLocaleString()}\n`;
 
@@ -124,7 +135,11 @@ export default function POS({ user }) {
     const items = carrito
       .map(
         (p) =>
-          `<tr><td>${nombre(p)}</td><td>${p.cantidad}</td><td>$${precio(p) * p.cantidad}</td></tr>`
+          `<tr>
+            <td>${nombre(p)}</td>
+            <td>${p.cantidad}</td>
+            <td>$${precio(p) * p.cantidad}</td>
+          </tr>`
       )
       .join("");
 
@@ -139,6 +154,12 @@ export default function POS({ user }) {
         ${items}
       </table>
       <h2>Total: $${total}</h2>
+      <p>Pago: ${metodoPago}</p>
+      ${
+        metodoPago === "efectivo"
+          ? `<p>Recibido: $${recibido} | Cambio: $${cambio}</p>`
+          : ""
+      }
     </body>
     </html>
     `;
@@ -150,6 +171,14 @@ export default function POS({ user }) {
 
   const ejecutarVenta = async () => {
     if (carrito.length === 0) return;
+
+    // 💳 VALIDACIÓN EFECTIVO
+    if (metodoPago === "efectivo") {
+      if (Number(recibido) < total) {
+        alert("Dinero insuficiente");
+        return;
+      }
+    }
 
     for (const item of carrito) {
       await updateDoc(doc(db, "inventario", item.id), {
@@ -168,7 +197,10 @@ export default function POS({ user }) {
       fecha: new Date().toLocaleString(),
       usuario: user,
       productos: carrito,
-      total: total
+      total: total,
+      metodoPago: metodoPago,
+      recibido: Number(recibido || 0),
+      cambio: cambio
     });
 
     imprimirFactura();
@@ -176,6 +208,9 @@ export default function POS({ user }) {
 
     setCarrito([]);
     setTelefono("");
+    setRecibido("");
+    setMetodoPago("efectivo");
+
     cargarInventario();
   };
 
@@ -185,6 +220,7 @@ export default function POS({ user }) {
 
   return (
     <div className="pos-layout">
+      {/* PRODUCTOS */}
       <div className="productos-panel">
         <h2>🔥 POS FINAL PRO</h2>
 
@@ -208,6 +244,7 @@ export default function POS({ user }) {
         </div>
       </div>
 
+      {/* CARRITO */}
       <div className="carrito-panel">
         <h2>📦 Carrito</h2>
 
@@ -234,6 +271,34 @@ export default function POS({ user }) {
 
         <h3>Total: ${total}</h3>
 
+        {/* 💳 MÉTODO DE PAGO */}
+        <select
+          value={metodoPago}
+          onChange={(e) => setMetodoPago(e.target.value)}
+        >
+          <option value="efectivo">Efectivo</option>
+          <option value="nequi">Nequi</option>
+          <option value="daviplata">Daviplata</option>
+          <option value="tarjeta">Tarjeta</option>
+        </select>
+
+        {/* 💵 EFECTIVO */}
+        {metodoPago === "efectivo" && (
+          <>
+            <input
+              placeholder="Dinero recibido"
+              value={recibido}
+              onChange={(e) => setRecibido(e.target.value)}
+            />
+            <p>
+              Cambio:{" "}
+              <strong style={{ color: cambio < 0 ? "red" : "#16b84e" }}>
+                ${cambio}
+              </strong>
+            </p>
+          </>
+        )}
+
         <input
           placeholder="Cliente WhatsApp"
           value={telefono}
@@ -252,6 +317,7 @@ export default function POS({ user }) {
         </button>
       </div>
 
+      {/* CONFIRMACIÓN */}
       <ConfirmModal
         open={mostrarConfirm}
         total={total}
