@@ -161,7 +161,12 @@ export default function POS({ user }) {
         <div className="productos-lista">
           {productosFiltrados.slice(0, 80).map((p, i) => (
             <button key={i} onClick={() => agregar(p)}>
-              {nombre(p)} - ${precio(p)} | Stock:{stock(p)}
+             {nombre(p)} - ${precio(p)} | Stock:{stock(p)}
+{stock(p) <= 5 && (
+  <span style={{ color: "red", marginLeft: "10px" }}>
+    ⚠️ Bajo
+  </span>
+)}
             </button>
           ))}
         </div>
