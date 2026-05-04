@@ -38,14 +38,28 @@ export default function InventarioAdmin() {
     setLista(datos);
   };
 
-  const guardar = async (item) => {
-    await updateDoc(doc(db, "inventario", item.id), item);
-    alert("Actualizado");
+  // 🔥 Guardado automático
+  const actualizarCampo = async (id, campo, valor) => {
+    if (campo === "venta" || campo === "stock") {
+      if (valor < 0) return;
+    }
+
+    const nuevaLista = lista.map((item) =>
+      item.id === id ? { ...item, [campo]: valor } : item
+    );
+
+    setLista(nuevaLista);
+
+    await updateDoc(doc(db, "inventario", id), {
+      [campo]:
+        campo === "venta" || campo === "stock"
+          ? Number(valor)
+          : valor
+    });
   };
 
   const eliminar = async (id) => {
     if (!confirm("Eliminar producto?")) return;
-
     await deleteDoc(doc(db, "inventario", id));
     cargar();
   };
@@ -54,9 +68,9 @@ export default function InventarioAdmin() {
     if (!nuevo.nombre) return alert("Falta nombre");
 
     await addDoc(collection(db, "inventario"), {
-      ...nuevo,
-      venta: Number(nuevo.venta),
-      stock: Number(nuevo.stock)
+      nombre: nuevo.nombre,
+      venta: Number(nuevo.venta || 0),
+      stock: Number(nuevo.stock || 0)
     });
 
     setNuevo({ nombre: "", venta: "", stock: "" });
@@ -69,98 +83,96 @@ export default function InventarioAdmin() {
 
   return (
     <div style={{ padding: 20, color: "white" }}>
-      <h1>📦 Inventario ADMIN</h1>
+      <h1>📦 Inventario PRO</h1>
 
       <input
-        placeholder="Buscar..."
+        placeholder="Buscar producto..."
         value={busqueda}
         onChange={(e) => setBusqueda(e.target.value)}
+        style={{ marginBottom: 15 }}
       />
 
-      <h3>➕ Nuevo producto</h3>
+      {/* NUEVO PRODUCTO */}
+      <div style={row}>
+        <input
+          placeholder="Nombre"
+          value={nuevo.nombre}
+          onChange={(e) =>
+            setNuevo({ ...nuevo, nombre: e.target.value })
+          }
+        />
 
-      <input
-        placeholder="Nombre"
-        value={nuevo.nombre}
-        onChange={(e) =>
-          setNuevo({ ...nuevo, nombre: e.target.value })
-        }
-      />
+        <input
+          placeholder="Precio"
+          value={nuevo.venta}
+          onChange={(e) =>
+            setNuevo({ ...nuevo, venta: e.target.value })
+          }
+        />
 
-      <input
-        placeholder="Precio"
-        value={nuevo.venta}
-        onChange={(e) =>
-          setNuevo({ ...nuevo, venta: e.target.value })
-        }
-      />
+        <input
+          placeholder="Stock"
+          value={nuevo.stock}
+          onChange={(e) =>
+            setNuevo({ ...nuevo, stock: e.target.value })
+          }
+        />
 
-      <input
-        placeholder="Stock"
-        value={nuevo.stock}
-        onChange={(e) =>
-          setNuevo({ ...nuevo, stock: e.target.value })
-        }
-      />
-
-      <button onClick={agregar}>Agregar</button>
+        <button onClick={agregar}>➕</button>
+      </div>
 
       <hr />
 
+      {/* TABLA */}
       {filtrados.slice(0, 200).map((p) => (
-        <div
-          key={p.id}
-          style={{
-            marginBottom: 10,
-            background: "#111",
-            padding: 10
-          }}
-        >
+        <div key={p.id} style={row}>
           <input
-  value={p.nombre}
-  onChange={(e) => {
-    const nuevaLista = lista.map((item) =>
-      item.id === p.id
-        ? { ...item, nombre: e.target.value }
-        : item
-    );
-    setLista(nuevaLista);
-  }}
-/>
+            value={p.nombre}
+            onChange={(e) =>
+              actualizarCampo(p.id, "nombre", e.target.value)
+            }
+          />
 
-         <input
-  value={p.venta}
-  onChange={(e) => {
-    const nuevaLista = lista.map((item) =>
-      item.id === p.id
-        ? { ...item, venta: e.target.value }
-        : item
-    );
-    setLista(nuevaLista);
-  }}
-/>
+          <input
+            value={p.venta}
+            onChange={(e) =>
+              actualizarCampo(p.id, "venta", e.target.value)
+            }
+          />
 
-        <input
-  value={p.stock}
-  onChange={(e) => {
-    const nuevaLista = lista.map((item) =>
-      item.id === p.id
-        ? { ...item, stock: e.target.value }
-        : item
-    );
-    setLista(nuevaLista);
-  }}
-/>
+          <input
+            value={p.stock}
+            onChange={(e) =>
+              actualizarCampo(p.id, "stock", e.target.value)
+            }
+          />
 
-          <button onClick={() => guardar(p)}>
-            Guardar
-          </button>
-
-          <button onClick={() => eliminar(p.id)}>
-            Eliminar
+          <button
+            onClick={() => eliminar(p.id)}
+            style={btnDelete}
+          >
+            🗑
           </button>
         </div>
       ))}
     </div>
   );
 }
+
+const row = {
+  display: "grid",
+  gridTemplateColumns: "2fr 1fr 1fr auto",
+  gap: "10px",
+  marginBottom: "8px",
+  background: "#111",
+  padding: "10px",
+  borderRadius: "8px"
+};
+
+const btnDelete = {
+  background: "#ff2a2a",
+  color: "white",
+  border: "none",
+  borderRadius: "6px",
+  cursor: "pointer"
+};
