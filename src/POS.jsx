@@ -110,7 +110,14 @@ export default function POS({ user }) {
   };
 
   const cobrar = async () => {
-    if (carrito.length === 0) return;
+  if (carrito.length === 0) return;
+
+  const confirmar = window.confirm(
+    "¿Está seguro de realizar esta venta?"
+  );
+
+  if (!confirmar) return;
+
 
     for (const item of carrito) {
       await updateDoc(doc(db, "inventario", item.id), {
