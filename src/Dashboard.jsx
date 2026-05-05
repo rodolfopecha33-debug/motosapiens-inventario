@@ -2,6 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import { db } from "./firebase";
+import { resetVentas } from "./resetDB";
+
 
 import {
   collection,
@@ -136,6 +138,19 @@ export default function Dashboard() {
 
       <br /><br />
 
+      <button
+  onClick={resetVentas}
+  style={{
+    background: "#ff2a2a",
+    color: "white",
+    padding: "10px",
+    borderRadius: "8px",
+    marginTop: "10px"
+  }}
+>
+  🧨 Reset Ventas
+</button>
+      
       <table
         style={{
           width:"100%",
