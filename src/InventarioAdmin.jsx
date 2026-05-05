@@ -142,7 +142,7 @@ export default function InventarioAdmin() {
               actualizarCampo(p.id, "nombre", e.target.value)
             }
           />
-          // COMPRA
+          /*COMPRA*/
 
           <input
             value={p.compra}
