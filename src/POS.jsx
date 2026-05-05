@@ -18,7 +18,6 @@ export default function POS({ user }) {
   const [cargando, setCargando] = useState(true);
   const [mostrarConfirm, setMostrarConfirm] = useState(false);
 
-  // 💳 PAGO PRO
   const [metodoPago, setMetodoPago] = useState("efectivo");
   const [recibido, setRecibido] = useState("");
 
@@ -45,13 +44,14 @@ export default function POS({ user }) {
       codigo(p).includes(busqueda)
   );
 
-  // 🛒 AGREGAR (con cantidad)
   const agregar = (p) => {
     if (stock(p) <= 0) {
       alert("Sin stock");
       return;
     }
+
     const existe = carrito.find((i) => i.id === p.id);
+
     if (existe) {
       setCarrito(
         carrito.map((i) =>
@@ -73,10 +73,12 @@ export default function POS({ user }) {
 
   const disminuir = (id) => {
     const item = carrito.find((i) => i.id === id);
+
     if (item.cantidad === 1) {
       eliminar(id);
       return;
     }
+
     setCarrito(
       carrito.map((i) =>
         i.id === id ? { ...i, cantidad: i.cantidad - 1 } : i
@@ -97,62 +99,6 @@ export default function POS({ user }) {
     metodoPago === "efectivo"
       ? Number(recibido || 0) - total
       : 0;
-
-  const generarMensaje = () => {
-    let mensaje = `🏍️ *MOTOSAPIENS*\n🧾 Factura\n\n`;
-    carrito.forEach((p) => {
-      mensaje += `• ${nombre(p)} x${p.cantidad} - $${precio(p) * p.cantidad}\n`;
-    });
-    mensaje += `\n💰 Total: $${total}\n`;
-    mensaje += `💳 Pago: ${metodoPago}\n`;
-    mensaje += `👤 ${user}\n`;
-    return encodeURIComponent(mensaje);
-  };
-
-  const enviarWhatsApp = () => {
-    if (!telefono) return;
-    window.open(
-      `https://wa.me/57${telefono}?text=${generarMensaje()}`,
-      "_blank"
-    );
-  };
-
-  const imprimirFactura = () => {
-    const items = carrito
-      .map(
-        (p) => `
-        <tr>
-          <td>${nombre(p)}</td>
-          <td>${p.cantidad}</td>
-          <td>$${precio(p) * p.cantidad}</td>
-        </tr>`
-      )
-      .join("");
-
-    const html = `
-    <html>
-      <body style="font-family:Arial;padding:20px">
-        <h1 style="color:red">MOTOSAPIENS</h1>
-        <p>${new Date().toLocaleString()}</p>
-        <table border="1" width="100%">
-          <tr><th>Producto</th><th>Cant</th><th>Total</th></tr>
-          ${items}
-        </table>
-        <h2>Total: $${total}</h2>
-        <p>Pago: ${metodoPago}</p>
-        ${
-          metodoPago === "efectivo"
-            ? `<p>Recibido: $${recibido} | Cambio: $${cambio}</p>`
-            : ""
-        }
-      </body>
-    </html>
-    `;
-    const win = window.open("", "", "width=800,height=900");
-    win.document.write(html);
-    win.document.close();
-    win.print();
-  };
 
   const ejecutarVenta = async () => {
     if (carrito.length === 0) return;
@@ -185,19 +131,15 @@ export default function POS({ user }) {
       cambio
     });
 
-    imprimirFactura();
-    enviarWhatsApp();
-
     setCarrito([]);
     setTelefono("");
     setRecibido("");
     setMetodoPago("efectivo");
+
     cargarInventario();
   };
 
-  if (cargando) {
-    return <div style={{ padding: 30 }}>Cargando...</div>;
-  }
+  if (cargando) return <div style={{ padding: 30 }}>Cargando...</div>;
 
   return (
     <div className="pos-layout">
@@ -215,7 +157,7 @@ export default function POS({ user }) {
           {productosFiltrados.slice(0, 80).map((p) => (
             <div
               key={p.id}
-              className="producto-card-pro"
+              className="producto-card-max"
               onClick={() => agregar(p)}
             >
               {/* IZQUIERDA */}
@@ -226,38 +168,41 @@ export default function POS({ user }) {
                   <div className="producto-nombre">
                     {nombre(p)}
                   </div>
+
                   <div className="producto-sub">
                     Ref: {p.codigo || "N/A"}
+                  </div>
+
+                  <div className="producto-stock">
+                    Stock: {stock(p)}
                   </div>
                 </div>
               </div>
 
               {/* DERECHA */}
-         <div className="producto-right">
-  <div className="producto-precio">
-    ${precio(p)}
-  </div>
+              <div className="producto-right-max">
+                <div className="precio-row">
+                  <span className="producto-precio">
+                    ${precio(p)}
+                  </span>
 
-  <div className="producto-stock">
-    Stock: {stock(p)}
-  </div>
+                  <button
+                    className="btn-add-max"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      agregar(p);
+                    }}
+                  >
+                    +
+                  </button>
+                </div>
 
-  {stock(p) <= 5 && (
-    <div className="badge-stock">
-      Bajo
-    </div>
-  )}
-
-  <button
-    className="btn-add"
-    onClick={(e) => {
-      e.stopPropagation();
-      agregar(p);
-    }}
-  >
-    +
-  </button>
-</div>
+                {stock(p) <= 5 && (
+                  <span className="badge-stock-max">
+                    ⚠ Bajo
+                  </span>
+                )}
+              </div>
             </div>
           ))}
         </div>
@@ -268,9 +213,7 @@ export default function POS({ user }) {
         <h2>📦 Carrito</h2>
 
         {carrito.length === 0 && (
-          <p style={{ color: "#aaa" }}>
-            🛒 No hay productos
-          </p>
+          <p className="empty">🛒 No hay productos</p>
         )}
 
         {carrito.map((x) => (
@@ -293,14 +236,12 @@ export default function POS({ user }) {
 
         <h3>Total: ${total}</h3>
 
-        {/* PAGO */}
         <select
           value={metodoPago}
           onChange={(e) => setMetodoPago(e.target.value)}
         >
           <option value="efectivo">Efectivo</option>
           <option value="nequi">Nequi</option>
-          <option value="daviplata">Daviplata</option>
           <option value="tarjeta">Tarjeta</option>
         </select>
 
@@ -311,11 +252,8 @@ export default function POS({ user }) {
               value={recibido}
               onChange={(e) => setRecibido(e.target.value)}
             />
-            <p>
-              Cambio:{" "}
-              <strong style={{ color: cambio < 0 ? "red" : "#16b84e" }}>
-                ${cambio}
-              </strong>
+            <p className="cambio">
+              Cambio: ${cambio}
             </p>
           </>
         )}
@@ -331,11 +269,10 @@ export default function POS({ user }) {
           disabled={carrito.length === 0}
           className="btn-cobrar"
         >
-          Cobrar + Factura + WhatsApp
+          Cobrar
         </button>
       </div>
 
-      {/* CONFIRMACIÓN */}
       <ConfirmModal
         open={mostrarConfirm}
         total={total}
