@@ -186,7 +186,9 @@ export default function Dashboard() {
                 <td>${v.total}</td>
                 <td>${gan}</td>
                  <td>
-        {v.metodoPago || "N/A"}
+       <span className={`pago ${v.metodoPago}`}>
+    {v.metodoPago}
+  </span>
       </td>
               </tr>
             );
