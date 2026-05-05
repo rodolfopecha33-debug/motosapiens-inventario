@@ -242,6 +242,7 @@ export default function POS({ user }) {
         >
           <option value="efectivo">Efectivo</option>
           <option value="nequi">Nequi</option>
+          <option value="daviplata">Daviplata</option>
           <option value="tarjeta">Tarjeta</option>
         </select>
 
