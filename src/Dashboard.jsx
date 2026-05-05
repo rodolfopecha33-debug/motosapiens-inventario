@@ -91,6 +91,22 @@ export default function Dashboard() {
     a.click();
   };
 
+  const totalEfectivo = ventas
+  .filter(v => v.metodoPago === "efectivo")
+  .reduce((acc, v) => acc + Number(v.total || 0), 0);
+
+const totalNequi = ventas
+  .filter(v => v.metodoPago === "nequi")
+  .reduce((acc, v) => acc + Number(v.total || 0), 0);
+
+const totalDaviplata = ventas
+  .filter(v => v.metodoPago === "daviplata")
+  .reduce((acc, v) => acc + Number(v.total || 0), 0);
+
+const totalTarjeta = ventas
+  .filter(v => v.metodoPago === "tarjeta")
+  .reduce((acc, v) => acc + Number(v.total || 0), 0);
+  
   return (
     <div style={{ padding:"25px", color:"white" }}>
       <h1>
@@ -126,6 +142,30 @@ export default function Dashboard() {
           valor={ventas.length}
         />
       </div>
+
+      <div className="grid-pagos">
+
+  <div className="card pago-efectivo">
+    💵 Efectivo
+    <h2>${totalEfectivo}</h2>
+  </div>
+
+  <div className="card pago-nequi">
+    📱 Nequi
+    <h2>${totalNequi}</h2>
+  </div>
+
+  <div className="card pago-daviplata">
+    🟥 Daviplata
+    <h2>${totalDaviplata}</h2>
+  </div>
+
+  <div className="card pago-tarjeta">
+    💳 Tarjeta
+    <h2>${totalTarjeta}</h2>
+  </div>
+
+</div>
 
       <br />
 
