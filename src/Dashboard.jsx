@@ -164,6 +164,7 @@ export default function Dashboard() {
             <th>Usuario</th>
             <th>Total</th>
             <th>Ganancia</th>
+            <th>Método</th>
           </tr>
         </thead>
 
@@ -184,6 +185,9 @@ export default function Dashboard() {
                 <td>{v.usuario}</td>
                 <td>${v.total}</td>
                 <td>${gan}</td>
+                 <td>
+        {v.metodoPago || "N/A"}
+      </td>
               </tr>
             );
           })}
