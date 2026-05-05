@@ -144,3 +144,27 @@ body {
 .cambio {
   color: #00ff88;
 }
+
+.pago {
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* Colores */
+.pago.efectivo {
+  background: #16b84e;
+}
+
+.pago.nequi {
+  background: #8a2be2;
+}
+
+.pago.daviplata {
+  background: #ff2a2a;
+}
+
+.pago.tarjeta {
+  background: #1e90ff;
+}
