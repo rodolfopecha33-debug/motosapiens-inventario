@@ -16,6 +16,7 @@ export default function InventarioAdmin() {
 
   const [nuevo, setNuevo] = useState({
     nombre: "",
+    compra: "", 
     venta: "",
     stock: ""
   });
@@ -69,11 +70,12 @@ export default function InventarioAdmin() {
 
     await addDoc(collection(db, "inventario"), {
       nombre: nuevo.nombre,
+      compra: Number(nuevo.compra || 0),
       venta: Number(nuevo.venta || 0),
       stock: Number(nuevo.stock || 0)
     });
 
-    setNuevo({ nombre: "", venta: "", stock: "" });
+    setNuevo({ nombre: "", compra: "", venta: "", stock: "" });
     cargar();
   };
 
@@ -101,6 +103,14 @@ export default function InventarioAdmin() {
             setNuevo({ ...nuevo, nombre: e.target.value })
           }
         />
+
+        <input
+  placeholder="Precio compra"
+  value={nuevo.compra}
+  onChange={(e) =>
+    setNuevo({ ...nuevo, compra: e.target.value })
+  }
+/>
 
         <input
           placeholder="Precio"
@@ -132,7 +142,15 @@ export default function InventarioAdmin() {
               actualizarCampo(p.id, "nombre", e.target.value)
             }
           />
+          // COMPRA
 
+          <input
+            value={p.compra}
+            onChange={(e) =>
+              actualizarCampo(p.id, "compra", e.target.value)
+            }
+          />
+          
           <input
             value={p.venta}
             onChange={(e) =>
