@@ -168,3 +168,37 @@ body {
 .pago.tarjeta {
   background: #1e90ff;
 }
+
+/* GRID */
+.grid-pagos {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-top: 15px;
+}
+
+/* BASE CARD */
+.card {
+  background: #111;
+  padding: 15px;
+  border-radius: 10px;
+  text-align: center;
+  font-weight: bold;
+}
+
+/* COLORES */
+.pago-efectivo {
+  border-left: 4px solid #16b84e;
+}
+
+.pago-nequi {
+  border-left: 4px solid #8a2be2;
+}
+
+.pago-daviplata {
+  border-left: 4px solid #ff2a2a;
+}
+
+.pago-tarjeta {
+  border-left: 4px solid #1e90ff;
+}
