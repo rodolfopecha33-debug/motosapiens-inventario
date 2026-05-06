@@ -1,4 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, {
+  useEffect,
+  useState,
+  useMemo
+} from "react";
+
 import { db } from "./firebase";
 
 import {
@@ -13,82 +18,116 @@ import {
 export default function InventarioAdmin() {
 
   const [lista, setLista] = useState([]);
-  const [busqueda, setBusqueda] = useState("");
 
+  const [busqueda, setBusqueda] =
+    useState("");
 
+  // 🔥 ORDENAMIENTO
   const [ordenCampo, setOrdenCampo] =
-  useState("nombre");
+    useState("nombre");
 
-const [ordenDireccion, setOrdenDireccion] =
-  useState("asc");
+  const [ordenDireccion, setOrdenDireccion] =
+    useState("asc");
 
-  
-
+  // 🔥 NUEVO PRODUCTO
   const [nuevo, setNuevo] = useState({
+
     nombre: "",
+
     compra: "",
+
     venta: "",
+
     stock: "",
+
     categoria: "",
+
     marca: "",
+
     proveedor: ""
+
   });
 
+  // 🔥 CARGAR
   useEffect(() => {
-
-   const ordenarPor = (campo) => {
-
-  if (ordenCampo === campo) {
-
-    setOrdenDireccion((prev) =>
-
-      prev === "asc"
-        ? "desc"
-        : "asc"
-
-    );
-
-  } else {
-
-    setOrdenCampo(campo);
-
-    setOrdenDireccion("asc");
-
-  }
-};
-    
-    
     cargar();
   }, []);
+
+  // 🔥 ORDENAR COLUMNAS
+  const ordenarPor = (campo) => {
+
+    if (ordenCampo === campo) {
+
+      setOrdenDireccion((prev) =>
+
+        prev === "asc"
+          ? "desc"
+          : "asc"
+
+      );
+
+    } else {
+
+      setOrdenCampo(campo);
+
+      setOrdenDireccion("asc");
+
+    }
+  };
 
   // 🔥 CARGAR INVENTARIO
   const cargar = async () => {
 
-    const snap = await getDocs(
-      collection(db, "inventario")
-    );
+    try {
 
-    const datos = [];
+      const snap = await getDocs(
+        collection(db, "inventario")
+      );
 
-    snap.forEach((d) => {
-      datos.push({
-        id: d.id,
-        ...d.data()
+      const datos = [];
+
+      snap.forEach((d) => {
+
+        datos.push({
+          id: d.id,
+          ...d.data()
+        });
+
       });
-    });
 
-    setLista(datos);
+      setLista(datos);
+
+    } catch (error) {
+
+      console.error(error);
+
+      alert(
+        "Error cargando inventario"
+      );
+
+    }
   };
 
   // 🔥 CAMBIOS LOCALES
-  const cambiarLocal = (id, campo, valor) => {
+  const cambiarLocal = (
+    id,
+    campo,
+    valor
+  ) => {
 
     setLista((prev) =>
+
       prev.map((p) =>
+
         p.id === id
-          ? { ...p, [campo]: valor }
+          ? {
+              ...p,
+              [campo]: valor
+            }
           : p
+
       )
+
     );
   };
 
@@ -100,19 +139,27 @@ const [ordenDireccion, setOrdenDireccion] =
       await updateDoc(
         doc(db, "inventario", p.id),
         {
+
           nombre: p.nombre,
 
-          compra: Number(p.compra || 0),
+          compra:
+            Number(p.compra || 0),
 
-          venta: Number(p.venta || 0),
+          venta:
+            Number(p.venta || 0),
 
-          stock: Number(p.stock || 0),
+          stock:
+            Number(p.stock || 0),
 
-          categoria: p.categoria || "",
+          categoria:
+            p.categoria || "",
 
-          marca: p.marca || "",
+          marca:
+            p.marca || "",
 
-          proveedor: p.proveedor || ""
+          proveedor:
+            p.proveedor || ""
+
         }
       );
 
@@ -128,10 +175,15 @@ const [ordenDireccion, setOrdenDireccion] =
   };
 
   // 🗑 ELIMINAR
-  const eliminar = async (id, nombre) => {
+  const eliminar = async (
+    id,
+    nombre
+  ) => {
 
     const ok = window.confirm(
+
       `⚠️ ¿Seguro de eliminar?\n\n${nombre}`
+
     );
 
     if (!ok) return;
@@ -143,16 +195,24 @@ const [ordenDireccion, setOrdenDireccion] =
       );
 
       setLista(
-        lista.filter((p) => p.id !== id)
+
+        lista.filter(
+          (p) => p.id !== id
+        )
+
       );
 
-      alert("✅ Producto eliminado");
+      alert(
+        "✅ Producto eliminado"
+      );
 
     } catch (error) {
 
       console.error(error);
 
-      alert("❌ Error eliminando");
+      alert(
+        "❌ Error eliminando"
+      );
 
     }
   };
@@ -161,12 +221,16 @@ const [ordenDireccion, setOrdenDireccion] =
   const agregar = async () => {
 
     if (!nuevo.nombre) {
-      return alert("Falta nombre");
+
+      return alert(
+        "Falta nombre"
+      );
+
     }
 
     try {
 
-      // 🔥 OBTENER ÚLTIMO CÓDIGO
+      // 🔥 ÚLTIMO CÓDIGO
       let ultimo = 100000;
 
       lista.forEach((p) => {
@@ -174,7 +238,10 @@ const [ordenDireccion, setOrdenDireccion] =
         if (p.codigo) {
 
           const num = Number(
-            String(p.codigo).replace("A", "")
+
+            String(p.codigo)
+              .replace("A", "")
+
           );
 
           if (num > ultimo) {
@@ -183,116 +250,166 @@ const [ordenDireccion, setOrdenDireccion] =
         }
       });
 
-      const nuevoCodigo = `A${ultimo + 1}`;
+      const nuevoCodigo =
+        `A${ultimo + 1}`;
 
-      // 🔥 GUARDAR
-      await addDoc(
+      // 🔥 NUEVO PRODUCTO
+      const nuevoProducto = {
+
+        codigo: nuevoCodigo,
+
+        nombre: nuevo.nombre,
+
+        compra:
+          Number(nuevo.compra || 0),
+
+        venta:
+          Number(nuevo.venta || 0),
+
+        stock:
+          Number(nuevo.stock || 0),
+
+        categoria:
+          nuevo.categoria || "",
+
+        marca:
+          nuevo.marca || "",
+
+        proveedor:
+          nuevo.proveedor || ""
+
+      };
+
+      // 🔥 FIREBASE
+      const ref = await addDoc(
+
         collection(db, "inventario"),
-        {
 
-          codigo: nuevoCodigo,
+        nuevoProducto
 
-          nombre: nuevo.nombre,
-
-          compra: Number(nuevo.compra || 0),
-
-          venta: Number(nuevo.venta || 0),
-
-          stock: Number(nuevo.stock || 0),
-
-          categoria: nuevo.categoria || "",
-
-          marca: nuevo.marca || "",
-
-          proveedor: nuevo.proveedor || ""
-
-        }
       );
+
+      // 🔥 LOCAL
+      setLista((prev) => [
+
+        ...prev,
+
+        {
+          id: ref.id,
+          ...nuevoProducto
+        }
+
+      ]);
 
       // 🔥 LIMPIAR
       setNuevo({
+
         nombre: "",
+
         compra: "",
+
         venta: "",
+
         stock: "",
+
         categoria: "",
+
         marca: "",
+
         proveedor: ""
+
       });
 
-      cargar();
+      alert(
+        "✅ Producto agregado"
+      );
 
     } catch (error) {
 
       console.error(error);
 
-      alert("❌ Error agregando");
+      alert(
+        "❌ Error agregando"
+      );
 
     }
   };
 
-  // 🔍 FILTRAR
+  // 🔍 FILTRAR + ORDENAR
+  const filtrados = useMemo(() => {
 
-    const filtrados = useMemo(() => {
+    let datos = lista.filter((p) =>
 
-  let datos = lista.filter((p) =>
+      (p.nombre || "")
+        .toLowerCase()
+        .includes(
+          busqueda.toLowerCase()
+        )
 
-    (p.nombre || "")
-      .toLowerCase()
-      .includes(
-        busqueda.toLowerCase()
-      )
+    );
 
-  );
+    datos.sort((a, b) => {
 
-  datos.sort((a, b) => {
+      const valA =
+        a[ordenCampo] || "";
 
-    const valA =
-      a[ordenCampo] || "";
+      const valB =
+        b[ordenCampo] || "";
 
-    const valB =
-      b[ordenCampo] || "";
+      if (ordenDireccion === "asc") {
 
-    if (ordenDireccion === "asc") {
+        return String(valA)
+          .localeCompare(
 
-      return String(valA)
+            String(valB),
+
+            undefined,
+
+            {
+              numeric: true,
+              sensitivity: "base"
+            }
+
+          );
+      }
+
+      return String(valB)
         .localeCompare(
-          String(valB),
+
+          String(valA),
+
           undefined,
-          { numeric: true }
+
+          {
+            numeric: true,
+            sensitivity: "base"
+          }
+
         );
 
-    }
+    });
 
-    return String(valB)
-      .localeCompare(
-        String(valA),
-        undefined,
-        { numeric: true }
-      );
+    return datos;
 
-  });
+  }, [
 
-  return datos;
+    lista,
 
-}, [
+    busqueda,
 
-  lista,
+    ordenCampo,
 
-  busqueda,
+    ordenDireccion
 
-  ordenCampo,
+  ]);
 
-  ordenDireccion
-
-]);
-
-  
-  
   return (
+
     <div className="inventario-container">
-      <div className="tabla-wrapper">
-      <h1>📦 INVENTARIO PRO MAX</h1>
+
+      <h1>
+        📦 INVENTARIO PRO MAX
+      </h1>
 
       {/* BUSCAR */}
       <input
@@ -300,265 +417,417 @@ const [ordenDireccion, setOrdenDireccion] =
         placeholder="Buscar producto..."
         value={busqueda}
         onChange={(e) =>
-          setBusqueda(e.target.value)
+          setBusqueda(
+            e.target.value
+          )
         }
       />
 
-      {/* ENCABEZADOS */}
-      <div className="row headers">
+      {/* TABLA */}
+      <div className="tabla-wrapper">
 
-        <div>Código</div>
+        {/* HEADERS */}
+        <div className="row headers">
 
-        <div>Nombre</div>
+          <div
+            onClick={() =>
+              ordenarPor("codigo")
+            }
+          >
+            Código
+          </div>
 
-        <div>Compra</div>
+          <div
+            onClick={() =>
+              ordenarPor("nombre")
+            }
+          >
+            Nombre
+          </div>
 
-        <div>Venta</div>
+          <div
+            onClick={() =>
+              ordenarPor("compra")
+            }
+          >
+            Compra
+          </div>
 
-        <div>Stock</div>
+          <div
+            onClick={() =>
+              ordenarPor("venta")
+            }
+          >
+            Venta
+          </div>
 
-        <div>Categoría</div>
+          <div
+            onClick={() =>
+              ordenarPor("stock")
+            }
+          >
+            Stock
+          </div>
 
-        <div>Marca</div>
+          <div
+            onClick={() =>
+              ordenarPor("categoria")
+            }
+          >
+            Categoría
+          </div>
 
-        <div>Proveedor</div>
+          <div
+            onClick={() =>
+              ordenarPor("marca")
+            }
+          >
+            Marca
+          </div>
 
-        <div></div>
-        <div></div>
-        <div></div>
+          <div
+            onClick={() =>
+              ordenarPor("proveedor")
+            }
+          >
+            Proveedor
+          </div>
+
+          <div></div>
+          <div></div>
+          <div></div>
+
         </div>
-      </div>
 
-      {/* NUEVO PRODUCTO */}
-      <div className="row inv-header">
+        {/* NUEVO PRODUCTO */}
+        <div className="row inv-header">
 
-        <input
-          value="AUTO"
-          disabled
-          className="codigo"
-        />
-
-        <input
-          placeholder="Nombre"
-          value={nuevo.nombre}
-          onChange={(e)=>
-            setNuevo({
-              ...nuevo,
-              nombre:e.target.value
-            })
-          }
-        />
-
-        <input
-          placeholder="Compra"
-          value={nuevo.compra}
-          onChange={(e)=>
-            setNuevo({
-              ...nuevo,
-              compra:e.target.value
-            })
-          }
-        />
-
-        <input
-          placeholder="Venta"
-          value={nuevo.venta}
-          onChange={(e)=>
-            setNuevo({
-              ...nuevo,
-              venta:e.target.value
-            })
-          }
-        />
-
-        <input
-          placeholder="Stock"
-          value={nuevo.stock}
-          onChange={(e)=>
-            setNuevo({
-              ...nuevo,
-              stock:e.target.value
-            })
-          }
-        />
-
-        <input
-          placeholder="Categoría"
-          value={nuevo.categoria}
-          onChange={(e)=>
-            setNuevo({
-              ...nuevo,
-              categoria:e.target.value
-            })
-          }
-        />
-
-        <input
-          placeholder="Marca"
-          value={nuevo.marca}
-          onChange={(e)=>
-            setNuevo({
-              ...nuevo,
-              marca:e.target.value
-            })
-          }
-        />
-
-        <input
-          placeholder="Proveedor"
-          value={nuevo.proveedor}
-          onChange={(e)=>
-            setNuevo({
-              ...nuevo,
-              proveedor:e.target.value
-            })
-          }
-        />
-
-        {/* STOCK BAJO */}
-        <div></div>
-
-        {/* AGREGAR */}
-        <button
-          className="btn-add"
-          onClick={agregar}
-        >
-          ➕
-        </button>
-
-        <div></div>
-
-      </div>
-
-      {/* LISTA */}
-      {filtrados.slice(0, 300).map((p) => (
-
-        <div
-          key={p.id}
-          className="row"
-        >
-
-          {/* CÓDIGO */}
           <input
-            value={p.codigo || ""}
+            value="AUTO"
             disabled
             className="codigo"
           />
 
-          {/* NOMBRE */}
           <input
-            value={p.nombre || ""}
+            placeholder="Nombre"
+            value={nuevo.nombre}
             onChange={(e)=>
-              cambiarLocal(
-                p.id,
-                "nombre",
-                e.target.value
-              )
+
+              setNuevo({
+
+                ...nuevo,
+
+                nombre:
+                  e.target.value
+
+              })
+
             }
           />
 
-          {/* COMPRA */}
           <input
-            value={p.compra || ""}
+            placeholder="Compra"
+            value={nuevo.compra}
             onChange={(e)=>
-              cambiarLocal(
-                p.id,
-                "compra",
-                e.target.value
-              )
+
+              setNuevo({
+
+                ...nuevo,
+
+                compra:
+                  e.target.value
+
+              })
+
             }
           />
 
-          {/* VENTA */}
           <input
-            value={p.venta || ""}
+            placeholder="Venta"
+            value={nuevo.venta}
             onChange={(e)=>
-              cambiarLocal(
-                p.id,
-                "venta",
-                e.target.value
-              )
+
+              setNuevo({
+
+                ...nuevo,
+
+                venta:
+                  e.target.value
+
+              })
+
             }
           />
 
-          {/* STOCK */}
           <input
-            value={p.stock || ""}
+            placeholder="Stock"
+            value={nuevo.stock}
             onChange={(e)=>
-              cambiarLocal(
-                p.id,
-                "stock",
-                e.target.value
-              )
+
+              setNuevo({
+
+                ...nuevo,
+
+                stock:
+                  e.target.value
+
+              })
+
             }
           />
 
-          {/* CATEGORÍA */}
           <input
-            value={p.categoria || ""}
+            placeholder="Categoría"
+            value={nuevo.categoria}
             onChange={(e)=>
-              cambiarLocal(
-                p.id,
-                "categoria",
-                e.target.value
-              )
+
+              setNuevo({
+
+                ...nuevo,
+
+                categoria:
+                  e.target.value
+
+              })
+
             }
           />
 
-          {/* MARCA */}
           <input
-            value={p.marca || ""}
+            placeholder="Marca"
+            value={nuevo.marca}
             onChange={(e)=>
-              cambiarLocal(
-                p.id,
-                "marca",
-                e.target.value
-              )
+
+              setNuevo({
+
+                ...nuevo,
+
+                marca:
+                  e.target.value
+
+              })
+
             }
           />
 
-          {/* PROVEEDOR */}
           <input
-            value={p.proveedor || ""}
+            placeholder="Proveedor"
+            value={nuevo.proveedor}
             onChange={(e)=>
-              cambiarLocal(
-                p.id,
-                "proveedor",
-                e.target.value
-              )
+
+              setNuevo({
+
+                ...nuevo,
+
+                proveedor:
+                  e.target.value
+
+              })
+
             }
           />
 
-          {/* STOCK BAJO */}
-          <div className="stock-bajo">
-            {Number(p.stock) <= 5 ? "⚠" : ""}
-          </div>
+          {/* ALERTA */}
+          <div></div>
 
-          {/* GUARDAR */}
+          {/* ADD */}
           <button
-            className="btn-save"
-            onClick={() => guardar(p)}
+            className="btn-add"
+            onClick={agregar}
           >
-            💾
+            ➕
           </button>
 
-          {/* ELIMINAR */}
-          <button
-            className="btn-delete"
-            onClick={() =>
-              eliminar(
-                p.id,
-                p.nombre
-              )
-            }
-          >
-            🗑
-          </button>
+          <div></div>
 
         </div>
 
-      ))}
+        {/* LISTA */}
+        {filtrados.map((p) => (
+
+          <div
+            key={p.id}
+            className="row"
+          >
+
+            {/* CÓDIGO */}
+            <input
+              value={p.codigo || ""}
+              disabled
+              className="codigo"
+            />
+
+            {/* NOMBRE */}
+            <input
+              value={p.nombre || ""}
+              onChange={(e)=>
+
+                cambiarLocal(
+
+                  p.id,
+
+                  "nombre",
+
+                  e.target.value
+
+                )
+
+              }
+            />
+
+            {/* COMPRA */}
+            <input
+              value={p.compra || ""}
+              onChange={(e)=>
+
+                cambiarLocal(
+
+                  p.id,
+
+                  "compra",
+
+                  e.target.value
+
+                )
+
+              }
+            />
+
+            {/* VENTA */}
+            <input
+              value={p.venta || ""}
+              onChange={(e)=>
+
+                cambiarLocal(
+
+                  p.id,
+
+                  "venta",
+
+                  e.target.value
+
+                )
+
+              }
+            />
+
+            {/* STOCK */}
+            <input
+              value={p.stock || ""}
+              onChange={(e)=>
+
+                cambiarLocal(
+
+                  p.id,
+
+                  "stock",
+
+                  e.target.value
+
+                )
+
+              }
+            />
+
+            {/* CATEGORÍA */}
+            <input
+              value={
+                p.categoria || ""
+              }
+              onChange={(e)=>
+
+                cambiarLocal(
+
+                  p.id,
+
+                  "categoria",
+
+                  e.target.value
+
+                )
+
+              }
+            />
+
+            {/* MARCA */}
+            <input
+              value={p.marca || ""}
+              onChange={(e)=>
+
+                cambiarLocal(
+
+                  p.id,
+
+                  "marca",
+
+                  e.target.value
+
+                )
+
+              }
+            />
+
+            {/* PROVEEDOR */}
+            <input
+              value={
+                p.proveedor || ""
+              }
+              onChange={(e)=>
+
+                cambiarLocal(
+
+                  p.id,
+
+                  "proveedor",
+
+                  e.target.value
+
+                )
+
+              }
+            />
+
+            {/* STOCK BAJO */}
+            <div className="stock-bajo">
+
+              {Number(p.stock) <= 5
+                ? "⚠"
+                : ""}
+
+            </div>
+
+            {/* GUARDAR */}
+            <button
+              className="btn-save"
+              onClick={() =>
+                guardar(p)
+              }
+            >
+              💾
+            </button>
+
+            {/* ELIMINAR */}
+            <button
+              className="btn-delete"
+              onClick={() =>
+
+                eliminar(
+                  p.id,
+                  p.nombre
+                )
+
+              }
+            >
+              🗑
+            </button>
+
+          </div>
+
+        ))}
+
+      </div>
 
     </div>
+
   );
 }
