@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-
 import { db } from "./firebase";
 
 import {
@@ -30,6 +29,7 @@ export default function InventarioAdmin() {
     cargar();
   }, []);
 
+  // 🔥 CARGAR INVENTARIO
   const cargar = async () => {
 
     const snap = await getDocs(
@@ -48,7 +48,7 @@ export default function InventarioAdmin() {
     setLista(datos);
   };
 
-  // 🔥 CAMBIO LOCAL
+  // 🔥 CAMBIOS LOCALES
   const cambiarLocal = (id, campo, valor) => {
 
     setLista((prev) =>
@@ -69,11 +69,17 @@ export default function InventarioAdmin() {
         doc(db, "inventario", p.id),
         {
           nombre: p.nombre,
+
           compra: Number(p.compra || 0),
+
           venta: Number(p.venta || 0),
+
           stock: Number(p.stock || 0),
+
           categoria: p.categoria || "",
+
           marca: p.marca || "",
+
           proveedor: p.proveedor || ""
         }
       );
@@ -93,53 +99,113 @@ export default function InventarioAdmin() {
   const eliminar = async (id, nombre) => {
 
     const ok = window.confirm(
-      `⚠️ ¿Eliminar producto?\n\n${nombre}`
+      `⚠️ ¿Seguro de eliminar?\n\n${nombre}`
     );
 
     if (!ok) return;
 
-    await deleteDoc(doc(db, "inventario", id));
+    try {
 
-    setLista(lista.filter((p) => p.id !== id));
+      await deleteDoc(
+        doc(db, "inventario", id)
+      );
+
+      setLista(
+        lista.filter((p) => p.id !== id)
+      );
+
+      alert("✅ Producto eliminado");
+
+    } catch (error) {
+
+      console.error(error);
+
+      alert("❌ Error eliminando");
+
+    }
   };
 
-  // ➕ AGREGAR
+  // ➕ AGREGAR PRODUCTO
   const agregar = async () => {
 
     if (!nuevo.nombre) {
       return alert("Falta nombre");
     }
 
-    await addDoc(collection(db, "inventario"), {
-      nombre: nuevo.nombre,
-      compra: Number(nuevo.compra || 0),
-      venta: Number(nuevo.venta || 0),
-      stock: Number(nuevo.stock || 0),
-      categoria: nuevo.categoria || "",
-      marca: nuevo.marca || "",
-      proveedor: nuevo.proveedor || ""
-    });
+    try {
 
-    setNuevo({
-      nombre: "",
-      compra: "",
-      venta: "",
-      stock: "",
-      categoria: "",
-      marca: "",
-      proveedor: ""
-    });
+      // 🔥 OBTENER ÚLTIMO CÓDIGO
+      let ultimo = 100000;
 
-    cargar();
+      lista.forEach((p) => {
+
+        if (p.codigo) {
+
+          const num = Number(
+            String(p.codigo).replace("A", "")
+          );
+
+          if (num > ultimo) {
+            ultimo = num;
+          }
+        }
+      });
+
+      const nuevoCodigo = `A${ultimo + 1}`;
+
+      // 🔥 GUARDAR
+      await addDoc(
+        collection(db, "inventario"),
+        {
+
+          codigo: nuevoCodigo,
+
+          nombre: nuevo.nombre,
+
+          compra: Number(nuevo.compra || 0),
+
+          venta: Number(nuevo.venta || 0),
+
+          stock: Number(nuevo.stock || 0),
+
+          categoria: nuevo.categoria || "",
+
+          marca: nuevo.marca || "",
+
+          proveedor: nuevo.proveedor || ""
+
+        }
+      );
+
+      // 🔥 LIMPIAR
+      setNuevo({
+        nombre: "",
+        compra: "",
+        venta: "",
+        stock: "",
+        categoria: "",
+        marca: "",
+        proveedor: ""
+      });
+
+      cargar();
+
+    } catch (error) {
+
+      console.error(error);
+
+      alert("❌ Error agregando");
+
+    }
   };
 
-  // 🔍 FILTRO
+  // 🔍 FILTRAR
   const filtrados = lista.filter((p) =>
-    (
-      p.nombre || ""
-    )
+    (p.nombre || "")
       .toLowerCase()
-      .includes(busqueda.toLowerCase())
+      .includes(
+        busqueda.toLowerCase()
+      )
   );
 
   return (
@@ -157,8 +223,39 @@ export default function InventarioAdmin() {
         }
       />
 
-      {/* NUEVO */}
+      {/* ENCABEZADOS */}
+      <div className="row headers">
+
+        <div>Código</div>
+
+        <div>Nombre</div>
+
+        <div>Compra</div>
+
+        <div>Venta</div>
+
+        <div>Stock</div>
+
+        <div>Categoría</div>
+
+        <div>Marca</div>
+
+        <div>Proveedor</div>
+
+        <div></div>
+        <div></div>
+        <div></div>
+
+      </div>
+
+      {/* NUEVO PRODUCTO */}
       <div className="row inv-header">
+
+        <input
+          value="AUTO"
+          disabled
+          className="codigo"
+        />
 
         <input
           placeholder="Nombre"
@@ -237,6 +334,10 @@ export default function InventarioAdmin() {
           }
         />
 
+        {/* STOCK BAJO */}
+        <div></div>
+
+        {/* AGREGAR */}
         <button
           className="btn-add"
           onClick={agregar}
@@ -244,15 +345,28 @@ export default function InventarioAdmin() {
           ➕
         </button>
 
+        <div></div>
+
       </div>
 
       {/* LISTA */}
       {filtrados.slice(0, 300).map((p) => (
 
-        <div key={p.id} className="row">
+        <div
+          key={p.id}
+          className="row"
+        >
 
+          {/* CÓDIGO */}
           <input
-            value={p.nombre}
+            value={p.codigo || ""}
+            disabled
+            className="codigo"
+          />
+
+          {/* NOMBRE */}
+          <input
+            value={p.nombre || ""}
             onChange={(e)=>
               cambiarLocal(
                 p.id,
@@ -262,8 +376,9 @@ export default function InventarioAdmin() {
             }
           />
 
+          {/* COMPRA */}
           <input
-            value={p.compra}
+            value={p.compra || ""}
             onChange={(e)=>
               cambiarLocal(
                 p.id,
@@ -273,8 +388,9 @@ export default function InventarioAdmin() {
             }
           />
 
+          {/* VENTA */}
           <input
-            value={p.venta}
+            value={p.venta || ""}
             onChange={(e)=>
               cambiarLocal(
                 p.id,
@@ -284,8 +400,9 @@ export default function InventarioAdmin() {
             }
           />
 
+          {/* STOCK */}
           <input
-            value={p.stock}
+            value={p.stock || ""}
             onChange={(e)=>
               cambiarLocal(
                 p.id,
@@ -295,6 +412,7 @@ export default function InventarioAdmin() {
             }
           />
 
+          {/* CATEGORÍA */}
           <input
             value={p.categoria || ""}
             onChange={(e)=>
@@ -306,6 +424,7 @@ export default function InventarioAdmin() {
             }
           />
 
+          {/* MARCA */}
           <input
             value={p.marca || ""}
             onChange={(e)=>
@@ -317,6 +436,7 @@ export default function InventarioAdmin() {
             }
           />
 
+          {/* PROVEEDOR */}
           <input
             value={p.proveedor || ""}
             onChange={(e)=>
@@ -328,12 +448,10 @@ export default function InventarioAdmin() {
             }
           />
 
-          {/* ALERTA */}
-          {Number(p.stock) <= 5 && (
-            <div className="stock-bajo">
-              ⚠
-            </div>
-          )}
+          {/* STOCK BAJO */}
+          <div className="stock-bajo">
+            {Number(p.stock) <= 5 ? "⚠" : ""}
+          </div>
 
           {/* GUARDAR */}
           <button
@@ -347,7 +465,10 @@ export default function InventarioAdmin() {
           <button
             className="btn-delete"
             onClick={() =>
-              eliminar(p.id, p.nombre)
+              eliminar(
+                p.id,
+                p.nombre
+              )
             }
           >
             🗑
