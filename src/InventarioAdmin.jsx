@@ -15,6 +15,15 @@ export default function InventarioAdmin() {
   const [lista, setLista] = useState([]);
   const [busqueda, setBusqueda] = useState("");
 
+
+  const [ordenCampo, setOrdenCampo] =
+  useState("nombre");
+
+const [ordenDireccion, setOrdenDireccion] =
+  useState("asc");
+
+  
+
   const [nuevo, setNuevo] = useState({
     nombre: "",
     compra: "",
@@ -26,6 +35,14 @@ export default function InventarioAdmin() {
   });
 
   useEffect(() => {
+
+    const [ordenCampo, setOrdenCampo] =
+  useState("nombre");
+
+const [ordenDireccion, setOrdenDireccion] =
+  useState("asc");
+    
+    
     cargar();
   }, []);
 
