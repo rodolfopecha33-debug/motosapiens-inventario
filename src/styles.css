@@ -267,9 +267,16 @@ body {
 
 /* CÓDIGO */
 .codigo {
+
   background: #222 !important;
+
   color: #00ff88 !important;
+
   font-weight: bold;
+
+  text-align: center;
+
+  font-size: 13px;
 }
 
 /* BOTONES */
@@ -412,6 +419,34 @@ body {
   border: 1px solid #222;
 
   border-radius: 10px;
+
+  font-size: 15px;
+}
+
+.row input {
+
+  min-width: 0;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+}
+
+.btn-save,
+.btn-delete,
+.btn-add {
+
+  width: 38px;
+
+  height: 38px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
 
   font-size: 15px;
 }
