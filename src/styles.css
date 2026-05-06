@@ -202,3 +202,103 @@ body {
 .pago-tarjeta {
   border-left: 4px solid #1e90ff;
 }
+
+/* FILAS */
+.row {
+  display: grid;
+
+  grid-template-columns:
+    1fr
+    2fr
+    1fr
+    1fr
+    1fr
+    1fr
+    1fr
+    1fr
+    auto
+    auto
+    auto;
+
+  gap: 10px;
+
+  align-items: center;
+
+  background: #111;
+
+  padding: 10px;
+
+  border-radius: 10px;
+
+  margin-bottom: 8px;
+}
+
+/* HEADERS */
+.headers {
+  background: #1c1c1c;
+  font-weight: bold;
+  color: #00ff88;
+}
+
+/* INPUTS */
+.row input {
+  background: #1a1a1a;
+  color: white;
+
+  border: 1px solid #222;
+
+  padding: 8px;
+
+  border-radius: 6px;
+}
+
+/* CÓDIGO */
+.codigo {
+  background: #222 !important;
+  color: #00ff88 !important;
+  font-weight: bold;
+}
+
+/* BOTONES */
+.btn-save {
+  background: #16b84e;
+}
+
+.btn-delete {
+  background: #ff2a2a;
+}
+
+.btn-add {
+  background: #1e90ff;
+}
+
+.btn-save,
+.btn-delete,
+.btn-add {
+
+  color: white;
+
+  border: none;
+
+  border-radius: 8px;
+
+  width: 35px;
+  height: 35px;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.btn-save:hover,
+.btn-delete:hover,
+.btn-add:hover {
+
+  transform: scale(1.1);
+}
+
+/* STOCK BAJO */
+.stock-bajo {
+  color: #ff2a2a;
+  font-size: 20px;
+}
