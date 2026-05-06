@@ -208,17 +208,30 @@ body {
   display: grid;
 
   grid-template-columns:
-    1fr
-    2fr
-    1fr
-    1fr
-    1fr
-    1fr
-    1fr
-    1fr
-    auto
-    auto
-    auto;
+
+  0.7fr   /* código */
+
+  2.8fr   /* nombre */
+
+  1fr     /* compra */
+
+  1fr     /* venta */
+
+  0.8fr   /* stock */
+
+  1.2fr   /* categoría */
+
+  1fr     /* marca */
+
+  1fr     /* proveedor */
+
+  40px    /* alerta */
+
+  45px    /* guardar */
+
+  45px;   /* eliminar */
+
+  
 
   gap: 10px;
 
