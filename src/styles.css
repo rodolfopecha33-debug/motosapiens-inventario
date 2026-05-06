@@ -302,3 +302,82 @@ body {
   color: #ff2a2a;
   font-size: 20px;
 }
+
+
+/* CONTENEDOR */
+.kardex-container {
+
+  padding: 20px;
+
+  color: white;
+}
+
+/* BUSCAR */
+.buscar-kardex {
+
+  width: 100%;
+
+  padding: 12px;
+
+  border-radius: 10px;
+
+  border: none;
+
+  background: #111;
+
+  color: white;
+
+  margin-bottom: 20px;
+}
+
+/* FILAS */
+.kardex-row {
+
+  display: grid;
+
+  grid-template-columns:
+    2fr
+    2fr
+    1fr
+    1fr
+    1fr
+    1fr;
+
+  gap: 10px;
+
+  align-items: center;
+
+  background: #111;
+
+  padding: 12px;
+
+  border-radius: 10px;
+
+  margin-bottom: 8px;
+}
+
+/* HEADER */
+.kardex-header {
+
+  background: #1c1c1c;
+
+  color: #00ff88;
+
+  font-weight: bold;
+}
+
+/* BADGES */
+.tipo-badge {
+
+  padding: 5px 10px;
+
+  border-radius: 8px;
+
+  color: white;
+
+  font-size: 12px;
+
+  text-transform: uppercase;
+
+  font-weight: bold;
+}
