@@ -531,3 +531,26 @@ body {
 
   background: #00ff88;
 }
+
+
+.headers div {
+
+  cursor: pointer;
+
+  user-select: none;
+
+  transition: .2s;
+}
+
+.headers div:hover {
+
+  color: white;
+
+  transform: scale(1.02);
+}
+
+/* RESPONSIVE */
+.row {
+
+  min-width: 1400px;
+}
