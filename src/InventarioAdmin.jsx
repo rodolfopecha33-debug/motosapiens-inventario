@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+
 import { db } from "./firebase";
 
 import {
@@ -11,14 +12,18 @@ import {
 } from "firebase/firestore";
 
 export default function InventarioAdmin() {
+
   const [lista, setLista] = useState([]);
   const [busqueda, setBusqueda] = useState("");
 
   const [nuevo, setNuevo] = useState({
     nombre: "",
-    compra: "", 
+    compra: "",
     venta: "",
-    stock: ""
+    stock: "",
+    categoria: "",
+    marca: "",
+    proveedor: ""
   });
 
   useEffect(() => {
@@ -26,7 +31,11 @@ export default function InventarioAdmin() {
   }, []);
 
   const cargar = async () => {
-    const snap = await getDocs(collection(db, "inventario"));
+
+    const snap = await getDocs(
+      collection(db, "inventario")
+    );
+
     const datos = [];
 
     snap.forEach((d) => {
@@ -39,158 +48,315 @@ export default function InventarioAdmin() {
     setLista(datos);
   };
 
-  // 🔥 Guardado automático
-  const actualizarCampo = async (id, campo, valor) => {
-    if (campo === "venta" || campo === "stock") {
-      if (valor < 0) return;
-    }
+  // 🔥 CAMBIO LOCAL
+  const cambiarLocal = (id, campo, valor) => {
 
-    const nuevaLista = lista.map((item) =>
-      item.id === id ? { ...item, [campo]: valor } : item
+    setLista((prev) =>
+      prev.map((p) =>
+        p.id === id
+          ? { ...p, [campo]: valor }
+          : p
+      )
+    );
+  };
+
+  // 💾 GUARDAR
+  const guardar = async (p) => {
+
+    try {
+
+      await updateDoc(
+        doc(db, "inventario", p.id),
+        {
+          nombre: p.nombre,
+          compra: Number(p.compra || 0),
+          venta: Number(p.venta || 0),
+          stock: Number(p.stock || 0),
+          categoria: p.categoria || "",
+          marca: p.marca || "",
+          proveedor: p.proveedor || ""
+        }
+      );
+
+      alert("✅ Guardado");
+
+    } catch (error) {
+
+      console.error(error);
+
+      alert("❌ Error");
+
+    }
+  };
+
+  // 🗑 ELIMINAR
+  const eliminar = async (id, nombre) => {
+
+    const ok = window.confirm(
+      `⚠️ ¿Eliminar producto?\n\n${nombre}`
     );
 
-    setLista(nuevaLista);
+    if (!ok) return;
 
-    await updateDoc(doc(db, "inventario", id), {
-      [campo]:
-        campo === "venta" || campo === "stock"
-          ? Number(valor)
-          : valor
-    });
-  };
-
-  const eliminar = async (id) => {
-    if (!confirm("Eliminar producto?")) return;
     await deleteDoc(doc(db, "inventario", id));
-    cargar();
+
+    setLista(lista.filter((p) => p.id !== id));
   };
 
+  // ➕ AGREGAR
   const agregar = async () => {
-    if (!nuevo.nombre) return alert("Falta nombre");
+
+    if (!nuevo.nombre) {
+      return alert("Falta nombre");
+    }
 
     await addDoc(collection(db, "inventario"), {
       nombre: nuevo.nombre,
       compra: Number(nuevo.compra || 0),
       venta: Number(nuevo.venta || 0),
-      stock: Number(nuevo.stock || 0)
+      stock: Number(nuevo.stock || 0),
+      categoria: nuevo.categoria || "",
+      marca: nuevo.marca || "",
+      proveedor: nuevo.proveedor || ""
     });
 
-    setNuevo({ nombre: "", compra: "", venta: "", stock: "" });
+    setNuevo({
+      nombre: "",
+      compra: "",
+      venta: "",
+      stock: "",
+      categoria: "",
+      marca: "",
+      proveedor: ""
+    });
+
     cargar();
   };
 
+  // 🔍 FILTRO
   const filtrados = lista.filter((p) =>
-    p.nombre.toLowerCase().includes(busqueda.toLowerCase())
+    (
+      p.nombre || ""
+    )
+      .toLowerCase()
+      .includes(busqueda.toLowerCase())
   );
 
   return (
-    <div style={{ padding: 20, color: "white" }}>
-      <h1>📦 Inventario PRO</h1>
+    <div className="inventario-container">
 
+      <h1>📦 INVENTARIO PRO MAX</h1>
+
+      {/* BUSCAR */}
       <input
+        className="buscar"
         placeholder="Buscar producto..."
         value={busqueda}
-        onChange={(e) => setBusqueda(e.target.value)}
-        style={{ marginBottom: 15 }}
+        onChange={(e) =>
+          setBusqueda(e.target.value)
+        }
       />
 
-      {/* NUEVO PRODUCTO */}
-      <div style={row}>
+      {/* NUEVO */}
+      <div className="row inv-header">
+
         <input
           placeholder="Nombre"
           value={nuevo.nombre}
-          onChange={(e) =>
-            setNuevo({ ...nuevo, nombre: e.target.value })
+          onChange={(e)=>
+            setNuevo({
+              ...nuevo,
+              nombre:e.target.value
+            })
           }
         />
 
         <input
-  placeholder="Precio compra"
-  value={nuevo.compra}
-  onChange={(e) =>
-    setNuevo({ ...nuevo, compra: e.target.value })
-  }
-/>
+          placeholder="Compra"
+          value={nuevo.compra}
+          onChange={(e)=>
+            setNuevo({
+              ...nuevo,
+              compra:e.target.value
+            })
+          }
+        />
 
         <input
-          placeholder="Precio"
+          placeholder="Venta"
           value={nuevo.venta}
-          onChange={(e) =>
-            setNuevo({ ...nuevo, venta: e.target.value })
+          onChange={(e)=>
+            setNuevo({
+              ...nuevo,
+              venta:e.target.value
+            })
           }
         />
 
         <input
           placeholder="Stock"
           value={nuevo.stock}
-          onChange={(e) =>
-            setNuevo({ ...nuevo, stock: e.target.value })
+          onChange={(e)=>
+            setNuevo({
+              ...nuevo,
+              stock:e.target.value
+            })
           }
         />
 
-        <button onClick={agregar}>➕</button>
+        <input
+          placeholder="Categoría"
+          value={nuevo.categoria}
+          onChange={(e)=>
+            setNuevo({
+              ...nuevo,
+              categoria:e.target.value
+            })
+          }
+        />
+
+        <input
+          placeholder="Marca"
+          value={nuevo.marca}
+          onChange={(e)=>
+            setNuevo({
+              ...nuevo,
+              marca:e.target.value
+            })
+          }
+        />
+
+        <input
+          placeholder="Proveedor"
+          value={nuevo.proveedor}
+          onChange={(e)=>
+            setNuevo({
+              ...nuevo,
+              proveedor:e.target.value
+            })
+          }
+        />
+
+        <button
+          className="btn-add"
+          onClick={agregar}
+        >
+          ➕
+        </button>
+
       </div>
 
-      <hr />
+      {/* LISTA */}
+      {filtrados.slice(0, 300).map((p) => (
 
-      {/* TABLA */}
-      {filtrados.slice(0, 200).map((p) => (
-        <div key={p.id} style={row}>
+        <div key={p.id} className="row">
+
           <input
             value={p.nombre}
-            onChange={(e) =>
-              actualizarCampo(p.id, "nombre", e.target.value)
+            onChange={(e)=>
+              cambiarLocal(
+                p.id,
+                "nombre",
+                e.target.value
+              )
             }
           />
-          { /*COMPRA*/}
 
           <input
             value={p.compra}
-            onChange={(e) =>
-              actualizarCampo(p.id, "compra", e.target.value)
+            onChange={(e)=>
+              cambiarLocal(
+                p.id,
+                "compra",
+                e.target.value
+              )
             }
           />
-          
+
           <input
             value={p.venta}
-            onChange={(e) =>
-              actualizarCampo(p.id, "venta", e.target.value)
+            onChange={(e)=>
+              cambiarLocal(
+                p.id,
+                "venta",
+                e.target.value
+              )
             }
           />
 
           <input
             value={p.stock}
-            onChange={(e) =>
-              actualizarCampo(p.id, "stock", e.target.value)
+            onChange={(e)=>
+              cambiarLocal(
+                p.id,
+                "stock",
+                e.target.value
+              )
             }
           />
 
+          <input
+            value={p.categoria || ""}
+            onChange={(e)=>
+              cambiarLocal(
+                p.id,
+                "categoria",
+                e.target.value
+              )
+            }
+          />
+
+          <input
+            value={p.marca || ""}
+            onChange={(e)=>
+              cambiarLocal(
+                p.id,
+                "marca",
+                e.target.value
+              )
+            }
+          />
+
+          <input
+            value={p.proveedor || ""}
+            onChange={(e)=>
+              cambiarLocal(
+                p.id,
+                "proveedor",
+                e.target.value
+              )
+            }
+          />
+
+          {/* ALERTA */}
+          {Number(p.stock) <= 5 && (
+            <div className="stock-bajo">
+              ⚠
+            </div>
+          )}
+
+          {/* GUARDAR */}
           <button
-            onClick={() => eliminar(p.id)}
-            style={btnDelete}
+            className="btn-save"
+            onClick={() => guardar(p)}
+          >
+            💾
+          </button>
+
+          {/* ELIMINAR */}
+          <button
+            className="btn-delete"
+            onClick={() =>
+              eliminar(p.id, p.nombre)
+            }
           >
             🗑
           </button>
+
         </div>
+
       ))}
+
     </div>
   );
 }
-
-const row = {
-  display: "grid",
-  gridTemplateColumns: "2fr 1fr 1fr auto",
-  gap: "10px",
-  marginBottom: "8px",
-  background: "#111",
-  padding: "10px",
-  borderRadius: "8px"
-};
-
-const btnDelete = {
-  background: "#ff2a2a",
-  color: "white",
-  border: "none",
-  borderRadius: "6px",
-  cursor: "pointer"
-};
