@@ -450,3 +450,27 @@ body {
 
   font-size: 15px;
 }
+
+.row {
+
+  display: grid;
+
+  align-items: center;
+
+  gap: 10px;
+
+  background: #111;
+
+  padding: 10px;
+
+  border-radius: 12px;
+
+  margin-bottom: 10px;
+
+  transition: 0.2s;
+}
+
+.row:hover {
+
+  background: #161616;
+}
