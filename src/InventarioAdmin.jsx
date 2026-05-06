@@ -210,7 +210,7 @@ export default function InventarioAdmin() {
 
   return (
     <div className="inventario-container">
-
+      <div className="tabla-wrapper">
       <h1>📦 INVENTARIO PRO MAX</h1>
 
       {/* BUSCAR */}
@@ -245,7 +245,7 @@ export default function InventarioAdmin() {
         <div></div>
         <div></div>
         <div></div>
-
+        </div>
       </div>
 
       {/* NUEVO PRODUCTO */}
