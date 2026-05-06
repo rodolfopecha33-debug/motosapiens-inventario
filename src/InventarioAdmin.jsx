@@ -36,11 +36,26 @@ const [ordenDireccion, setOrdenDireccion] =
 
   useEffect(() => {
 
-    const [ordenCampo, setOrdenCampo] =
-  useState("nombre");
+   const ordenarPor = (campo) => {
 
-const [ordenDireccion, setOrdenDireccion] =
-  useState("asc");
+  if (ordenCampo === campo) {
+
+    setOrdenDireccion((prev) =>
+
+      prev === "asc"
+        ? "desc"
+        : "asc"
+
+    );
+
+  } else {
+
+    setOrdenCampo(campo);
+
+    setOrdenDireccion("asc");
+
+  }
+};
     
     
     cargar();
