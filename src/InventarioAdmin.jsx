@@ -232,14 +232,63 @@ const [ordenDireccion, setOrdenDireccion] =
   };
 
   // 🔍 FILTRAR
-  const filtrados = lista.filter((p) =>
+
+    const filtrados = useMemo(() => {
+
+  let datos = lista.filter((p) =>
+
     (p.nombre || "")
       .toLowerCase()
       .includes(
         busqueda.toLowerCase()
       )
+
   );
 
+  datos.sort((a, b) => {
+
+    const valA =
+      a[ordenCampo] || "";
+
+    const valB =
+      b[ordenCampo] || "";
+
+    if (ordenDireccion === "asc") {
+
+      return String(valA)
+        .localeCompare(
+          String(valB),
+          undefined,
+          { numeric: true }
+        );
+
+    }
+
+    return String(valB)
+      .localeCompare(
+        String(valA),
+        undefined,
+        { numeric: true }
+      );
+
+  });
+
+  return datos;
+
+}, [
+
+  lista,
+
+  busqueda,
+
+  ordenCampo,
+
+  ordenDireccion
+
+]);
+
+  
+  
   return (
     <div className="inventario-container">
       <div className="tabla-wrapper">
