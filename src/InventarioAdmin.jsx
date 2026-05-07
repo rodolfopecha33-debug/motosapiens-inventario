@@ -317,7 +317,104 @@ export default function InventarioAdmin() {
 };
 
 
-      
+
+
+
+          const importarExcel =
+  async (e) => {
+
+    const file =
+      e.target.files[0];
+
+    if (!file) return;
+
+    const reader =
+      new FileReader();
+
+    reader.readAsArrayBuffer(
+      file
+    );
+
+    reader.onload =
+      async (evt) => {
+
+        const data =
+          new Uint8Array(
+            evt.target.result
+          );
+
+        // 🔥 LEER
+        const workbook =
+          XLSX.read(data, {
+            type: "array"
+          });
+
+        // 🔥 PRIMERA HOJA
+        const sheet =
+          workbook.Sheets[
+            workbook.SheetNames[0]
+          ];
+
+        // 🔥 JSON
+        const productos =
+          XLSX.utils
+            .sheet_to_json(sheet);
+
+        // 🔥 SUBIR
+        for (const p of productos) {
+
+          await addDoc(
+
+            collection(
+              db,
+              "inventario"
+            ),
+
+            {
+
+              codigo:
+                p.Codigo || "",
+
+              nombre:
+                p.Nombre || "",
+
+              compra:
+                Number(
+                  p.Compra || 0
+                ),
+
+              venta:
+                Number(
+                  p.Venta || 0
+                ),
+
+              stock:
+                Number(
+                  p.Stock || 0
+                ),
+
+              categoria:
+                p.Categoria || "",
+
+              marca:
+                p.Marca || "",
+
+              proveedor:
+                p.Proveedor || ""
+
+            }
+
+          );
+        }
+
+        alert(
+          "Inventario importado"
+        );
+
+        cargar();
+
+      };
+};
 
 
 
