@@ -392,8 +392,11 @@ const [clienteCedula, setClienteCedula] = useState("");
           {
 
             fecha:
-              new Date()
-                .toLocaleString(),
+              Date.now(),
+
+            fechaTexto:
+  new Date()
+    .toLocaleString(),
 
             usuario: user,
 
