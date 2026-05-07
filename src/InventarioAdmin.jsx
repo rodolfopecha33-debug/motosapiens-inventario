@@ -454,112 +454,207 @@ export default function InventarioAdmin() {
   };
 
   // 🚀 IMPORTAR EXCEL
-  const importarExcel =
-    async (e) => {
 
-      const file =
-        e.target.files[0];
 
-      if (!file) return;
 
-      try {
+  // 🚀 IMPORTADOR INTELIGENTE PRO MAX
+const importarExcel = async (e) => {
 
-        const reader =
-          new FileReader();
+  const file = e.target.files[0];
 
-        reader.readAsArrayBuffer(
-          file
+  if (!file) return;
+
+  // 🔥 CONFIRMACIÓN
+  const ok = window.confirm(
+
+    "⚠️ IMPORTAR INVENTARIO\n\n" +
+
+    "El sistema:\n\n" +
+
+    "✅ Actualizará productos existentes\n" +
+
+    "✅ Creará productos nuevos\n" +
+
+    "❌ No eliminará inventario actual\n\n" +
+
+    "¿Deseas continuar?"
+
+  );
+
+  if (!ok) {
+
+    e.target.value = "";
+
+    return;
+  }
+
+  try {
+
+    const reader = new FileReader();
+
+    reader.readAsArrayBuffer(file);
+
+    reader.onload = async (evt) => {
+
+      const data =
+        new Uint8Array(
+          evt.target.result
         );
 
-        reader.onload =
-          async (evt) => {
+      // 🔥 LEER EXCEL
+      const workbook =
+        XLSX.read(data, {
+          type: "array"
+        });
 
-            const data =
-              new Uint8Array(
-                evt.target.result
-              );
+      // 🔥 PRIMERA HOJA
+      const sheet =
+        workbook.Sheets[
+          workbook.SheetNames[0]
+        ];
 
-            const workbook =
-              XLSX.read(data, {
+      // 🔥 JSON
+      const productos =
+        XLSX.utils
+          .sheet_to_json(sheet);
 
-                type: "array"
+      // 🔥 CONTADORES
+      let creados = 0;
 
-              });
+      let actualizados = 0;
 
-            const sheet =
-              workbook.Sheets[
-                workbook.SheetNames[0]
-              ];
+      // 🔥 RECORRER
+      for (const p of productos) {
 
-            const productos =
-              XLSX.utils
-                .sheet_to_json(sheet);
+        const codigoExcel =
+          String(
+            p.Codigo || ""
+          ).trim();
 
-            for (const p of productos) {
+        // 🚨 SIN CÓDIGO
+        if (!codigoExcel)
+          continue;
 
-              await addDoc(
+        // 🔥 BUSCAR EXISTENTE
+        const existente =
+          lista.find(
 
-                collection(
-                  db,
-                  "inventario"
-                ),
+            (item) =>
 
-                {
+              String(
+                item.codigo || ""
+              ).trim()
 
-                  codigo:
-                    p.Codigo || "",
+              === codigoExcel
 
-                  nombre:
-                    p.Nombre || "",
+          );
 
-                  compra:
-                    Number(
-                      p.Compra || 0
-                    ),
+        // 🔥 DATOS LIMPIOS
+        const datos = {
 
-                  venta:
-                    Number(
-                      p.Venta || 0
-                    ),
+          codigo:
+            codigoExcel,
 
-                  stock:
-                    Number(
-                      p.Stock || 0
-                    ),
+          nombre:
+            p.Nombre || "",
 
-                  categoria:
-                    p.Categoria || "",
+          compra:
+            Number(
+              p.Compra || 0
+            ),
 
-                  marca:
-                    p.Marca || "",
+          venta:
+            Number(
+              p.Venta || 0
+            ),
 
-                  proveedor:
-                    p.Proveedor || ""
+          stock:
+            Number(
+              p.Stock || 0
+            ),
 
-                }
+          categoria:
+            p.Categoria || "",
 
-              );
-            }
+          marca:
+            p.Marca || "",
 
-            alert(
-              "✅ Inventario importado"
-            );
+          proveedor:
+            p.Proveedor || ""
 
-            cargar();
+        };
 
-          };
+        // 🔥 ACTUALIZAR
+        if (existente) {
 
-      } catch (error) {
+          await updateDoc(
 
-        console.error(error);
+            doc(
+              db,
+              "inventario",
+              existente.id
+            ),
 
-        alert(
-          "❌ Error importando Excel"
-        );
+            datos
 
+          );
+
+          actualizados++;
+
+        }
+
+        // 🔥 CREAR
+        else {
+
+          await addDoc(
+
+            collection(
+              db,
+              "inventario"
+            ),
+
+            datos
+
+          );
+
+          creados++;
+
+        }
       }
+
+      // 🔥 RECARGAR
+      await cargar();
+
+      // 🔥 ALERTA FINAL
+      alert(
+
+        "✅ IMPORTACIÓN COMPLETADA\n\n" +
+
+        `🆕 Creados: ${creados}\n` +
+
+        `🔄 Actualizados: ${actualizados}`
+
+      );
+
+      // 🔥 LIMPIAR INPUT
+      e.target.value = "";
+
     };
 
+  } catch (error) {
+
+    console.error(error);
+
+    alert(
+      "❌ Error importando Excel"
+    );
+
+  }
+};
+
+
+
+  
   // 🔥 FILTRAR + ORDENAR
   const filtrados =
     useMemo(() => {
