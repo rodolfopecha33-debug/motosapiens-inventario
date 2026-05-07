@@ -15,6 +15,8 @@ import {
   addDoc
 } from "firebase/firestore";
 
+import * as XLSX from "xlsx";
+
 export default function InventarioAdmin() {
 
   const [lista, setLista] = useState([]);
