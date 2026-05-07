@@ -12,7 +12,7 @@ import {
 
 } from "firebase/firestore";
 
-// 🚀 MIGRADOR DEFINITIVO
+// 🚀 MIGRAR FECHAS DEFINITIVO
 export const migrarFechas =
   async () => {
 
@@ -22,9 +22,9 @@ export const migrarFechas =
 
         "⚠️ MIGRAR FECHAS\n\n" +
 
-        "Convertirá fechas antiguas\n" +
+        "Convertirá fechas texto\n" +
 
-        "DD/MM/YYYY → timestamp\n\n" +
+        "a timestamps reales.\n\n" +
 
         "¿Continuar?"
 
@@ -44,40 +44,13 @@ export const migrarFechas =
 
       let migradas = 0;
 
-      let ignoradas = 0;
-
       for (const d of snap.docs) {
 
         const venta = d.data();
 
-        // 🔥 YA TIMESTAMP
+        // 🔥 SOLO STRINGS
         if (
-
-          typeof venta.fecha ===
-          "number"
-
-          &&
-
-          venta.fechaTexto
-
-        ) {
-
-          ignoradas++;
-
-          continue;
-
-        }
-
-        // 🔥 FECHA ORIGINAL
-        const original =
-
-          venta.fechaTexto ||
-
-          venta.fecha;
-
-        // 🚨 NO STRING
-        if (
-          typeof original !==
+          typeof venta.fecha !==
           "string"
         ) {
 
@@ -87,9 +60,11 @@ export const migrarFechas =
 
         try {
 
-          // 🔥 LIMPIAR
+          // 🔥 EJEMPLO:
+          // 4/5/2026, 9:12:03 p. m.
+
           const texto =
-            original
+            venta.fecha
 
               .replace(
                 "p. m.",
@@ -101,29 +76,30 @@ export const migrarFechas =
                 "AM"
               );
 
-          // 🔥 DIVIDIR
-          const partes =
-            texto.split(",");
-
-          const fechaPart =
-            partes[0].trim();
-
-          const horaPart =
-            partes[1]?.trim() ||
-            "12:00 AM";
+          // 🔥 SEPARAR
+          const [fechaPart,
+            horaPart] =
+              texto.split(",");
 
           // 🔥 DD/MM/YYYY
-          const [
-            dia,
-            mes,
-            anio
-          ] =
-            fechaPart.split("/");
+          const partes =
+            fechaPart
+              .trim()
+              .split("/");
 
-          // 🔥 ISO
+          const dia =
+            partes[0];
+
+          const mes =
+            partes[1];
+
+          const anio =
+            partes[2];
+
+          // 🔥 ISO CORRECTO
           const iso =
 
-            `${anio}-${mes}-${dia} ${horaPart}`;
+            `${anio}-${mes}-${dia} ${horaPart.trim()}`;
 
           const fecha =
             new Date(iso);
@@ -134,7 +110,7 @@ export const migrarFechas =
           ) {
 
             console.log(
-              "Fecha inválida:",
+              "INVALID:",
               texto
             );
 
@@ -157,7 +133,7 @@ export const migrarFechas =
                 fecha.getTime(),
 
               fechaTexto:
-                original
+                venta.fecha
 
             }
 
@@ -176,9 +152,7 @@ export const migrarFechas =
 
         "✅ MIGRACIÓN COMPLETADA\n\n" +
 
-        `🔄 Migradas: ${migradas}\n` +
-
-        `⏭ Ignoradas: ${ignoradas}`
+        `🔄 Migradas: ${migradas}`
 
       );
 
