@@ -22,6 +22,11 @@ import {
   leerCache
 } from "./cacheUtils";
 
+import { generarFacturaPDF } from "./facturaUtils";
+
+
+
+
 export default function POS({ user }) {
 
   const [busqueda, setBusqueda] =
@@ -35,6 +40,10 @@ export default function POS({ user }) {
 
   const [telefono, setTelefono] =
     useState("");
+
+  const [clienteNombre, setClienteNombre] = useState("");
+
+const [clienteCedula, setClienteCedula] = useState("");
 
   const [cargando, setCargando] =
     useState(true);
@@ -740,6 +749,22 @@ export default function POS({ user }) {
           }
         />
 
+        <input
+  placeholder="Nombre cliente"
+  value={clienteNombre}
+  onChange={(e) =>
+    setClienteNombre(e.target.value)
+  }
+/>
+
+<input
+  placeholder="Cédula cliente"
+  value={clienteCedula}
+  onChange={(e) =>
+    setClienteCedula(e.target.value)
+  }
+/>
+
         {/* COBRAR */}
         <button
           onClick={() =>
@@ -756,6 +781,39 @@ export default function POS({ user }) {
           Cobrar
 
         </button>
+
+        <button
+  className="btn-factura"
+  disabled={carrito.length === 0}
+  onClick={() =>
+    generarFacturaPDF({
+
+      carrito,
+
+      total,
+
+      metodoPago,
+
+      recibido,
+
+      cambio,
+
+      cliente: {
+        nombre: clienteNombre,
+        cedula: clienteCedula,
+        telefono
+      },
+
+      negocio: {
+        nombre: "TU NEGOCIO",
+        eslogan: "Evoluciona tu moto"
+      }
+
+    })
+  }
+>
+  🧾 Generar Factura
+</button>
 
       </div>
 
