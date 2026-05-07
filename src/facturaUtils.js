@@ -1,4 +1,109 @@
 import jsPDF from "jspdf";
+
+import autoTable from "jspdf-autotable";
+
+// 🔥 GENERAR FACTURA
+export const generarFacturaPDF = ({
+  carrito,
+  total,
+  metodoPago,
+  recibido,
+  cambio,
+  cliente,
+  negocio
+}) => {
+
+  const doc = new jsPDF();
+
+  // 🔥 HEADER
+  doc.setFontSize(20);
+
+  doc.text(
+    negocio?.nombre || "Mi Negocio",
+    14,
+    20
+  );
+
+  doc.setFontSize(10);
+
+  doc.text(
+    negocio?.eslogan || "",
+    14,
+    28
+  );
+
+  doc.text(
+    `Fecha: ${new Date().toLocaleString()}`,
+    14,
+    36
+  );
+
+  // 🔥 CLIENTE
+  doc.setFontSize(12);
+
+  doc.text(
+    "DATOS CLIENTE",
+    14,
+    50
+  );
+
+  doc.setFontSize(10);
+
+  doc.text(
+    `Nombre: ${
+      cliente?.nombre ||
+      "Consumidor final"
+    }`,
+    14,
+    58
+  );
+
+  doc.text(
+    `Cédula: ${
+      cliente?.cedula || "N/A"
+    }`,
+    14,
+    64
+  );
+
+  doc.text(
+    `Teléfono: ${
+      cliente?.telefono || "N/A"
+    }`,
+    14,
+    70
+  );
+
+  // 🔥 TABLA PRODUCTOS
+  const rows = carrito.map((p) => [
+
+    p.codigo || "N/A",
+
+    p.nombre || "",
+
+    p.cantidad || 0,
+
+    `$${Number(
+      p.venta || 0
+    ).toLocaleString()}`,
+
+    `$${(
+      Number(p.venta || 0) *
+      Number(p.cantidad || 0)
+    ).toLocaleString()}`
+
+  ]);
+
+  // 🔥 TABLA
+  autoTable(doc, {
+
+    startY: 80,
+
+    head: [[
+      "Código",
+      "Producto",
+      "Cant",
+      "Valor",
       "Subtotal"
     ]],
 
@@ -6,7 +111,9 @@ import jsPDF from "jspdf";
 
   });
 
-  const finalY = doc.lastAutoTable.finalY + 10;
+  // 🔥 FINAL TABLA
+  const finalY =
+    doc.lastAutoTable.finalY + 10;
 
   // 🔥 TOTALES
   doc.setFontSize(12);
@@ -23,16 +130,21 @@ import jsPDF from "jspdf";
     finalY + 8
   );
 
+  // 🔥 EFECTIVO
   if (metodoPago === "efectivo") {
 
     doc.text(
-      `Recibido: $${Number(recibido || 0).toLocaleString()}`,
+      `Recibido: $${Number(
+        recibido || 0
+      ).toLocaleString()}`,
       14,
       finalY + 16
     );
 
     doc.text(
-      `Cambio: $${Number(cambio || 0).toLocaleString()}`,
+      `Cambio: $${Number(
+        cambio || 0
+      ).toLocaleString()}`,
       14,
       finalY + 24
     );
