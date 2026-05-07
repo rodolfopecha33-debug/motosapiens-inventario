@@ -77,43 +77,55 @@ const [fechaFin, setFechaFin] =
   }, []);
 
   // 🔥 CARGAR
-  const cargarVentas = async () => {
 
-    try {
 
-      const snap = await getDocs(
 
-        collection(
-          db,
-          "ventas"
-        )
+const cargarVentas = async () => {
 
+  try {
+
+    console.log("🔥 Cargando ventas Firebase...");
+
+    const snap = await getDocs(
+      collection(db, "ventas")
+    );
+
+    console.log(
+      "TOTAL FIREBASE:",
+      snap.size
+    );
+
+    const datos = [];
+
+    snap.forEach((docu) => {
+
+      const venta = {
+
+        id: docu.id,
+
+        ...docu.data()
+
+      };
+
+      console.log(
+        "VENTA:",
+        venta
       );
 
-      const datos = [];
+      datos.push(venta);
 
-      snap.forEach((doc) => {
+    });
 
-        datos.push({
+    setVentas(datos);
 
-          id: doc.id,
+  } catch (error) {
 
-          ...doc.data()
+    console.error(error);
 
-        });
+  }
+};
 
-      });
-
-      setVentas(
-        datos.reverse()
-      );
-
-    } catch (error) {
-
-      console.error(error);
-
-    }
-  };
+  
 
   // 🔥 FILTRAR
   const ventasFiltradas =
