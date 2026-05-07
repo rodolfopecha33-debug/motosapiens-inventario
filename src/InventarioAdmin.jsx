@@ -19,7 +19,8 @@ import * as XLSX from "xlsx";
 
 export default function InventarioAdmin() {
 
-  const [lista, setLista] = useState([]);
+  const [lista, setLista] =
+    useState([]);
 
   const [busqueda, setBusqueda] =
     useState("");
@@ -28,34 +29,79 @@ export default function InventarioAdmin() {
   const [ordenCampo, setOrdenCampo] =
     useState("nombre");
 
-  const [ordenDireccion, setOrdenDireccion] =
-    useState("asc");
+  const [ordenDireccion,
+    setOrdenDireccion] =
+      useState("asc");
 
   // 🔥 NUEVO PRODUCTO
-  const [nuevo, setNuevo] = useState({
+  const [nuevo, setNuevo] =
+    useState({
 
-    nombre: "",
+      nombre: "",
 
-    compra: "",
+      compra: "",
 
-    venta: "",
+      venta: "",
 
-    stock: "",
+      stock: "",
 
-    categoria: "",
+      categoria: "",
 
-    marca: "",
+      marca: "",
 
-    proveedor: ""
+      proveedor: ""
 
-  });
+    });
 
-  // 🔥 CARGAR
+  // 🔥 LOAD
   useEffect(() => {
+
     cargar();
+
   }, []);
 
-  // 🔥 ORDENAR COLUMNAS
+  // 🔥 CARGAR INVENTARIO
+  const cargar = async () => {
+
+    try {
+
+      const snap = await getDocs(
+
+        collection(
+          db,
+          "inventario"
+        )
+
+      );
+
+      const datos = [];
+
+      snap.forEach((d) => {
+
+        datos.push({
+
+          id: d.id,
+
+          ...d.data()
+
+        });
+
+      });
+
+      setLista(datos);
+
+    } catch (error) {
+
+      console.error(error);
+
+      alert(
+        "Error cargando inventario"
+      );
+
+    }
+  };
+
+  // 🔥 ORDENAR
   const ordenarPor = (campo) => {
 
     if (ordenCampo === campo) {
@@ -77,39 +123,6 @@ export default function InventarioAdmin() {
     }
   };
 
-  // 🔥 CARGAR INVENTARIO
-  const cargar = async () => {
-
-    try {
-
-      const snap = await getDocs(
-        collection(db, "inventario")
-      );
-
-      const datos = [];
-
-      snap.forEach((d) => {
-
-        datos.push({
-          id: d.id,
-          ...d.data()
-        });
-
-      });
-
-      setLista(datos);
-
-    } catch (error) {
-
-      console.error(error);
-
-      alert(
-        "Error cargando inventario"
-      );
-
-    }
-  };
-
   // 🔥 CAMBIOS LOCALES
   const cambiarLocal = (
     id,
@@ -122,10 +135,15 @@ export default function InventarioAdmin() {
       prev.map((p) =>
 
         p.id === id
+
           ? {
+
               ...p,
+
               [campo]: valor
+
             }
+
           : p
 
       )
@@ -133,25 +151,38 @@ export default function InventarioAdmin() {
     );
   };
 
-  // 💾 GUARDAR
+  // 🔥 GUARDAR
   const guardar = async (p) => {
 
     try {
 
       await updateDoc(
-        doc(db, "inventario", p.id),
+
+        doc(
+          db,
+          "inventario",
+          p.id
+        ),
+
         {
 
-          nombre: p.nombre,
+          nombre:
+            p.nombre || "",
 
           compra:
-            Number(p.compra || 0),
+            Number(
+              p.compra || 0
+            ),
 
           venta:
-            Number(p.venta || 0),
+            Number(
+              p.venta || 0
+            ),
 
           stock:
-            Number(p.stock || 0),
+            Number(
+              p.stock || 0
+            ),
 
           categoria:
             p.categoria || "",
@@ -163,20 +194,25 @@ export default function InventarioAdmin() {
             p.proveedor || ""
 
         }
+
       );
 
-      alert("✅ Guardado");
+      alert(
+        "✅ Guardado"
+      );
 
     } catch (error) {
 
       console.error(error);
 
-      alert("❌ Error");
+      alert(
+        "❌ Error guardando"
+      );
 
     }
   };
 
-  // 🗑 ELIMINAR
+  // 🔥 ELIMINAR
   const eliminar = async (
     id,
     nombre
@@ -184,7 +220,7 @@ export default function InventarioAdmin() {
 
     const ok = window.confirm(
 
-      `⚠️ ¿Seguro de eliminar?\n\n${nombre}`
+      `⚠️ ¿Eliminar producto?\n\n${nombre}`
 
     );
 
@@ -193,7 +229,13 @@ export default function InventarioAdmin() {
     try {
 
       await deleteDoc(
-        doc(db, "inventario", id)
+
+        doc(
+          db,
+          "inventario",
+          id
+        )
+
       );
 
       setLista(
@@ -205,7 +247,7 @@ export default function InventarioAdmin() {
       );
 
       alert(
-        "✅ Producto eliminado"
+        "✅ Eliminado"
       );
 
     } catch (error) {
@@ -219,7 +261,7 @@ export default function InventarioAdmin() {
     }
   };
 
-  // ➕ AGREGAR PRODUCTO
+  // 🔥 AGREGAR PRODUCTO
   const agregar = async () => {
 
     if (!nuevo.nombre) {
@@ -232,7 +274,7 @@ export default function InventarioAdmin() {
 
     try {
 
-      // 🔥 ÚLTIMO CÓDIGO
+      // 🔥 CÓDIGO AUTOMÁTICO
       let ultimo = 100000;
 
       lista.forEach((p) => {
@@ -247,7 +289,9 @@ export default function InventarioAdmin() {
           );
 
           if (num > ultimo) {
+
             ultimo = num;
+
           }
         }
       });
@@ -255,185 +299,29 @@ export default function InventarioAdmin() {
       const nuevoCodigo =
         `A${ultimo + 1}`;
 
-
-          const exportarExcel = () => {
-
-  const datos = lista.map((p) => ({
-
-    Codigo:
-      p.codigo || "",
-
-    Nombre:
-      p.nombre || "",
-
-    Compra:
-      p.compra || 0,
-
-    Venta:
-      p.venta || 0,
-
-    Stock:
-      p.stock || 0,
-
-    Categoria:
-      p.categoria || "",
-
-    Marca:
-      p.marca || "",
-
-    Proveedor:
-      p.proveedor || ""
-
-  }));
-
-  // 🔥 SHEET
-  const ws =
-    XLSX.utils.json_to_sheet(
-      datos
-    );
-
-  // 🔥 WORKBOOK
-  const wb =
-    XLSX.utils.book_new();
-
-  XLSX.utils.book_append_sheet(
-
-    wb,
-
-    ws,
-
-    "Inventario"
-
-  );
-
-  // 🔥 DESCARGAR
-  XLSX.writeFile(
-
-    wb,
-
-    `Inventario-${Date.now()}.xlsx`
-
-  );
-};
-
-
-
-
-
-          const importarExcel =
-  async (e) => {
-
-    const file =
-      e.target.files[0];
-
-    if (!file) return;
-
-    const reader =
-      new FileReader();
-
-    reader.readAsArrayBuffer(
-      file
-    );
-
-    reader.onload =
-      async (evt) => {
-
-        const data =
-          new Uint8Array(
-            evt.target.result
-          );
-
-        // 🔥 LEER
-        const workbook =
-          XLSX.read(data, {
-            type: "array"
-          });
-
-        // 🔥 PRIMERA HOJA
-        const sheet =
-          workbook.Sheets[
-            workbook.SheetNames[0]
-          ];
-
-        // 🔥 JSON
-        const productos =
-          XLSX.utils
-            .sheet_to_json(sheet);
-
-        // 🔥 SUBIR
-        for (const p of productos) {
-
-          await addDoc(
-
-            collection(
-              db,
-              "inventario"
-            ),
-
-            {
-
-              codigo:
-                p.Codigo || "",
-
-              nombre:
-                p.Nombre || "",
-
-              compra:
-                Number(
-                  p.Compra || 0
-                ),
-
-              venta:
-                Number(
-                  p.Venta || 0
-                ),
-
-              stock:
-                Number(
-                  p.Stock || 0
-                ),
-
-              categoria:
-                p.Categoria || "",
-
-              marca:
-                p.Marca || "",
-
-              proveedor:
-                p.Proveedor || ""
-
-            }
-
-          );
-        }
-
-        alert(
-          "Inventario importado"
-        );
-
-        cargar();
-
-      };
-};
-
-
-
-      
       // 🔥 NUEVO PRODUCTO
       const nuevoProducto = {
 
-        codigo: nuevoCodigo,
+        codigo:
+          nuevoCodigo,
 
-        nombre: nuevo.nombre,
+        nombre:
+          nuevo.nombre,
 
         compra:
-          Number(nuevo.compra || 0),
+          Number(
+            nuevo.compra || 0
+          ),
 
         venta:
-          Number(nuevo.venta || 0),
+          Number(
+            nuevo.venta || 0
+          ),
 
         stock:
-          Number(nuevo.stock || 0),
+          Number(
+            nuevo.stock || 0
+          ),
 
         categoria:
           nuevo.categoria || "",
@@ -449,7 +337,10 @@ export default function InventarioAdmin() {
       // 🔥 FIREBASE
       const ref = await addDoc(
 
-        collection(db, "inventario"),
+        collection(
+          db,
+          "inventario"
+        ),
 
         nuevoProducto
 
@@ -461,8 +352,11 @@ export default function InventarioAdmin() {
         ...prev,
 
         {
+
           id: ref.id,
+
           ...nuevoProducto
+
         }
 
       ]);
@@ -501,73 +395,243 @@ export default function InventarioAdmin() {
     }
   };
 
-  // 🔍 FILTRAR + ORDENAR
-  const filtrados = useMemo(() => {
+  // 🚀 EXPORTAR EXCEL
+  const exportarExcel = () => {
 
-    let datos = lista.filter((p) =>
+    const datos = lista.map((p) => ({
 
-      (p.nombre || "")
-        .toLowerCase()
-        .includes(
-          busqueda.toLowerCase()
-        )
+      Codigo:
+        p.codigo || "",
+
+      Nombre:
+        p.nombre || "",
+
+      Compra:
+        p.compra || 0,
+
+      Venta:
+        p.venta || 0,
+
+      Stock:
+        p.stock || 0,
+
+      Categoria:
+        p.categoria || "",
+
+      Marca:
+        p.marca || "",
+
+      Proveedor:
+        p.proveedor || ""
+
+    }));
+
+    const ws =
+      XLSX.utils.json_to_sheet(
+        datos
+      );
+
+    const wb =
+      XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(
+
+      wb,
+
+      ws,
+
+      "Inventario"
 
     );
 
-    datos.sort((a, b) => {
+    XLSX.writeFile(
 
-      const valA =
-        a[ordenCampo] || "";
+      wb,
 
-      const valB =
-        b[ordenCampo] || "";
+      `Inventario-${Date.now()}.xlsx`
 
-      if (ordenDireccion === "asc") {
+    );
+  };
 
-        return String(valA)
+  // 🚀 IMPORTAR EXCEL
+  const importarExcel =
+    async (e) => {
+
+      const file =
+        e.target.files[0];
+
+      if (!file) return;
+
+      try {
+
+        const reader =
+          new FileReader();
+
+        reader.readAsArrayBuffer(
+          file
+        );
+
+        reader.onload =
+          async (evt) => {
+
+            const data =
+              new Uint8Array(
+                evt.target.result
+              );
+
+            const workbook =
+              XLSX.read(data, {
+
+                type: "array"
+
+              });
+
+            const sheet =
+              workbook.Sheets[
+                workbook.SheetNames[0]
+              ];
+
+            const productos =
+              XLSX.utils
+                .sheet_to_json(sheet);
+
+            for (const p of productos) {
+
+              await addDoc(
+
+                collection(
+                  db,
+                  "inventario"
+                ),
+
+                {
+
+                  codigo:
+                    p.Codigo || "",
+
+                  nombre:
+                    p.Nombre || "",
+
+                  compra:
+                    Number(
+                      p.Compra || 0
+                    ),
+
+                  venta:
+                    Number(
+                      p.Venta || 0
+                    ),
+
+                  stock:
+                    Number(
+                      p.Stock || 0
+                    ),
+
+                  categoria:
+                    p.Categoria || "",
+
+                  marca:
+                    p.Marca || "",
+
+                  proveedor:
+                    p.Proveedor || ""
+
+                }
+
+              );
+            }
+
+            alert(
+              "✅ Inventario importado"
+            );
+
+            cargar();
+
+          };
+
+      } catch (error) {
+
+        console.error(error);
+
+        alert(
+          "❌ Error importando Excel"
+        );
+
+      }
+    };
+
+  // 🔥 FILTRAR + ORDENAR
+  const filtrados =
+    useMemo(() => {
+
+      let datos = lista.filter((p) =>
+
+        (p.nombre || "")
+          .toLowerCase()
+          .includes(
+            busqueda.toLowerCase()
+          )
+
+      );
+
+      datos.sort((a, b) => {
+
+        const valA =
+          a[ordenCampo] || "";
+
+        const valB =
+          b[ordenCampo] || "";
+
+        if (
+          ordenDireccion === "asc"
+        ) {
+
+          return String(valA)
+            .localeCompare(
+
+              String(valB),
+
+              undefined,
+
+              {
+                numeric: true,
+                sensitivity:
+                  "base"
+              }
+
+            );
+        }
+
+        return String(valB)
           .localeCompare(
 
-            String(valB),
+            String(valA),
 
             undefined,
 
             {
               numeric: true,
-              sensitivity: "base"
+              sensitivity:
+                "base"
             }
 
           );
-      }
 
-      return String(valB)
-        .localeCompare(
+      });
 
-          String(valA),
+      return datos;
 
-          undefined,
+    }, [
 
-          {
-            numeric: true,
-            sensitivity: "base"
-          }
+      lista,
 
-        );
+      busqueda,
 
-    });
+      ordenCampo,
 
-    return datos;
+      ordenDireccion
 
-  }, [
-
-    lista,
-
-    busqueda,
-
-    ordenCampo,
-
-    ordenDireccion
-
-  ]);
+    ]);
 
   return (
 
@@ -583,39 +647,42 @@ export default function InventarioAdmin() {
         placeholder="Buscar producto..."
         value={busqueda}
         onChange={(e) =>
+
           setBusqueda(
             e.target.value
           )
+
         }
       />
 
+      {/* EXCEL */}
+      <div className="excel-actions">
 
-          <div className="excel-actions">
+        <button
+          onClick={exportarExcel}
+          className="btn-excel"
+        >
+          📥 Exportar Excel
+        </button>
 
-  <button
-    onClick={exportarExcel}
-    className="btn-excel"
-  >
-    📥 Exportar Excel
-  </button>
+        <label
+          className="btn-import"
+        >
 
-  <label className="btn-import">
+          📤 Importar Excel
 
-    📤 Importar Excel
+          <input
+            type="file"
+            accept=".xlsx,.xls"
+            onChange={
+              importarExcel
+            }
+            hidden
+          />
 
-    <input
-      type="file"
-      accept=".xlsx,.xls"
-      onChange={importarExcel}
-      hidden
-    />
+        </label>
 
-  </label>
-
-</div>
-
-
-      
+      </div>
 
       {/* TABLA */}
       <div className="tabla-wrapper">
@@ -693,7 +760,7 @@ export default function InventarioAdmin() {
 
         </div>
 
-        {/* NUEVO PRODUCTO */}
+        {/* NUEVO */}
         <div className="row inv-header">
 
           <input
@@ -821,10 +888,8 @@ export default function InventarioAdmin() {
             }
           />
 
-          {/* ALERTA */}
           <div></div>
 
-          {/* ADD */}
           <button
             className="btn-add"
             onClick={agregar}
@@ -844,14 +909,12 @@ export default function InventarioAdmin() {
             className="row"
           >
 
-            {/* CÓDIGO */}
             <input
               value={p.codigo || ""}
               disabled
               className="codigo"
             />
 
-            {/* NOMBRE */}
             <input
               value={p.nombre || ""}
               onChange={(e)=>
@@ -869,7 +932,6 @@ export default function InventarioAdmin() {
               }
             />
 
-            {/* COMPRA */}
             <input
               value={p.compra || ""}
               onChange={(e)=>
@@ -887,7 +949,6 @@ export default function InventarioAdmin() {
               }
             />
 
-            {/* VENTA */}
             <input
               value={p.venta || ""}
               onChange={(e)=>
@@ -905,7 +966,6 @@ export default function InventarioAdmin() {
               }
             />
 
-            {/* STOCK */}
             <input
               value={p.stock || ""}
               onChange={(e)=>
@@ -923,7 +983,6 @@ export default function InventarioAdmin() {
               }
             />
 
-            {/* CATEGORÍA */}
             <input
               value={
                 p.categoria || ""
@@ -943,7 +1002,6 @@ export default function InventarioAdmin() {
               }
             />
 
-            {/* MARCA */}
             <input
               value={p.marca || ""}
               onChange={(e)=>
@@ -961,7 +1019,6 @@ export default function InventarioAdmin() {
               }
             />
 
-            {/* PROVEEDOR */}
             <input
               value={
                 p.proveedor || ""
@@ -990,7 +1047,7 @@ export default function InventarioAdmin() {
 
             </div>
 
-            {/* GUARDAR */}
+            {/* SAVE */}
             <button
               className="btn-save"
               onClick={() =>
@@ -1000,7 +1057,7 @@ export default function InventarioAdmin() {
               💾
             </button>
 
-            {/* ELIMINAR */}
+            {/* DELETE */}
             <button
               className="btn-delete"
               onClick={() =>
