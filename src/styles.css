@@ -732,3 +732,59 @@ body {
 
   cursor: pointer;
 }
+
+
+
+
+
+.excel-actions {
+
+  display: flex;
+
+  gap: 12px;
+
+  margin-bottom: 20px;
+
+  flex-wrap: wrap;
+}
+
+.btn-excel,
+.btn-import {
+
+  background: #16b84e;
+
+  color: white;
+
+  border: none;
+
+  padding: 12px 18px;
+
+  border-radius: 10px;
+
+  cursor: pointer;
+
+  font-weight: bold;
+
+  transition: .2s;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 8px;
+}
+
+.btn-import {
+
+  background: #1e90ff;
+}
+
+.btn-excel:hover,
+.btn-import:hover {
+
+  transform: scale(1.03);
+
+  opacity: .9;
+}
+
+
