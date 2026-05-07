@@ -255,6 +255,73 @@ export default function InventarioAdmin() {
       const nuevoCodigo =
         `A${ultimo + 1}`;
 
+
+          const exportarExcel = () => {
+
+  const datos = lista.map((p) => ({
+
+    Codigo:
+      p.codigo || "",
+
+    Nombre:
+      p.nombre || "",
+
+    Compra:
+      p.compra || 0,
+
+    Venta:
+      p.venta || 0,
+
+    Stock:
+      p.stock || 0,
+
+    Categoria:
+      p.categoria || "",
+
+    Marca:
+      p.marca || "",
+
+    Proveedor:
+      p.proveedor || ""
+
+  }));
+
+  // 🔥 SHEET
+  const ws =
+    XLSX.utils.json_to_sheet(
+      datos
+    );
+
+  // 🔥 WORKBOOK
+  const wb =
+    XLSX.utils.book_new();
+
+  XLSX.utils.book_append_sheet(
+
+    wb,
+
+    ws,
+
+    "Inventario"
+
+  );
+
+  // 🔥 DESCARGAR
+  XLSX.writeFile(
+
+    wb,
+
+    `Inventario-${Date.now()}.xlsx`
+
+  );
+};
+
+
+      
+
+
+
+      
       // 🔥 NUEVO PRODUCTO
       const nuevoProducto = {
 
