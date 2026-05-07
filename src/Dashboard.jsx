@@ -53,6 +53,12 @@ export default function Dashboard() {
   const [ventas, setVentas] =
     useState([]);
 
+  const [fechaInicio, setFechaInicio] =
+  useState("");
+
+const [fechaFin, setFechaFin] =
+  useState("");
+
   const [filtro, setFiltro] =
     useState("mes");
 
@@ -104,65 +110,94 @@ export default function Dashboard() {
 
   // 🔥 FILTRAR
   const ventasFiltradas =
-    ventas.filter((v) => {
+  ventas.filter((v) => {
 
-      if (!v.fecha) return false;
+    if (!v.fecha) return false;
 
-      const fecha =
-        new Date(v.fecha);
+    const fecha =
+      new Date(v.fecha);
 
-      const ahora =
+    const ahora =
+      new Date();
+
+    // 🔥 RANGO PERSONALIZADO
+    if (
+      fechaInicio &&
+      fechaFin
+    ) {
+
+      const inicio =
+        new Date(fechaInicio);
+
+      const fin =
+        new Date(fechaFin);
+
+      // 🔥 FIN DEL DÍA
+      fin.setHours(
+        23,
+        59,
+        59,
+        999
+      );
+
+      return (
+        fecha >= inicio &&
+        fecha <= fin
+      );
+    }
+
+    // 🔥 HOY
+    if (filtro === "hoy") {
+
+      return (
+
+        fecha.toDateString() ===
+        ahora.toDateString()
+
+      );
+    }
+
+    // 🔥 SEMANA
+    if (filtro === "semana") {
+
+      const hace7 =
         new Date();
 
-      // HOY
-      if (filtro === "hoy") {
+      hace7.setDate(
+        ahora.getDate() - 7
+      );
 
-        return (
+      return fecha >= hace7;
+    }
 
-          fecha.toDateString() ===
-          ahora.toDateString()
+    // 🔥 MES
+    if (filtro === "mes") {
 
-        );
-      }
+      return (
 
-      // SEMANA
-      if (filtro === "semana") {
+        fecha.getMonth() ===
+        ahora.getMonth() &&
 
-        const hace7 =
-          new Date();
+        fecha.getFullYear() ===
+        ahora.getFullYear()
 
-        hace7.setDate(
-          ahora.getDate() - 7
-        );
+      );
+    }
 
-        return fecha >= hace7;
-      }
+    // 🔥 AÑO
+    if (filtro === "año") {
 
-      // MES
-      if (filtro === "mes") {
+      return (
 
-        return (
+        fecha.getFullYear() ===
+        ahora.getFullYear()
 
-          fecha.getMonth() ===
-          ahora.getMonth()
+      );
+    }
 
-        );
-      }
+    return true;
 
-      // AÑO
-      if (filtro === "año") {
-
-        return (
-
-          fecha.getFullYear() ===
-          ahora.getFullYear()
-
-        );
-      }
-
-      return true;
-
-    });
+  });
 
   // 🔥 KPIS
   const totalVentas =
@@ -458,7 +493,49 @@ export default function Dashboard() {
           Año
         </button>
 
+
+        
+
       </div>
+
+
+
+      <div className="filtro-fechas">
+
+  <input
+    type="date"
+    value={fechaInicio}
+    onChange={(e) =>
+      setFechaInicio(
+        e.target.value
+      )
+    }
+  />
+
+  <input
+    type="date"
+    value={fechaFin}
+    onChange={(e) =>
+      setFechaFin(
+        e.target.value
+      )
+    }
+  />
+
+  <button
+    onClick={() => {
+
+      setFechaInicio("");
+
+      setFechaFin("");
+
+    }}
+  >
+    Limpiar
+  </button>
+
+</div>
+      
 
       {/* KPIS */}
       <div className="cards-grid">
