@@ -691,3 +691,44 @@ body {
   border-bottom:
     1px solid #222;
 }
+
+
+
+.filtro-fechas {
+
+  display: flex;
+
+  gap: 10px;
+
+  margin-bottom: 20px;
+
+  flex-wrap: wrap;
+}
+
+.filtro-fechas input {
+
+  background: #111;
+
+  color: white;
+
+  border: 1px solid #222;
+
+  padding: 10px;
+
+  border-radius: 10px;
+}
+
+.filtro-fechas button {
+
+  background: #ff2a2a;
+
+  color: white;
+
+  border: none;
+
+  padding: 10px 16px;
+
+  border-radius: 10px;
+
+  cursor: pointer;
+}
