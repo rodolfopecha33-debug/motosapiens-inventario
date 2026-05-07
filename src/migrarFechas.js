@@ -12,25 +12,10 @@ import {
 
 } from "firebase/firestore";
 
-// 🚀 MIGRAR FECHAS DEFINITIVO
 export const migrarFechas =
   async () => {
 
     try {
-
-      const ok = window.confirm(
-
-        "⚠️ MIGRAR FECHAS\n\n" +
-
-        "Convertirá fechas texto\n" +
-
-        "a timestamps reales.\n\n" +
-
-        "¿Continuar?"
-
-      );
-
-      if (!ok) return;
 
       const snap =
         await getDocs(
@@ -48,10 +33,17 @@ export const migrarFechas =
 
         const venta = d.data();
 
-        // 🔥 SOLO STRINGS
+        // 🔥 OBLIGAR STRING
+        const fechaOriginal =
+          String(
+            venta.fecha || ""
+          );
+
+        // 🔥 SI YA ES TIMESTAMP
         if (
-          typeof venta.fecha !==
-          "string"
+
+          !fechaOriginal.includes("/")
+
         ) {
 
           continue;
@@ -63,8 +55,8 @@ export const migrarFechas =
           // 🔥 EJEMPLO:
           // 4/5/2026, 9:12:03 p. m.
 
-          const texto =
-            venta.fecha
+          const limpia =
+            fechaOriginal
 
               .replace(
                 "p. m.",
@@ -76,47 +68,53 @@ export const migrarFechas =
                 "AM"
               );
 
-          // 🔥 SEPARAR
-          const [fechaPart,
-            horaPart] =
-              texto.split(",");
-
-          // 🔥 DD/MM/YYYY
           const partes =
-            fechaPart
-              .trim()
-              .split("/");
+            limpia.split(",");
 
-          const dia =
-            partes[0];
+          const fechaTexto =
+            partes[0].trim();
 
-          const mes =
-            partes[1];
+          const hora =
+            partes[1]?.trim() ||
+            "12:00 AM";
 
-          const anio =
-            partes[2];
+          // 🔥 DIVIDIR
+          const [
+            dia,
+            mes,
+            anio
+          ] =
+            fechaTexto.split("/");
 
-          // 🔥 ISO CORRECTO
-          const iso =
-
-            `${anio}-${mes}-${dia} ${horaPart.trim()}`;
-
+          // 🚀 FECHA MANUAL
           const fecha =
-            new Date(iso);
+            new Date(
 
-          // 🚨 INVALID
-          if (
-            isNaN(fecha)
-          ) {
+              Number(anio),
 
-            console.log(
-              "INVALID:",
-              texto
+              Number(mes) - 1,
+
+              Number(dia)
+
             );
 
-            continue;
+          // 🔥 HORA
+          const horaDate =
+            new Date(
+              `2000-01-01 ${hora}`
+            );
 
-          }
+          fecha.setHours(
+            horaDate.getHours()
+          );
+
+          fecha.setMinutes(
+            horaDate.getMinutes()
+          );
+
+          fecha.setSeconds(
+            horaDate.getSeconds()
+          );
 
           // 🔥 UPDATE
           await updateDoc(
@@ -133,7 +131,7 @@ export const migrarFechas =
                 fecha.getTime(),
 
               fechaTexto:
-                venta.fecha
+                fechaOriginal
 
             }
 
@@ -143,16 +141,14 @@ export const migrarFechas =
 
         } catch (err) {
 
-          console.error(err);
+          console.log(err);
 
         }
       }
 
       alert(
 
-        "✅ MIGRACIÓN COMPLETADA\n\n" +
-
-        `🔄 Migradas: ${migradas}`
+        `✅ Migradas: ${migradas}`
 
       );
 
