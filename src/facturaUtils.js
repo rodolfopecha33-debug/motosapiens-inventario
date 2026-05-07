@@ -16,7 +16,7 @@ export const generarFacturaPDF = ({
   const doc = new jsPDF();
 
 
-onst logo = new Image();
+const logo = new Image();
 
 logo.src = "/logo.png";
 
