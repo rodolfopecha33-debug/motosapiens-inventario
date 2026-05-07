@@ -8,6 +8,10 @@ import { db } from "./firebase";
 import { migrarFechas }
 from "./migrarFechas";
 
+import { fixFechasMayo }
+from "./fixFechasMayo";
+
+
 import { resetVentas } from "./resetDB";
 
 import {
@@ -703,6 +707,15 @@ const [fechaFin, setFechaFin] =
         >
           📥 Exportar Excel
         </button>
+
+
+        <button
+  onClick={fixFechasMayo}
+  style={btn()}
+>
+  🛠 Fix Mayo
+</button>
+        
 
           <button
   onClick={migrarFechas}
