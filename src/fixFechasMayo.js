@@ -1,3 +1,4 @@
+
 import { db } from "./firebase";
 
 import {
@@ -12,7 +13,7 @@ import {
 
 } from "firebase/firestore";
 
-// 🚀 FIX FECHAS MAYO
+// 🚀 FIX MAYO DIRECTO FIREBASE
 export const fixFechasMayo =
   async () => {
 
@@ -20,9 +21,11 @@ export const fixFechasMayo =
 
       const ok = window.confirm(
 
-        "⚠️ CORREGIR FECHAS\n\n" +
+        "⚠️ CORREGIR FECHAS FIREBASE\n\n" +
 
-        "5/4/2026 → 4/5/2026\n\n" +
+        "Buscará TODAS las ventas\n" +
+
+        "directamente en Firebase.\n\n" +
 
         "¿Continuar?"
 
@@ -30,6 +33,7 @@ export const fixFechasMayo =
 
       if (!ok) return;
 
+      // 🔥 LEER FIREBASE DIRECTO
       const snap =
         await getDocs(
 
@@ -42,69 +46,116 @@ export const fixFechasMayo =
 
       let corregidas = 0;
 
+      console.log(
+        "TOTAL DOCS:",
+        snap.docs.length
+      );
+
       for (const d of snap.docs) {
 
         const venta = d.data();
 
+        console.log(venta);
+
+        // 🔥 STRING
         if (
-          typeof venta.fecha !==
-          "number"
-        ) continue;
-
-        const fecha =
-          new Date(venta.fecha);
-
-        // 🔥 SI ES ABRIL 5
-        if (
-
-          fecha.getFullYear() === 2026 &&
-
-          fecha.getMonth() === 3 &&
-
-          fecha.getDate() === 5
-
+          typeof venta.fecha ===
+          "string"
         ) {
 
-          // 🔥 CREAR MAYO 4
-          const nueva =
-            new Date(
+          const texto =
+            venta.fecha;
 
-              2026,
+          // 🔥 SI CONTIENE 4/5/2026
+          if (
 
-              4, // mayo
+            texto.includes(
+              "4/5/2026"
+            )
 
-              4,
+          ) {
 
-              fecha.getHours(),
+            try {
 
-              fecha.getMinutes(),
+              // 🔥 LIMPIAR
+              const limpia =
+                texto
 
-              fecha.getSeconds()
+                  .replace(
+                    "p. m.",
+                    "PM"
+                  )
 
-            );
+                  .replace(
+                    "a. m.",
+                    "AM"
+                  );
 
-          // 🔥 UPDATE
-          await updateDoc(
+              const partes =
+                limpia.split(",");
 
-            doc(
-              db,
-              "ventas",
-              d.id
-            ),
+              const hora =
+                partes[1]?.trim() ||
+                "12:00 AM";
 
-            {
+              // 🔥 FECHA CORRECTA
+              const nueva =
+                new Date(
 
-              fecha:
-                nueva.getTime(),
+                  2026,
 
-              fechaTexto:
-                "4/5/2026"
+                  4, // mayo
+
+                  4
+
+                );
+
+              const horaDate =
+                new Date(
+                  `2000-01-01 ${hora}`
+                );
+
+              nueva.setHours(
+                horaDate.getHours()
+              );
+
+              nueva.setMinutes(
+                horaDate.getMinutes()
+              );
+
+              nueva.setSeconds(
+                horaDate.getSeconds()
+              );
+
+              // 🔥 UPDATE
+              await updateDoc(
+
+                doc(
+                  db,
+                  "ventas",
+                  d.id
+                ),
+
+                {
+
+                  fecha:
+                    nueva.getTime(),
+
+                  fechaTexto:
+                    texto
+
+                }
+
+              );
+
+              corregidas++;
+
+            } catch (err) {
+
+              console.log(err);
 
             }
-
-          );
-
-          corregidas++;
+          }
         }
       }
 
