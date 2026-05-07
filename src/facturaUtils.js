@@ -35,7 +35,7 @@ doc.addImage(
   doc.setFontSize(20);
 
   doc.text(
-    negocio?.nombre || "Mi Negocio",
+    negocio?.nombre || "MOTOSAPIENS",
     14,
     20
   );
