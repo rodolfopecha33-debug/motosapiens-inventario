@@ -589,6 +589,34 @@ export default function InventarioAdmin() {
         }
       />
 
+
+          <div className="excel-actions">
+
+  <button
+    onClick={exportarExcel}
+    className="btn-excel"
+  >
+    📥 Exportar Excel
+  </button>
+
+  <label className="btn-import">
+
+    📤 Importar Excel
+
+    <input
+      type="file"
+      accept=".xlsx,.xls"
+      onChange={importarExcel}
+      hidden
+    />
+
+  </label>
+
+</div>
+
+
+      
+
       {/* TABLA */}
       <div className="tabla-wrapper">
 
