@@ -554,3 +554,34 @@ body {
 
   min-width: 1400px;
 }
+
+
+.btn-factura {
+
+  width: 100%;
+
+  margin-top: 10px;
+
+  background: #1e90ff;
+
+  color: white;
+
+  border: none;
+
+  padding: 14px;
+
+  border-radius: 10px;
+
+  cursor: pointer;
+
+  font-weight: bold;
+
+  transition: .2s;
+}
+
+.btn-factura:hover {
+
+  transform: scale(1.02);
+
+  background: #3aa0ff;
+}
