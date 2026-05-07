@@ -15,6 +15,22 @@ export const generarFacturaPDF = ({
 
   const doc = new jsPDF();
 
+
+onst logo = new Image();
+
+logo.src = "/logo.png";
+
+doc.addImage(
+  logo,
+  "PNG",
+  150,
+  10,
+  40,
+  20
+);
+
+  
+
   // 🔥 HEADER
   doc.setFontSize(20);
 
