@@ -12,7 +12,7 @@ import {
 
 } from "firebase/firestore";
 
-// 🚀 FIX FECHAS NaN
+// 🚀 FIX DEFINITIVO NaN
 export const fixNaNFechas =
   async () => {
 
@@ -57,9 +57,15 @@ export const fixNaNFechas =
 
           try {
 
-            // 🔥 USAR fechaTexto
+            // 🔥 FECHA TEXTO
             const texto =
-              venta.fechaTexto
+              venta.fechaTexto;
+
+            // 🔥 EJEMPLO:
+            // 4/5/2026, 9:33:51 p. m.
+
+            const limpia =
+              texto
 
                 .replace(
                   "p. m.",
@@ -71,11 +77,9 @@ export const fixNaNFechas =
                   "AM"
                 );
 
-            // 🔥 EJEMPLO:
-            // 4/5/2026, 8:42:17 PM
-
+            // 🔥 DIVIDIR
             const partes =
-              texto.split(",");
+              limpia.split(",");
 
             const fechaPart =
               partes[0].trim();
@@ -120,6 +124,22 @@ export const fixNaNFechas =
             fecha.setSeconds(
               hora.getSeconds()
             );
+
+            // 🚨 VALIDAR
+            if (
+              isNaN(
+                fecha.getTime()
+              )
+            ) {
+
+              console.log(
+                "INVALID:",
+                texto
+              );
+
+              continue;
+
+            }
 
             // 🔥 UPDATE
             await updateDoc(
