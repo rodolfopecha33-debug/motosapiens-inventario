@@ -665,7 +665,12 @@ export default function Dashboard() {
 
             <tr key={i}>
 
-              <td>{v.fecha}</td>
+            <td>
+
+  {new Date(v.fecha)
+    .toLocaleString()}
+
+</td>
 
               <td>{v.usuario}</td>
 
