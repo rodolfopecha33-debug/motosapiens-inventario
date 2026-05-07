@@ -702,6 +702,16 @@ const [fechaFin, setFechaFin] =
           📥 Exportar Excel
         </button>
 
+          <button
+  onClick={migrarFechas}
+  style={btn()}
+>
+  🕒 Migrar Fechas
+</button>
+        
+
+
+        
         <button
           onClick={resetVentas}
           style={btnDanger()}
