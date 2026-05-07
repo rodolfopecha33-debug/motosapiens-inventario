@@ -10,6 +10,44 @@ import {
   getDocs
 } from "firebase/firestore";
 
+
+
+
+import React, {
+  useEffect,
+  useMemo,
+  useState
+} from "react";
+
+import {
+  ResponsiveContainer,
+
+  LineChart,
+  Line,
+
+  BarChart,
+  Bar,
+
+  PieChart,
+  Pie,
+
+  Cell,
+
+  CartesianGrid,
+
+  XAxis,
+  YAxis,
+
+  Tooltip,
+
+  Legend
+
+} from "recharts";
+
+
+
+
+
 export default function Dashboard() {
   const [ventas, setVentas] = useState([]);
 
