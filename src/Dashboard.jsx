@@ -5,6 +5,9 @@ import React, {
 
 import { db } from "./firebase";
 
+import { migrarFechas }
+from "./migrarFechas";
+
 import { resetVentas } from "./resetDB";
 
 import {
