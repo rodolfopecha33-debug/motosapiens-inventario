@@ -11,6 +11,9 @@ from "./migrarFechas";
 import { fixFechasMayo }
 from "./fixFechasMayo";
 
+import { fixNaNFechas }
+from "./fixNaNFechas";
+
 
 import { resetVentas } from "./resetDB";
 
