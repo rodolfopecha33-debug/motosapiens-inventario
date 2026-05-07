@@ -743,6 +743,15 @@ const cargarVentas = async () => {
 >
   🕒 Migrar Fechas
 </button>
+
+
+        <button
+  onClick={fixNaNFechas}
+  style={btn()}
+>
+  🛠 Fix NaN
+</button>
+        
         
 
 
