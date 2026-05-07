@@ -585,3 +585,109 @@ body {
 
   background: #3aa0ff;
 }
+
+
+
+
+/* FILTROS */
+.filtros {
+
+  display: flex;
+
+  gap: 10px;
+
+  margin-bottom: 20px;
+}
+
+.filtros button {
+
+  background: #111;
+
+  color: white;
+
+  border: 1px solid #222;
+
+  padding: 10px 16px;
+
+  border-radius: 10px;
+
+  cursor: pointer;
+
+  transition: .2s;
+}
+
+.filtros button:hover {
+
+  background: #00ff88;
+
+  color: black;
+}
+
+/* CARDS */
+.cards-grid {
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      auto-fit,
+      minmax(220px,1fr)
+    );
+
+  gap: 18px;
+
+  margin-bottom: 25px;
+}
+
+.card-pro {
+
+  background:
+    linear-gradient(
+      145deg,
+      #111,
+      #181818
+    );
+
+  border-radius: 16px;
+
+  padding: 24px;
+
+  border:
+    1px solid #1f1f1f;
+
+  transition: .2s;
+}
+
+.card-pro:hover {
+
+  transform:
+    translateY(-3px);
+}
+
+/* CHARTS */
+.chart-card {
+
+  background: #111;
+
+  border-radius: 16px;
+
+  padding: 20px;
+
+  margin-bottom: 20px;
+
+  border:
+    1px solid #1f1f1f;
+}
+
+.top-row {
+
+  display: flex;
+
+  justify-content:
+    space-between;
+
+  padding: 12px 0;
+
+  border-bottom:
+    1px solid #222;
+}
