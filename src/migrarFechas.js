@@ -12,7 +12,7 @@ import {
 
 } from "firebase/firestore";
 
-// 🚀 MIGRAR FECHAS
+// 🚀 MIGRADOR DEFINITIVO
 export const migrarFechas =
   async () => {
 
@@ -22,17 +22,16 @@ export const migrarFechas =
 
         "⚠️ MIGRAR FECHAS\n\n" +
 
-        "Esto convertirá las fechas viejas " +
+        "Convertirá fechas antiguas\n" +
 
-        "a timestamps reales.\n\n" +
+        "DD/MM/YYYY → timestamp\n\n" +
 
-        "¿Deseas continuar?"
+        "¿Continuar?"
 
       );
 
       if (!ok) return;
 
-      // 🔥 LEER VENTAS
       const snap =
         await getDocs(
 
@@ -47,93 +46,132 @@ export const migrarFechas =
 
       let ignoradas = 0;
 
-      // 🔥 RECORRER
       for (const d of snap.docs) {
 
         const venta = d.data();
 
-        // 🔥 YA ES TIMESTAMP
+        // 🔥 YA TIMESTAMP
         if (
+
           typeof venta.fecha ===
           "number"
+
+          &&
+
+          venta.fechaTexto
+
         ) {
 
           ignoradas++;
 
           continue;
+
         }
 
-        // 🔥 STRING
+        // 🔥 FECHA ORIGINAL
+        const original =
+
+          venta.fechaTexto ||
+
+          venta.fecha;
+
+        // 🚨 NO STRING
         if (
-          typeof venta.fecha ===
+          typeof original !==
           "string"
         ) {
 
-          try {
+          continue;
 
-            // 🔥 LIMPIAR
-            const limpia =
-              venta.fecha
+        }
 
-                .replace(
-                  "p. m.",
-                  "PM"
-                )
+        try {
 
-                .replace(
-                  "a. m.",
-                  "AM"
-                );
+          // 🔥 LIMPIAR
+          const texto =
+            original
 
-            // 🔥 PARSE
-            const fecha =
-              new Date(limpia);
+              .replace(
+                "p. m.",
+                "PM"
+              )
 
-            // 🚨 INVALID
-            if (
-              isNaN(fecha)
-            ) {
-
-              console.log(
-                "Fecha inválida:",
-                venta.fecha
+              .replace(
+                "a. m.",
+                "AM"
               );
 
-              continue;
-            }
+          // 🔥 DIVIDIR
+          const partes =
+            texto.split(",");
 
-            // 🔥 UPDATE
-            await updateDoc(
+          const fechaPart =
+            partes[0].trim();
 
-              doc(
-                db,
-                "ventas",
-                d.id
-              ),
+          const horaPart =
+            partes[1]?.trim() ||
+            "12:00 AM";
 
-              {
+          // 🔥 DD/MM/YYYY
+          const [
+            dia,
+            mes,
+            anio
+          ] =
+            fechaPart.split("/");
 
-                fecha:
-                  fecha.getTime(),
+          // 🔥 ISO
+          const iso =
 
-                fechaTexto:
-                  venta.fecha
+            `${anio}-${mes}-${dia} ${horaPart}`;
 
-              }
+          const fecha =
+            new Date(iso);
 
+          // 🚨 INVALID
+          if (
+            isNaN(fecha)
+          ) {
+
+            console.log(
+              "Fecha inválida:",
+              texto
             );
 
-            migradas++;
-
-          } catch (err) {
-
-            console.error(err);
+            continue;
 
           }
+
+          // 🔥 UPDATE
+          await updateDoc(
+
+            doc(
+              db,
+              "ventas",
+              d.id
+            ),
+
+            {
+
+              fecha:
+                fecha.getTime(),
+
+              fechaTexto:
+                original
+
+            }
+
+          );
+
+          migradas++;
+
+        } catch (err) {
+
+          console.error(err);
+
         }
       }
 
-      // 🔥 FINAL
       alert(
 
         "✅ MIGRACIÓN COMPLETADA\n\n" +
@@ -149,7 +187,7 @@ export const migrarFechas =
       console.error(error);
 
       alert(
-        "❌ Error migrando fechas"
+        "❌ Error migrando"
       );
 
     }
