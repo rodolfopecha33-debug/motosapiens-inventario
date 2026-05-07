@@ -118,7 +118,9 @@ const [fechaFin, setFechaFin] =
     if (!v.fecha) return false;
 
     const fecha =
-      new Date(v.fecha);
+     new Date(
+  Number(v.fecha)
+)
 
     const ahora =
       new Date();
