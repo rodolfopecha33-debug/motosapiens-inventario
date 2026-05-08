@@ -1,34 +1,21 @@
-import { db } from "./firebase";
-
 import {
-
+  addDoc,
   collection,
-
-  addDoc
-
+  serverTimestamp
 } from "firebase/firestore";
 
-// 🚀 CREAR MOVIMIENTO
+import { db } from "./firebase";
+
 export const crearMovimiento =
   async ({
 
     producto,
-
-    codigo,
-
+    productoId,
     tipo,
-
     cantidad,
-
-    stockInicial,
-
     stockFinal,
-
     usuario,
-
-    modulo,
-
-    referencia
+    metodoPago
 
   }) => {
 
@@ -43,41 +30,31 @@ export const crearMovimiento =
 
         {
 
-          fecha:
-            Date.now(),
-
-          producto:
-            producto || "",
-
-          codigo:
-            codigo || "",
+          producto,
+          productoId,
 
           tipo:
-            tipo || "",
+            String(tipo)
+              .toUpperCase(),
 
-          cantidad:
-            Number(
-              cantidad || 0
-            ),
+          cantidad,
 
-          stockInicial:
-            Number(
-              stockInicial || 0
-            ),
-
-          stockFinal:
-            Number(
-              stockFinal || 0
-            ),
+          stockFinal,
 
           usuario:
             usuario || "Sistema",
 
-          modulo:
-            modulo || "",
+          metodoPago:
+            metodoPago || "",
 
-          referencia:
-            referencia || ""
+          fecha:
+            serverTimestamp(),
+
+          fechaTexto:
+            new Date()
+              .toLocaleString(
+                "es-CO"
+              )
 
         }
 
@@ -85,13 +62,10 @@ export const crearMovimiento =
 
     } catch (error) {
 
-      console.error(
-
+      console.log(
         "Error creando movimiento",
-
         error
-
       );
 
     }
-};
+  };
