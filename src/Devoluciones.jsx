@@ -65,6 +65,10 @@ const [busqueda,
 const [telefono,
   setTelefono] =
     useState("");
+
+  const [imagenes,
+  setImagenes] =
+    useState([]);
   
 
   // 🔥 CARGAR
@@ -441,6 +445,26 @@ const [telefono,
 
         }
       />
+
+      <input
+
+  type="file"
+
+  multiple
+
+  accept="image/*"
+
+  onChange={(e)=>
+
+    setImagenes(
+
+      [...e.target.files]
+
+    )
+
+  }
+
+/>
 
       {/* BTN */}
       <button
