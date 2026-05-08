@@ -90,6 +90,7 @@ export default function Kardex() {
   // 🚀 FECHA SEGURA
   const parseFecha = (f) => {
 
+    // 🔥 TIMESTAMP NUMBER
     if (
       typeof f === "number"
     ) {
@@ -98,7 +99,28 @@ export default function Kardex() {
 
     }
 
-    return new Date();
+    // 🔥 STRING
+    if (
+      typeof f === "string"
+    ) {
+
+      return new Date(f);
+
+    }
+
+    // 🔥 FIREBASE TIMESTAMP
+    if (
+      f?.seconds
+    ) {
+
+      return new Date(
+        f.seconds * 1000
+      );
+
+    }
+
+    // 🚨 INVALID
+    return null;
   };
 
   // 🚀 ORDENAR
@@ -166,12 +188,12 @@ export default function Kardex() {
           valA =
             parseFecha(
               a.fecha
-            ).getTime();
+            )?.getTime() || 0;
 
           valB =
             parseFecha(
               b.fecha
-            ).getTime();
+            )?.getTime() || 0;
         }
 
         // 🔥 STRING
@@ -234,7 +256,13 @@ export default function Kardex() {
         Fecha:
           parseFecha(
             m.fecha
-          ).toLocaleString(),
+          )
+
+            ? parseFecha(
+                m.fecha
+              ).toLocaleString()
+
+            : "-",
 
         Producto:
           m.producto || "",
@@ -374,6 +402,9 @@ export default function Kardex() {
               "fecha"
             )
           }
+          style={{
+            cursor: "pointer"
+          }}
         >
           Fecha
         </div>
@@ -384,6 +415,9 @@ export default function Kardex() {
               "producto"
             )
           }
+          style={{
+            cursor: "pointer"
+          }}
         >
           Producto
         </div>
@@ -394,6 +428,9 @@ export default function Kardex() {
               "tipo"
             )
           }
+          style={{
+            cursor: "pointer"
+          }}
         >
           Tipo
         </div>
@@ -404,6 +441,9 @@ export default function Kardex() {
               "cantidad"
             )
           }
+          style={{
+            cursor: "pointer"
+          }}
         >
           Cantidad
         </div>
@@ -414,6 +454,9 @@ export default function Kardex() {
               "usuario"
             )
           }
+          style={{
+            cursor: "pointer"
+          }}
         >
           Usuario
         </div>
@@ -424,6 +467,9 @@ export default function Kardex() {
               "stockFinal"
             )
           }
+          style={{
+            cursor: "pointer"
+          }}
         >
           Stock Final
         </div>
@@ -445,9 +491,13 @@ export default function Kardex() {
           {/* FECHA */}
           <div>
 
-            {parseFecha(
-              m.fecha
-            ).toLocaleString()}
+            {parseFecha(m.fecha)
+
+              ? parseFecha(
+                  m.fecha
+                ).toLocaleString()
+
+              : "-"}
 
           </div>
 
