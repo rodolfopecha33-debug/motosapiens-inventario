@@ -728,8 +728,13 @@ const formatearFecha = (fecha) => {
           {/* USUARIO */}
           <div>
 
-            {m.usuario ||
-              "Sistema"}
+            {
+  typeof m.usuario === "object"
+
+    ? m.usuario?.nombre
+
+    : m.usuario || "Sistema"
+}
 
           </div>
 
