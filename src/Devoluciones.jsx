@@ -167,6 +167,34 @@ const [telefono,
           );
         }
 
+        const urls = [];
+
+for (const img of imagenes) {
+
+  const ruta = ref(
+
+    storage,
+
+    `garantias/${Date.now()}-${img.name}`
+
+  );
+
+  await uploadBytes(
+    ruta,
+    img
+  );
+
+  const url =
+    await getDownloadURL(
+      ruta
+    );
+
+  urls.push(url);
+
+}
+        
+        
+
         // 🔥 GUARDAR DEVOLUCIÓN
         await addDoc(
 
