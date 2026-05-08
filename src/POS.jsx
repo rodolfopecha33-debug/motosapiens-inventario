@@ -359,10 +359,10 @@ const [clienteCedula, setClienteCedula] = useState("");
 
           });
 
-          // 🔥 MOVIMIENTO
+         
+          
 
-
-          // 🔥 MOVIMIENTO
+            // 🔥 MOVIMIENTO
 await addDoc(
 
   collection(
@@ -390,7 +390,6 @@ await addDoc(
   }
 
 );
-
           
         }
 
