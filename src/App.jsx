@@ -8,6 +8,8 @@ import CargadorFirebase from "./CargadorFirebase";
 import InventarioAdmin from "./InventarioAdmin";
 import Compras from "./Compras";
 import Kardex from "./Kardex";
+import Devoluciones from "./Devoluciones";
+
 
 
 export default function App() {
@@ -114,6 +116,20 @@ export default function App() {
            {esAdmin && (
            <button onClick={() => setVista("kardex")}>📊 Kardex</button>
           )}
+
+
+          <button
+  onClick={() =>
+    setVista(
+      "devoluciones"
+    )
+  }
+>
+
+  🔄 Devoluciones
+
+</button>
+          
 
           <button
             onClick={salir}
