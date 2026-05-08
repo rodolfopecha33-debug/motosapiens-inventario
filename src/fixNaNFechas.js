@@ -12,32 +12,14 @@ import {
 
 } from "firebase/firestore";
 
-// 🚀 FIX DEFINITIVO NaN
 export const fixNaNFechas =
   async () => {
 
     try {
 
-      const ok = window.confirm(
-
-        "⚠️ CORREGIR FECHAS NaN\n\n" +
-
-        "Reconstruirá fechas dañadas.\n\n" +
-
-        "¿Continuar?"
-
-      );
-
-      if (!ok) return;
-
       const snap =
         await getDocs(
-
-          collection(
-            db,
-            "ventas"
-          )
-
+          collection(db, "ventas")
         );
 
       let corregidas = 0;
@@ -46,24 +28,29 @@ export const fixNaNFechas =
 
         const venta = d.data();
 
-        // 🔥 SOLO NaN
+        console.log(
+          "VENTA:",
+          venta.fecha
+        );
+
+        // 🔥 DETECTAR NaN
         if (
 
-          Number.isNaN(
-            venta.fecha
-          )
+          !venta.fecha ||
+
+          String(venta.fecha) ===
+          "NaN"
 
         ) {
 
           try {
 
-            // 🔥 FECHA TEXTO
             const texto =
               venta.fechaTexto;
 
-            // 🔥 EJEMPLO:
-            // 4/5/2026, 9:33:51 p. m.
+            if (!texto) continue;
 
+            // 🔥 LIMPIAR
             const limpia =
               texto
 
@@ -89,13 +76,17 @@ export const fixNaNFechas =
 
             // 🔥 DD/MM/YYYY
             const [
+
               dia,
+
               mes,
+
               anio
+
             ] =
               fechaPart.split("/");
 
-            // 🔥 FECHA MANUAL
+            // 🔥 FECHA
             const fecha =
               new Date(
 
@@ -125,21 +116,14 @@ export const fixNaNFechas =
               hora.getSeconds()
             );
 
-            // 🚨 VALIDAR
-            if (
-              isNaN(
-                fecha.getTime()
-              )
-            ) {
+            // 🔥 TIMESTAMP
+            const timestamp =
+              fecha.getTime();
 
-              console.log(
-                "INVALID:",
-                texto
-              );
-
-              continue;
-
-            }
+            console.log(
+              "FIX:",
+              timestamp
+            );
 
             // 🔥 UPDATE
             await updateDoc(
@@ -153,7 +137,7 @@ export const fixNaNFechas =
               {
 
                 fecha:
-                  fecha.getTime()
+                  timestamp
 
               }
 
@@ -180,7 +164,7 @@ export const fixNaNFechas =
       console.error(error);
 
       alert(
-        "❌ Error corrigiendo"
+        "❌ Error"
       );
 
     }
