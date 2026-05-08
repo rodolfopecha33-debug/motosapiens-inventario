@@ -787,4 +787,217 @@ body {
   opacity: .9;
 }
 
+/* 🔥 DEVOLUCIONES PRO */
+
+.devoluciones-container {
+
+  padding: 25px;
+
+  color: white;
+
+}
+
+/* HEADER */
+.devoluciones-title {
+
+  font-size: 34px;
+
+  font-weight: bold;
+
+  margin-bottom: 25px;
+
+}
+
+/* CARD */
+.devolucion-card {
+
+  background: #111;
+
+  border-radius: 18px;
+
+  padding: 25px;
+
+  box-shadow:
+    0 0 20px rgba(0,0,0,.4);
+
+  max-width: 900px;
+
+}
+
+/* GRID */
+.devolucion-grid {
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(auto-fit, minmax(250px,1fr));
+
+  gap: 18px;
+
+}
+
+/* INPUTS */
+.devolucion-input,
+.devolucion-select,
+.devolucion-textarea {
+
+  width: 100%;
+
+  padding: 14px;
+
+  border: none;
+
+  outline: none;
+
+  border-radius: 12px;
+
+  background: #1b1b1b;
+
+  color: white;
+
+  font-size: 15px;
+
+}
+
+/* TEXTAREA */
+.devolucion-textarea {
+
+  min-height: 120px;
+
+  resize: none;
+
+}
+
+/* BTN */
+.btn-devolucion {
+
+  margin-top: 20px;
+
+  width: 100%;
+
+  border: none;
+
+  padding: 16px;
+
+  border-radius: 14px;
+
+  background: #00c853;
+
+  color: white;
+
+  font-size: 17px;
+
+  font-weight: bold;
+
+  cursor: pointer;
+
+  transition: .2s;
+
+}
+
+.btn-devolucion:hover {
+
+  transform: scale(1.02);
+
+  background: #00e676;
+
+}
+
+/* BUSQUEDA PRO */
+.busqueda-pro {
+
+  width: 100%;
+
+  padding: 15px;
+
+  border-radius: 14px;
+
+  border: none;
+
+  outline: none;
+
+  background: #1b1b1b;
+
+  color: white;
+
+  margin-bottom: 20px;
+
+  font-size: 15px;
+
+}
+
+/* RESULTADOS */
+.resultados-productos {
+
+  max-height: 300px;
+
+  overflow-y: auto;
+
+  margin-top: 10px;
+
+  border-radius: 14px;
+
+}
+
+/* ITEM */
+.producto-dev {
+
+  background: #181818;
+
+  padding: 15px;
+
+  border-radius: 14px;
+
+  margin-bottom: 10px;
+
+  cursor: pointer;
+
+  transition: .2s;
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+}
+
+.producto-dev:hover {
+
+  background: #232323;
+
+  transform: translateY(-2px);
+
+}
+
+/* BADGES */
+.badge-stock {
+
+  background: #00c853;
+
+  padding: 5px 10px;
+
+  border-radius: 30px;
+
+  font-size: 12px;
+
+  font-weight: bold;
+
+}
+
+/* SELECTED */
+.producto-selected {
+
+  margin-top: 20px;
+
+  background: #151515;
+
+  padding: 18px;
+
+  border-radius: 16px;
+
+  border-left: 5px solid #00e676;
+
+}
+
 
