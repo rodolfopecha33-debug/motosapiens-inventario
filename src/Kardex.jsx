@@ -1,139 +1,484 @@
-import React, { useEffect, useState } from "react";
+import React, {
+
+  useEffect,
+
+  useMemo,
+
+  useState
+
+} from "react";
 
 import { db } from "./firebase";
 
 import {
+
   collection,
+
   getDocs
+
 } from "firebase/firestore";
+
+import * as XLSX from "xlsx";
 
 export default function Kardex() {
 
-  const [mov, setMov] = useState([]);
+  const [mov, setMov] =
+    useState([]);
 
-  const [busqueda, setBusqueda] = useState("");
+  const [busqueda,
+    setBusqueda] =
+      useState("");
 
+  // 🚀 ORDEN
+  const [ordenCampo,
+    setOrdenCampo] =
+      useState("fecha");
+
+  const [ordenDireccion,
+    setOrdenDireccion] =
+      useState("desc");
+
+  // 🚀 LOAD
   useEffect(() => {
+
     cargar();
+
   }, []);
 
-  // 🔥 CARGAR
+  // 🚀 CARGAR
   const cargar = async () => {
 
-    const snap = await getDocs(
-      collection(db, "movimientos")
-    );
+    try {
 
-    const datos = [];
+      const snap =
+        await getDocs(
 
-    snap.forEach((d) => {
+          collection(
+            db,
+            "movimientos"
+          )
 
-      datos.push({
-        id: d.id,
-        ...d.data()
+        );
+
+      const datos = [];
+
+      snap.forEach((d) => {
+
+        datos.push({
+
+          id: d.id,
+
+          ...d.data()
+
+        });
+
       });
 
-    });
+      setMov(datos);
 
-    setMov(datos.reverse());
+    } catch (error) {
+
+      console.error(error);
+
+      alert(
+        "Error cargando kardex"
+      );
+
+    }
   };
 
-  // 🔍 FILTRO
-  const filtrados = mov.filter((m) =>
+  // 🚀 FECHA SEGURA
+  const parseFecha = (f) => {
 
-    (
-      m.producto || ""
-    )
-      .toLowerCase()
-      .includes(
-        busqueda.toLowerCase()
-      )
+    if (
+      typeof f === "number"
+    ) {
 
-  );
+      return new Date(f);
+
+    }
+
+    return new Date();
+  };
+
+  // 🚀 ORDENAR
+  const ordenarPor = (campo) => {
+
+    if (ordenCampo === campo) {
+
+      setOrdenDireccion(
+
+        ordenDireccion === "asc"
+
+          ? "desc"
+
+          : "asc"
+
+      );
+
+    } else {
+
+      setOrdenCampo(campo);
+
+      setOrdenDireccion("asc");
+
+    }
+  };
+
+  // 🚀 FILTRO + ORDEN
+  const filtrados =
+    useMemo(() => {
+
+      let datos =
+        mov.filter((m) => {
+
+          const texto =
+
+            `${m.producto || ""}
+
+             ${m.tipo || ""}
+
+             ${m.usuario || ""}`
+
+              .toLowerCase();
+
+          return texto.includes(
+
+            busqueda.toLowerCase()
+
+          );
+        });
+
+      // 🚀 ORDENAMIENTO
+      datos.sort((a, b) => {
+
+        let valA =
+          a[ordenCampo];
+
+        let valB =
+          b[ordenCampo];
+
+        // 🔥 FECHA
+        if (
+          ordenCampo === "fecha"
+        ) {
+
+          valA =
+            parseFecha(
+              a.fecha
+            ).getTime();
+
+          valB =
+            parseFecha(
+              b.fecha
+            ).getTime();
+        }
+
+        // 🔥 STRING
+        if (
+          typeof valA ===
+          "string"
+        ) {
+
+          valA =
+            valA.toLowerCase();
+        }
+
+        if (
+          typeof valB ===
+          "string"
+        ) {
+
+          valB =
+            valB.toLowerCase();
+        }
+
+        // 🔥 ASC
+        if (
+          ordenDireccion ===
+          "asc"
+        ) {
+
+          return valA > valB
+            ? 1
+            : -1;
+        }
+
+        // 🔥 DESC
+        return valA < valB
+          ? 1
+          : -1;
+
+      });
+
+      return datos;
+
+    }, [
+
+      mov,
+
+      busqueda,
+
+      ordenCampo,
+
+      ordenDireccion
+
+    ]);
+
+  // 🚀 EXPORTAR EXCEL
+  const exportarExcel = () => {
+
+    const datos =
+      filtrados.map((m) => ({
+
+        Fecha:
+          parseFecha(
+            m.fecha
+          ).toLocaleString(),
+
+        Producto:
+          m.producto || "",
+
+        Tipo:
+          m.tipo || "",
+
+        Cantidad:
+          m.cantidad || 0,
+
+        Usuario:
+          m.usuario || "Sistema",
+
+        "Stock Final":
+          m.stockFinal || 0
+
+      }));
+
+    const ws =
+      XLSX.utils
+        .json_to_sheet(
+          datos
+        );
+
+    const wb =
+      XLSX.utils
+        .book_new();
+
+    XLSX.utils
+      .book_append_sheet(
+
+        wb,
+
+        ws,
+
+        "Kardex"
+
+      );
+
+    XLSX.writeFile(
+
+      wb,
+
+      `Kardex-${Date.now()}.xlsx`
+
+    );
+  };
 
   // 🎨 COLOR TIPO
   const colorTipo = (tipo) => {
 
-    switch (tipo) {
+    switch (
+      String(tipo)
+        .toLowerCase()
+    ) {
 
       case "venta":
+
         return "#ff4444";
 
       case "entrada":
+
         return "#16b84e";
 
       case "garantia":
+
         return "#ff9800";
 
       case "devolucion":
+
         return "#1e90ff";
 
       default:
+
         return "#999";
     }
   };
 
   return (
+
     <div className="kardex-container">
 
-      <h1>📊 KARDEX PRO MAX</h1>
+      <h1>
+        📊 KARDEX PRO MAX
+      </h1>
 
-      {/* BUSCAR */}
-      <input
-        className="buscar-kardex"
-        placeholder="Buscar producto..."
-        value={busqueda}
-        onChange={(e)=>
-          setBusqueda(e.target.value)
-        }
-      />
+      {/* TOP */}
+      <div
+        className="kardex-top"
+      >
+
+        {/* BUSCAR */}
+        <input
+
+          className=
+          "buscar-kardex"
+
+          placeholder=
+          "Buscar producto, usuario, tipo..."
+
+          value={busqueda}
+
+          onChange={(e)=>
+
+            setBusqueda(
+              e.target.value
+            )
+
+          }
+        />
+
+        {/* EXCEL */}
+        <button
+
+          onClick={
+            exportarExcel
+          }
+
+          className=
+          "btn-excel"
+
+        >
+          📥 Exportar Excel
+        </button>
+
+      </div>
 
       {/* HEADERS */}
-      <div className="kardex-row kardex-header">
+      <div
+        className=
+        "kardex-row kardex-header"
+      >
 
-        <div>Fecha</div>
+        <div
+          onClick={() =>
+            ordenarPor(
+              "fecha"
+            )
+          }
+        >
+          Fecha
+        </div>
 
-        <div>Producto</div>
+        <div
+          onClick={() =>
+            ordenarPor(
+              "producto"
+            )
+          }
+        >
+          Producto
+        </div>
 
-        <div>Tipo</div>
+        <div
+          onClick={() =>
+            ordenarPor(
+              "tipo"
+            )
+          }
+        >
+          Tipo
+        </div>
 
-        <div>Cantidad</div>
+        <div
+          onClick={() =>
+            ordenarPor(
+              "cantidad"
+            )
+          }
+        >
+          Cantidad
+        </div>
 
-        <div>Usuario</div>
+        <div
+          onClick={() =>
+            ordenarPor(
+              "usuario"
+            )
+          }
+        >
+          Usuario
+        </div>
 
-        <div>Stock Final</div>
+        <div
+          onClick={() =>
+            ordenarPor(
+              "stockFinal"
+            )
+          }
+        >
+          Stock Final
+        </div>
 
       </div>
 
       {/* MOVIMIENTOS */}
-      {filtrados.map((m, i) => (
+      {filtrados.map((m) => (
 
         <div
-          key={i}
-          className="kardex-row"
+
+          key={m.id}
+
+          className=
+          "kardex-row"
+
         >
 
           {/* FECHA */}
           <div>
-            {m.fecha || "-"}
+
+            {parseFecha(
+              m.fecha
+            ).toLocaleString()}
+
           </div>
 
           {/* PRODUCTO */}
           <div>
+
             {m.producto || "-"}
+
           </div>
 
           {/* TIPO */}
           <div>
 
             <span
-              className="tipo-badge"
+
+              className=
+              "tipo-badge"
+
               style={{
+
                 background:
-                  colorTipo(m.tipo)
+                  colorTipo(
+                    m.tipo
+                  )
+
               }}
+
             >
+
               {m.tipo}
+
             </span>
 
           </div>
@@ -141,17 +486,25 @@ export default function Kardex() {
           {/* CANTIDAD */}
           <div
             style={{
+
               color:
+
                 Number(m.cantidad) > 0
+
                   ? "#16b84e"
+
                   : "#ff4444",
 
-              fontWeight: "bold"
+              fontWeight:
+                "bold"
+
             }}
           >
 
             {Number(m.cantidad) > 0
+
               ? "+"
+
               : ""}
 
             {m.cantidad}
@@ -160,12 +513,17 @@ export default function Kardex() {
 
           {/* USUARIO */}
           <div>
-            {m.usuario || "Sistema"}
+
+            {m.usuario ||
+              "Sistema"}
+
           </div>
 
-          {/* STOCK FINAL */}
+          {/* STOCK */}
           <div>
-            {m.stockFinal || "-"}
+
+            {m.stockFinal ?? "-"}
+
           </div>
 
         </div>
@@ -173,5 +531,6 @@ export default function Kardex() {
       ))}
 
     </div>
+
   );
 }
