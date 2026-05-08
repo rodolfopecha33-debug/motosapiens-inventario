@@ -1,21 +1,14 @@
 import React, {
-
   useEffect,
-
   useMemo,
-
   useState
-
 } from "react";
 
 import { db } from "./firebase";
 
 import {
-
   collection,
-
   getDocs
-
 } from "firebase/firestore";
 
 import * as XLSX from "xlsx";
@@ -90,37 +83,177 @@ export default function Kardex() {
   // 🚀 FECHA SEGURA
   const parseFecha = (f) => {
 
-    // 🔥 TIMESTAMP NUMBER
-    if (
-      typeof f === "number"
-    ) {
+    try {
 
-      return new Date(f);
+      // 🔥 TIMESTAMP NUMBER
+      if (
+        typeof f === "number"
+      ) {
+
+        return new Date(f);
+
+      }
+
+      // 🔥 FIREBASE TIMESTAMP
+      if (
+        f?.seconds
+      ) {
+
+        return new Date(
+          f.seconds * 1000
+        );
+
+      }
+
+      // 🔥 STRING
+      if (
+        typeof f === "string"
+      ) {
+
+        // 🚀 INTENTO NORMAL
+        const normal =
+          new Date(f);
+
+        // ✅ SI FUNCIONA
+        if (
+          !isNaN(normal)
+        ) {
+
+          return normal;
+
+        }
+
+        // 🚀 FALLBACK COLOMBIA
+        // 5/5/2026, 1:33:02 p. m.
+
+        const limpia =
+          f
+
+            .replace(
+              "p. m.",
+              "PM"
+            )
+
+            .replace(
+              "a. m.",
+              "AM"
+            );
+
+        const partes =
+          limpia.split(",");
+
+        // 🚨 INVALID
+        if (
+          partes.length < 2
+        ) {
+
+          return null;
+
+        }
+
+        const fechaPart =
+          partes[0].trim();
+
+        const horaPart =
+          partes[1].trim();
+
+        // 🔥 DD/MM/YYYY
+        const [
+
+          dia,
+
+          mes,
+
+          anio
+
+        ] =
+          fechaPart.split("/");
+
+        // 🔥 HORA
+        let [
+
+          horaTexto,
+
+          minutos,
+
+          segundosAMPM
+
+        ] =
+          horaPart.split(":");
+
+        // 🚨 INVALID
+        if (
+          !segundosAMPM
+        ) {
+
+          return null;
+
+        }
+
+        let segundos =
+          segundosAMPM
+            .slice(0,2);
+
+        let ampm =
+          segundosAMPM
+            .slice(2)
+            .trim();
+
+        let hora =
+          Number(horaTexto);
+
+        // 🔥 PM
+        if (
+
+          ampm === "PM" &&
+
+          hora !== 12
+
+        ) {
+
+          hora += 12;
+
+        }
+
+        // 🔥 AM
+        if (
+
+          ampm === "AM" &&
+
+          hora === 12
+
+        ) {
+
+          hora = 0;
+
+        }
+
+        return new Date(
+
+          Number(anio),
+
+          Number(mes) - 1,
+
+          Number(dia),
+
+          hora,
+
+          Number(minutos),
+
+          Number(segundos)
+
+        );
+      }
+
+      return null;
+
+    } catch (error) {
+
+      console.log(error);
+
+      return null;
 
     }
-
-    // 🔥 STRING
-    if (
-      typeof f === "string"
-    ) {
-
-      return new Date(f);
-
-    }
-
-    // 🔥 FIREBASE TIMESTAMP
-    if (
-      f?.seconds
-    ) {
-
-      return new Date(
-        f.seconds * 1000
-      );
-
-    }
-
-    // 🚨 INVALID
-    return null;
   };
 
   // 🚀 ORDENAR
@@ -254,9 +387,7 @@ export default function Kardex() {
       filtrados.map((m) => ({
 
         Fecha:
-          parseFecha(
-            m.fecha
-          )
+          parseFecha(m.fecha)
 
             ? parseFecha(
                 m.fecha
