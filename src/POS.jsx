@@ -27,6 +27,14 @@ import { generarFacturaPDF } from "./facturaUtils";
 
 
 
+import {
+  crearMovimiento
+}
+from "./kardexUtils";
+
+
+
+
 export default function POS({ user }) {
 
   const [busqueda, setBusqueda] =
