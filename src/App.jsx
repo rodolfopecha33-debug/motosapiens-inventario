@@ -131,6 +131,18 @@ export default function App() {
   🔄 Devoluciones
 
 </button>
+          <button
+  onClick={() =>
+    setVista(
+      "seguimiento"
+    )
+  }
+>
+
+  🛡 Garantías
+
+</button>
+          
           
 
           <button
