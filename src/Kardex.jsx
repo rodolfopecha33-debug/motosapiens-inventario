@@ -80,8 +80,7 @@ export default function Kardex() {
     }
   };
 
-  // 🚀 FECHA SEGURA
-
+ 
 
     // 🚀 FECHA SEGURA
 const parseFecha = (f) => {
@@ -297,37 +296,6 @@ const formatearFecha = (fecha) => {
 
 
   
-
-  // 🚀 FORMATO PROFESIONAL FECHA
-  const formatearFecha = (fecha) => {
-
-    const f = parseFecha(fecha);
-
-    if (!f) return "-";
-
-    const dia =
-      String(f.getDate())
-        .padStart(2, "0");
-
-    const mes =
-      String(f.getMonth() + 1)
-        .padStart(2, "0");
-
-    const anio =
-      f.getFullYear();
-
-    const hora =
-      f.toLocaleTimeString(
-        "es-CO",
-        {
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: true
-        }
-      );
-
-    return `${dia}/${mes}/${anio} - ${hora}`;
-  };
 
   // 🚀 ORDENAR
   const ordenarPor = (campo) => {
