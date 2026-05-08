@@ -81,178 +81,222 @@ export default function Kardex() {
   };
 
   // 🚀 FECHA SEGURA
-  const parseFecha = (f) => {
 
-    try {
 
-      // 🔥 TIMESTAMP NUMBER
-      if (
-        typeof f === "number"
-      ) {
+    // 🚀 FECHA SEGURA
+const parseFecha = (f) => {
 
-        return new Date(f);
+  try {
 
-      }
+    // 🔥 TIMESTAMP NUMBER
+    if (
+      typeof f === "number"
+    ) {
 
-      // 🔥 FIREBASE TIMESTAMP
-      if (
-        f?.seconds
-      ) {
-
-        return new Date(
-          f.seconds * 1000
-        );
-
-      }
-
-      // 🔥 STRING
-      if (
-        typeof f === "string"
-      ) {
-
-        // 🚀 INTENTO NORMAL
-        const normal =
-          new Date(f);
-
-        // ✅ SI FUNCIONA
-        if (
-          !isNaN(normal)
-        ) {
-
-          return normal;
-
-        }
-
-        // 🚀 FALLBACK COLOMBIA
-        const limpia =
-          f
-
-            .replace(
-              "p. m.",
-              "PM"
-            )
-
-            .replace(
-              "a. m.",
-              "AM"
-            );
-
-        const partes =
-          limpia.split(",");
-
-        // 🚨 INVALID
-        if (
-          partes.length < 2
-        ) {
-
-          return null;
-
-        }
-
-        const fechaPart =
-          partes[0].trim();
-
-        const horaPart =
-          partes[1].trim();
-
-        // 🔥 DD/MM/YYYY
-        const [
-
-          dia,
-
-          mes,
-
-          anio
-
-        ] =
-          fechaPart.split("/");
-
-        // 🔥 HORA
-        let [
-
-          horaTexto,
-
-          minutos,
-
-          segundosAMPM
-
-        ] =
-          horaPart.split(":");
-
-        // 🚨 INVALID
-        if (
-          !segundosAMPM
-        ) {
-
-          return null;
-
-        }
-
-        let segundos =
-          segundosAMPM
-            .slice(0, 2);
-
-        let ampm =
-          segundosAMPM
-            .slice(2)
-            .trim();
-
-        let hora =
-          Number(horaTexto);
-
-        // 🔥 PM
-        if (
-
-          ampm === "PM" &&
-
-          hora !== 12
-
-        ) {
-
-          hora += 12;
-
-        }
-
-        // 🔥 AM
-        if (
-
-          ampm === "AM" &&
-
-          hora === 12
-
-        ) {
-
-          hora = 0;
-
-        }
-
-        return new Date(
-
-          Number(anio),
-
-          Number(mes) - 1,
-
-          Number(dia),
-
-          hora,
-
-          Number(minutos),
-
-          Number(segundos)
-
-        );
-      }
-
-      return null;
-
-    } catch (error) {
-
-      console.log(error);
-
-      return null;
+      return new Date(f);
 
     }
-  };
+
+    // 🔥 FIREBASE TIMESTAMP
+    if (
+      f?.seconds
+    ) {
+
+      return new Date(
+        f.seconds * 1000
+      );
+
+    }
+
+    // 🔥 STRING
+    if (
+      typeof f === "string"
+    ) {
+
+      // 🚀 LIMPIAR FORMATO COLOMBIA
+      // Ej:
+      // 7/5/2026, 3:58:38 p. m.
+
+      const limpia =
+        f
+
+          .replace(
+            "p. m.",
+            "PM"
+          )
+
+          .replace(
+            "a. m.",
+            "AM"
+          )
+
+          .replace(/\s+/g, " ")
+          .trim();
+
+      const partes =
+        limpia.split(",");
+
+      // 🚨 INVALID
+      if (
+        partes.length < 2
+      ) {
+
+        return null;
+
+      }
+
+      const fechaPart =
+        partes[0].trim();
+
+      const horaPart =
+        partes[1].trim();
+
+      // 🔥 DD/MM/YYYY
+      const [
+
+        dia,
+
+        mes,
+
+        anio
+
+      ] =
+        fechaPart.split("/");
+
+      // 🚨 VALIDAR
+      if (
+        !dia ||
+        !mes ||
+        !anio
+      ) {
+
+        return null;
+
+      }
+
+      // 🔥 HORA
+      // 3:58:38 PM
+
+      const horaSplit =
+        horaPart.split(":");
+
+      if (
+        horaSplit.length < 3
+      ) {
+
+        return null;
+
+      }
+
+      let horaTexto =
+        horaSplit[0];
+
+      let minutos =
+        horaSplit[1];
+
+      let segundosAMPM =
+        horaSplit[2];
+
+      let segundos =
+        segundosAMPM
+          .slice(0, 2);
+
+      let ampm =
+        segundosAMPM
+          .slice(2)
+          .trim();
+
+      let hora =
+        Number(horaTexto);
+
+      // 🔥 PM
+      if (
+
+        ampm === "PM" &&
+
+        hora !== 12
+
+      ) {
+
+        hora += 12;
+
+      }
+
+      // 🔥 AM
+      if (
+
+        ampm === "AM" &&
+
+        hora === 12
+
+      ) {
+
+        hora = 0;
+
+      }
+
+      return new Date(
+
+        Number(anio),
+
+        Number(mes) - 1,
+
+        Number(dia),
+
+        hora,
+
+        Number(minutos),
+
+        Number(segundos)
+
+      );
+    }
+
+    return null;
+
+  } catch (error) {
+
+    console.log(error);
+
+    return null;
+
+  }
+};
+
+// 🚀 FORMATO PROFESIONAL FECHA
+const formatearFecha = (fecha) => {
+
+  const f =
+    parseFecha(fecha);
+
+  if (!f) return "-";
+
+  const dia =
+    String(f.getDate())
+      .padStart(2, "0");
+
+  const mes =
+    String(f.getMonth() + 1)
+      .padStart(2, "0");
+
+  const anio =
+    f.getFullYear();
+
+  const hora =
+    f.toLocaleTimeString(
+      "es-CO",
+      {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true
+      }
+    );
+
+  return `${dia}/${mes}/${anio} - ${hora}`;
+};
+
+
+  
 
   // 🚀 FORMATO PROFESIONAL FECHA
   const formatearFecha = (fecha) => {
