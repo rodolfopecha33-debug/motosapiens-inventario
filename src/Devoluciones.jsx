@@ -481,7 +481,9 @@ for (const img of imagenes) {
         }
       />
 
-      <input
+    <input
+
+  key={fileKey}
 
   type="file"
 
