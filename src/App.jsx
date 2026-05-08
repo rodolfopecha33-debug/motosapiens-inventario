@@ -162,6 +162,15 @@ export default function App() {
 )}
       {vista === "compras" && esAdmin && <Compras />}
 {vista === "kardex" && esAdmin && <Kardex />}
+
+{vista === "devoluciones" && (
+
+  <Devoluciones
+    user={user}
+  />
+
+)}
+      
     </div>
   );
 }
