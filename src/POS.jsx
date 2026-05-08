@@ -389,7 +389,8 @@ await crearMovimiento({
     nuevoStock,
 
   usuario:
-    user || "Sistema",
+   user?.nombre ||
+  "Sistema",
 
   metodoPago
 
