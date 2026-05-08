@@ -42,7 +42,11 @@ export const crearMovimiento =
           stockFinal,
 
           usuario:
-            usuario || "Sistema",
+            typeof usuario === "object"
+
+    ? usuario?.nombre
+
+    : usuario || "Sistema",
 
           metodoPago:
             metodoPago || "",
