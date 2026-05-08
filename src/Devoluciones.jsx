@@ -215,7 +215,7 @@ const [telefono,
             nuevoStock,
 
           usuario:
-            user || "Sistema"
+            user?.nombre || "Sistema"
 
         });
 
