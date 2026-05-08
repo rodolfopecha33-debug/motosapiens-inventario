@@ -172,6 +172,8 @@ const [telefono,
             motivo,
 
             detalle,
+            cliente,
+            telefono,
 
             estado: "pendiente",
             
