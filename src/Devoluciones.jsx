@@ -228,6 +228,8 @@ for (const img of imagenes) {
 
             reintegraStock,
 
+            imagenes: urls,
+
             fecha:
               serverTimestamp()
 
