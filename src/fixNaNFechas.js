@@ -42,7 +42,7 @@ export const fixNaNFechas =
     "STRING:",
     String(venta.fecha)
   );
-      }
+      
 
         // 🔥 DETECTAR NaN
         if (
