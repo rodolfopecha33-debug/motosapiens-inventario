@@ -220,84 +220,161 @@ export default function Devoluciones({ user }) {
       }
     };
 
-  return (
+ return (
 
-    <div className="devoluciones-container">
+  <div className="devoluciones-container">
 
-      <h1>
-        🔄 Devoluciones
-      </h1>
+    <h1 className="devoluciones-title">
+      🔄 Devoluciones PRO
+    </h1>
 
-      {/* PRODUCTO */}
-      <select
-        value={productoId}
-        onChange={(e)=>
+    <div className="devolucion-card">
 
-          setProductoId(
-            e.target.value
-          )
-
-        }
-      >
-
-        <option value="">
-          Seleccione producto
-        </option>
-
-        {productos.map((p)=>(
-
-          <option
-            key={p.id}
-            value={p.id}
-          >
-
-            {p.nombre}
-
-          </option>
-
-        ))}
-
-      </select>
-
-      {/* CANTIDAD */}
+      {/* BUSQUEDA */}
       <input
-        type="number"
-        placeholder="Cantidad"
-        value={cantidad}
+        className="busqueda-pro"
+        placeholder="Buscar producto..."
+        value={busqueda}
         onChange={(e)=>
-
-          setCantidad(
+          setBusqueda(
             e.target.value
           )
-
         }
       />
 
-      {/* MOTIVO */}
-      <select
-        value={motivo}
-        onChange={(e)=>
+      {/* RESULTADOS */}
+      <div className="resultados-productos">
 
-          setMotivo(
-            e.target.value
+        {productos
+
+          .filter((p)=>
+
+            p.nombre
+              ?.toLowerCase()
+              .includes(
+                busqueda.toLowerCase()
+              )
+
           )
 
-        }
-      >
+          .slice(0,20)
 
-        <option value="garantia">
-          Garantía
-        </option>
+          .map((p)=>(
 
-        <option value="insatisfaccion">
-          Insatisfacción Cliente
-        </option>
+            <div
 
-      </select>
+              key={p.id}
+
+              className="producto-dev"
+
+              onClick={()=>
+                setProductoId(
+                  p.id
+                )
+              }
+            >
+
+              <div>
+
+                <strong>
+                  {p.nombre}
+                </strong>
+
+                <br />
+
+                <small>
+                  Ref:
+                  {p.codigo || "N/A"}
+                </small>
+
+              </div>
+
+              <span className="badge-stock">
+
+                Stock:
+                {p.stock}
+
+              </span>
+
+            </div>
+
+        ))}
+
+      </div>
+
+      {/* PRODUCTO SELECCIONADO */}
+      {productoId && (
+
+        <div className="producto-selected">
+
+          <h3>
+            Producto seleccionado
+          </h3>
+
+          <p>
+
+            {
+
+              productos.find(
+                (p)=>
+                  p.id === productoId
+              )?.nombre
+
+            }
+
+          </p>
+
+        </div>
+
+      )}
+
+      {/* GRID */}
+      <div className="devolucion-grid">
+
+        {/* CANTIDAD */}
+        <input
+          type="number"
+          className="devolucion-input"
+          placeholder="Cantidad"
+          value={cantidad}
+          onChange={(e)=>
+
+            setCantidad(
+              e.target.value
+            )
+
+          }
+        />
+
+        {/* MOTIVO */}
+        <select
+          className="devolucion-select"
+          value={motivo}
+          onChange={(e)=>
+
+            setMotivo(
+              e.target.value
+            )
+
+          }
+        >
+
+          <option value="garantia">
+            Garantía
+          </option>
+
+          <option value="insatisfaccion">
+            Insatisfacción Cliente
+          </option>
+
+        </select>
+
+      </div>
 
       {/* DETALLE */}
       <textarea
-        placeholder="Detalle..."
+        className="devolucion-textarea"
+        placeholder="Describe el motivo..."
         value={detalle}
         onChange={(e)=>
 
@@ -310,6 +387,7 @@ export default function Devoluciones({ user }) {
 
       {/* BTN */}
       <button
+        className="btn-devolucion"
         onClick={guardar}
       >
 
@@ -319,5 +397,7 @@ export default function Devoluciones({ user }) {
 
     </div>
 
-  );
+  </div>
+
+);
 }
