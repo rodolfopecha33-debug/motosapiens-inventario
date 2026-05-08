@@ -33,21 +33,8 @@ export const fixNaNFechas =
           venta.fecha
         );
 
-         console.log(
-    "VALOR:",
-    venta.fecha
-  );
-
-  console.log(
-    "STRING:",
-    String(venta.fecha)
-  );
-      
-
         // 🔥 DETECTAR NaN
         if (
-
-          !venta.fecha ||
 
           String(venta.fecha) ===
           "NaN"
@@ -75,7 +62,7 @@ export const fixNaNFechas =
                   "AM"
                 );
 
-            // 🔥 DIVIDIR
+            // 🔥 PARTES
             const partes =
               limpia.split(",");
 
@@ -85,7 +72,7 @@ export const fixNaNFechas =
             const horaPart =
               partes[1].trim();
 
-            // 🔥 DD/MM/YYYY
+            // 🔥 FECHA
             const [
 
               dia,
@@ -97,7 +84,57 @@ export const fixNaNFechas =
             ] =
               fechaPart.split("/");
 
-            // 🔥 FECHA
+            // 🔥 HORA
+            let [
+
+              horaTexto,
+
+              minutos,
+
+              segundosAMPM
+
+            ] =
+              horaPart.split(":");
+
+            let segundos =
+              segundosAMPM
+                .slice(0,2);
+
+            let ampm =
+              segundosAMPM
+                .slice(2)
+                .trim();
+
+            let hora =
+              Number(horaTexto);
+
+            // 🔥 PM
+            if (
+
+              ampm === "PM" &&
+
+              hora !== 12
+
+            ) {
+
+              hora += 12;
+
+            }
+
+            // 🔥 AM
+            if (
+
+              ampm === "AM" &&
+
+              hora === 12
+
+            ) {
+
+              hora = 0;
+
+            }
+
+            // 🔥 FECHA FINAL
             const fecha =
               new Date(
 
@@ -105,29 +142,16 @@ export const fixNaNFechas =
 
                 Number(mes) - 1,
 
-                Number(dia)
+                Number(dia),
+
+                hora,
+
+                Number(minutos),
+
+                Number(segundos)
 
               );
 
-            // 🔥 HORA
-            const hora =
-              new Date(
-                `2000-01-01 ${horaPart}`
-              );
-
-            fecha.setHours(
-              hora.getHours()
-            );
-
-            fecha.setMinutes(
-              hora.getMinutes()
-            );
-
-            fecha.setSeconds(
-              hora.getSeconds()
-            );
-
-            // 🔥 TIMESTAMP
             const timestamp =
               fecha.getTime();
 
@@ -135,6 +159,20 @@ export const fixNaNFechas =
               "FIX:",
               timestamp
             );
+
+            // 🚨 VALIDAR
+            if (
+              isNaN(timestamp)
+            ) {
+
+              console.log(
+                "INVALID:",
+                texto
+              );
+
+              continue;
+
+            }
 
             // 🔥 UPDATE
             await updateDoc(
