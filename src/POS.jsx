@@ -370,8 +370,11 @@ const [clienteCedula, setClienteCedula] = useState("");
                 item.cantidad,
 
               fecha:
-                new Date()
-                  .toLocaleString()
+      Date.now(),
+
+    fechaTexto:
+      new Date()
+        .toLocaleString(),
 
             }
 
