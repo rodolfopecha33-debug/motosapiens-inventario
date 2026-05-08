@@ -275,9 +275,27 @@ for (const img of imagenes) {
           "Devolución registrada"
         );
 
-        setCantidad(1);
 
-        setDetalle("");
+        setProductoId("");
+
+setCantidad(1);
+
+setDetalle("");
+
+setCliente("");
+
+setTelefono("");
+
+setBusqueda("");
+
+setImagenes([]);
+
+setFileKey(
+  Date.now()
+);
+
+
+        
 
       } catch (error) {
 
