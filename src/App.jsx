@@ -184,6 +184,17 @@ export default function App() {
   />
 
 )}
+
+      {
+  vista ===
+  "seguimiento"
+
+  && (
+
+    <SeguimientoGarantias />
+
+  )
+}
       
     </div>
   );
