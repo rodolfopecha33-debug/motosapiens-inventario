@@ -124,8 +124,6 @@ export default function Kardex() {
         }
 
         // 🚀 FALLBACK COLOMBIA
-        // 5/5/2026, 1:33:02 p. m.
-
         const limpia =
           f
 
@@ -192,7 +190,7 @@ export default function Kardex() {
 
         let segundos =
           segundosAMPM
-            .slice(0,2);
+            .slice(0, 2);
 
         let ampm =
           segundosAMPM
@@ -254,6 +252,37 @@ export default function Kardex() {
       return null;
 
     }
+  };
+
+  // 🚀 FORMATO PROFESIONAL FECHA
+  const formatearFecha = (fecha) => {
+
+    const f = parseFecha(fecha);
+
+    if (!f) return "-";
+
+    const dia =
+      String(f.getDate())
+        .padStart(2, "0");
+
+    const mes =
+      String(f.getMonth() + 1)
+        .padStart(2, "0");
+
+    const anio =
+      f.getFullYear();
+
+    const hora =
+      f.toLocaleTimeString(
+        "es-CO",
+        {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true
+        }
+      );
+
+    return `${dia}/${mes}/${anio} - ${hora}`;
   };
 
   // 🚀 ORDENAR
@@ -387,13 +416,9 @@ export default function Kardex() {
       filtrados.map((m) => ({
 
         Fecha:
-          parseFecha(m.fecha)
-
-            ? parseFecha(
-                m.fecha
-              ).toLocaleString()
-
-            : "-",
+          formatearFecha(
+            m.fecha
+          ),
 
         Producto:
           m.producto || "",
@@ -622,13 +647,9 @@ export default function Kardex() {
           {/* FECHA */}
           <div>
 
-            {parseFecha(m.fecha)
-
-              ? parseFecha(
-                  m.fecha
-                ).toLocaleString()
-
-              : "-"}
+            {formatearFecha(
+              m.fecha
+            )}
 
           </div>
 
