@@ -203,6 +203,55 @@ export default function SeguimientoGarantias() {
 
               </p>
 
+
+              {/* IMAGENES */}
+<div
+  style={{
+
+    display: "flex",
+
+    gap: 10,
+
+    flexWrap: "wrap",
+
+    marginTop: 15
+
+  }}
+>
+
+  {g.imagenes?.map(
+    (img, i) => (
+
+      <img
+
+        key={i}
+
+        src={img}
+
+        alt="garantia"
+
+        style={{
+
+          width: 120,
+
+          height: 120,
+
+          objectFit: "cover",
+
+          borderRadius: 12,
+
+          border:
+            "2px solid #222"
+
+        }}
+
+      />
+
+    )
+  )}
+
+</div>
+
               {/* ESTADO */}
               <div
                 style={{
