@@ -165,6 +165,9 @@ const [busqueda,
 
             detalle,
 
+            estado: "pendiente",
+            
+
             usuario:
               user || "Sistema",
 
