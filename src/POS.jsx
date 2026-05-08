@@ -363,33 +363,38 @@ const [clienteCedula, setClienteCedula] = useState("");
           
 
             // 🔥 MOVIMIENTO
-await addDoc(
 
-  collection(
-    db,
-    "movimientos"
-  ),
 
-  {
+          // 🔥 NUEVO STOCK
+const nuevoStock =
 
-    tipo: "venta",
+  stock(item) -
+  item.cantidad;
 
-    producto:
-      item.nombre,
+// 🔥 KARDEX PRO
+await crearMovimiento({
 
-    cantidad:
-      item.cantidad,
+  producto:
+    item.nombre,
 
-    fecha:
-      Date.now(),
+  productoId:
+    item.id,
 
-    fechaTexto:
-      new Date()
-        .toLocaleString(),
+  tipo: "VENTA",
 
-  }
+  cantidad:
+    -item.cantidad,
 
-);
+  stockFinal:
+    nuevoStock,
+
+  usuario:
+    user || "Sistema",
+
+  metodoPago
+
+});
+          
           
         }
 
