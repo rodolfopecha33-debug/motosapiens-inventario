@@ -722,29 +722,9 @@ const cargarVentas = async () => {
         </button>
 
 
-        <button
-  onClick={fixFechasMayo}
-  style={btn()}
->
-  🛠 Fix Mayo
-</button>
-        
+      
 
-          <button
-  onClick={migrarFechas}
-  style={btn()}
->
-  🕒 Migrar Fechas
-</button>
-
-
-        <button
-  onClick={fixNaNFechas}
-  style={btn()}
->
-  🛠 Fix NaN
-</button>
-        
+  
         
 
 
