@@ -41,6 +41,11 @@ export default function Devoluciones({ user }) {
     setDetalle] =
       useState("");
 
+const [busqueda,
+  setBusqueda] =
+    useState("");
+  
+
   // 🔥 CARGAR
   useEffect(() => {
 
