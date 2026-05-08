@@ -360,33 +360,38 @@ const [clienteCedula, setClienteCedula] = useState("");
           });
 
           // 🔥 MOVIMIENTO
-          await addDoc(
 
-            collection(
-              db,
-              "movimientos"
-            ),
 
-            {
+          // 🔥 MOVIMIENTO
+await addDoc(
 
-              tipo: "venta",
+  collection(
+    db,
+    "movimientos"
+  ),
 
-              producto:
-                item.nombre,
+  {
 
-              cantidad:
-                item.cantidad,
+    tipo: "venta",
 
-              fecha:
+    producto:
+      item.nombre,
+
+    cantidad:
+      item.cantidad,
+
+    fecha:
       Date.now(),
 
     fechaTexto:
       new Date()
         .toLocaleString(),
 
-            }
+  }
 
-          );
+);
+
+          
         }
 
         // 🔥 EJECUTAR BATCH
