@@ -19,6 +19,19 @@ import {
   crearMovimiento
 } from "./kardexUtils";
 
+import {
+  ref,
+  uploadBytes,
+  getDownloadURL
+}
+from "firebase/storage";
+
+import {
+  storage
+}
+from "./firebase";
+
+
 export default function Devoluciones({ user }) {
 
   const [productos,
