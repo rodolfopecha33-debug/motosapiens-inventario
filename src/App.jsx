@@ -9,6 +9,8 @@ import InventarioAdmin from "./InventarioAdmin";
 import Compras from "./Compras";
 import Kardex from "./Kardex";
 import Devoluciones from "./Devoluciones";
+import SeguimientoGarantias
+from "./SeguimientoGarantias";
 
 
 
