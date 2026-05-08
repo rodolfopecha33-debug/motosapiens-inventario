@@ -516,6 +516,12 @@ await crearMovimiento({
     );
   }
 
+    // 🔥 DEBUG
+console.log(
+  "USER POS:",
+  user
+);
+  
   return (
 
     <div className="pos-layout">
