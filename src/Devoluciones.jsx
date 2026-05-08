@@ -44,6 +44,14 @@ export default function Devoluciones({ user }) {
 const [busqueda,
   setBusqueda] =
     useState("");
+
+  const [cliente,
+  setCliente] =
+    useState("");
+
+const [telefono,
+  setTelefono] =
+    useState("");
   
 
   // 🔥 CARGAR
