@@ -5,14 +5,7 @@ import React, {
 
 import { db } from "./firebase";
 
-import { migrarFechas }
-from "./migrarFechas";
 
-import { fixFechasMayo }
-from "./fixFechasMayo";
-
-import { fixNaNFechas }
-from "./fixNaNFechas";
 
 
 import { resetVentas } from "./resetDB";
