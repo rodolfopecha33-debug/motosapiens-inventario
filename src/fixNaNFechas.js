@@ -33,6 +33,17 @@ export const fixNaNFechas =
           venta.fecha
         );
 
+         console.log(
+    "VALOR:",
+    venta.fecha
+  );
+
+  console.log(
+    "STRING:",
+    String(venta.fecha)
+  );
+      }
+
         // 🔥 DETECTAR NaN
         if (
 
