@@ -362,6 +362,32 @@ const [telefono,
           }
         />
 
+        <input
+  className="devolucion-input"
+  placeholder="Cliente"
+  value={cliente}
+  onChange={(e)=>
+
+    setCliente(
+      e.target.value
+    )
+
+  }
+/>
+
+<input
+  className="devolucion-input"
+  placeholder="Teléfono"
+  value={telefono}
+  onChange={(e)=>
+
+    setTelefono(
+      e.target.value
+    )
+
+  }
+/>
+
         {/* MOTIVO */}
         <select
           className="devolucion-select"
