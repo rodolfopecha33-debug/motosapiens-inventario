@@ -69,6 +69,11 @@ const [telefono,
   const [imagenes,
   setImagenes] =
     useState([]);
+
+  const [fileKey,
+  setFileKey] =
+    useState(Date.now());
+  
   
 
   // 🔥 CARGAR
