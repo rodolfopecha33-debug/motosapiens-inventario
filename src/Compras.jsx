@@ -1,5 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, {
+  useEffect,
+  useState
+} from "react";
+
 import { db } from "./firebase";
+
 import {
   collection,
   getDocs,
@@ -9,82 +14,297 @@ import {
 } from "firebase/firestore";
 
 export default function Compras() {
-  const [lista, setLista] = useState([]);
-  const [busqueda, setBusqueda] = useState("");
+
+  const [lista, setLista] =
+    useState([]);
+
+  const [busqueda, setBusqueda] =
+    useState("");
 
   useEffect(() => {
+
     cargar();
+
   }, []);
 
+  // 🔥 CARGAR
   const cargar = async () => {
-    const snap = await getDocs(collection(db, "inventario"));
+
+    const snap =
+      await getDocs(
+
+        collection(
+          db,
+          "inventario"
+        )
+
+      );
+
     const datos = [];
-    snap.forEach((d) => datos.push({ id: d.id, ...d.data() }));
+
+    snap.forEach((d) =>
+
+      datos.push({
+
+        id: d.id,
+
+        ...d.data()
+
+      })
+
+    );
+
     setLista(datos);
+
   };
 
-  const comprar = async (p, cantidad) => {
-    if (!cantidad || cantidad <= 0) return;
+  // 🔥 COMPRAR
+  const comprar =
+    async (p, cantidad) => {
 
-    const nuevoStock = Number(p.stock || 0) + Number(cantidad);
+      if (
+        !cantidad ||
+        cantidad <= 0
+      ) {
 
-    // actualizar inventario
-    await updateDoc(doc(db, "inventario", p.id), {
-      stock: nuevoStock,
-      compra: Number(p.compra || 0)
-    });
+        alert(
+          "Cantidad inválida"
+        );
 
-    // registrar movimiento
-    await addDoc(collection(db, "movimientos"), {
-      tipo: "compra",
-      producto: p.nombre,
-      cantidad: Number(cantidad),
-      fecha: Date.now()
-    });
+        return;
+      }
 
-    alert("Compra registrada");
-    cargar();
-  };
+      const nuevoStock =
 
-  const filtrados = lista.filter((p) =>
-    p.nombre.toLowerCase().includes(busqueda.toLowerCase())
-  );
+        Number(p.stock || 0)
+
+        +
+
+        Number(cantidad);
+
+      // 🔥 UPDATE INVENTARIO
+      await updateDoc(
+
+        doc(
+          db,
+          "inventario",
+          p.id
+        ),
+
+        {
+
+          stock: nuevoStock,
+
+          compra:
+            Number(
+              p.compra || 0
+            )
+
+        }
+
+      );
+
+      // 🔥 MOVIMIENTO
+      await addDoc(
+
+        collection(
+          db,
+          "movimientos"
+        ),
+
+        {
+
+          tipo: "COMPRA",
+
+          producto:
+            p.nombre,
+
+          productoId:
+            p.codigo || "",
+
+          cantidad:
+            Number(cantidad),
+
+          stockFinal:
+            nuevoStock,
+
+          metodoPago: "",
+
+          usuario:
+            "Rodolfo",
+
+          fecha:
+            Date.now()
+
+        }
+
+      );
+
+      alert(
+        "Compra registrada"
+      );
+
+      cargar();
+
+    };
+
+  // 🔥 FILTRAR
+  const filtrados =
+    lista.filter((p) =>
+
+      p.nombre
+
+        ?.toLowerCase()
+
+        .includes(
+
+          busqueda.toLowerCase()
+
+        )
+
+    );
 
   return (
-    <div style={{ padding: 20, color: "white" }}>
-      <h1>📦 Compras ERP</h1>
 
+    <div className="compras-container">
+
+      <h1 className="compras-title">
+        📦 Compras ERP
+      </h1>
+
+      {/* BUSCADOR */}
       <input
+
+        className="compras-search"
+
         placeholder="Buscar producto..."
+
         value={busqueda}
-        onChange={(e) => setBusqueda(e.target.value)}
+
+        onChange={(e)=>
+
+          setBusqueda(
+            e.target.value
+          )
+
+        }
       />
 
-      {filtrados.slice(0, 100).map((p) => (
-        <Item key={p.id} p={p} comprar={comprar} />
-      ))}
+      {/* LISTA */}
+      <div className="compras-grid">
+
+        {filtrados
+
+          .slice(0,100)
+
+          .map((p)=>(
+
+            <Item
+
+              key={p.id}
+
+              p={p}
+
+              comprar={comprar}
+
+            />
+
+        ))}
+
+      </div>
+
     </div>
+
   );
+
 }
 
-function Item({ p, comprar }) {
-  const [cant, setCant] = useState("");
+// 🔥 ITEM
+function Item({
+  p,
+  comprar
+}) {
+
+  const [cant, setCant] =
+    useState("");
 
   return (
-    <div style={{ marginBottom: 10, background: "#111", padding: 10 }}>
-      <strong>{p.nombre}</strong> | Stock: {p.stock}
 
-      <br />
+    <div className="compra-card">
 
-      <input
-        placeholder="Cantidad"
-        value={cant}
-        onChange={(e) => setCant(e.target.value)}
-      />
+      {/* TOP */}
+      <div className="compra-top">
 
-      <button onClick={() => comprar(p, cant)}>
-        Comprar
-      </button>
+        <div>
+
+          <h3 className="compra-nombre">
+
+            {p.nombre}
+
+          </h3>
+
+          <p className="compra-ref">
+
+            Ref:
+            {p.codigo || "N/A"}
+
+          </p>
+
+        </div>
+
+        <div className="stock-badge">
+
+          Stock:
+          {p.stock || 0}
+
+        </div>
+
+      </div>
+
+      {/* BOTTOM */}
+      <div className="compra-actions">
+
+        <input
+
+          type="number"
+
+          placeholder="Cantidad"
+
+          className="input-cantidad"
+
+          value={cant}
+
+          onChange={(e)=>
+
+            setCant(
+              e.target.value
+            )
+
+          }
+        />
+
+        <button
+
+          className="btn-comprar"
+
+          onClick={()=>
+
+            comprar(
+              p,
+              cant
+            )
+
+          }
+        >
+
+          📦 Comprar
+
+        </button>
+
+      </div>
+
     </div>
+
   );
+
 }
