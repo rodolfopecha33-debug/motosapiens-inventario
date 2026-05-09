@@ -271,8 +271,7 @@ const cargarVentas = async () => {
 
     if (!v.fecha) return false;
 
-    const fecha =
-
+   
 
      const fecha =
   parseFecha(v.fecha);
