@@ -911,8 +911,12 @@ const cargarVentas = async () => {
 
             <td>
 
-  {new Date(v.fecha)
-    .toLocaleString()}
+        {
+  parseFecha(v.fecha)
+    ?.toLocaleString(
+      "es-CO"
+    )
+}
 
 </td>
 
