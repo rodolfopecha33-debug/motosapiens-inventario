@@ -51,6 +51,148 @@ const COLORS = [
 
 ];
 
+// 🔥 FECHA SEGURA
+const parseFecha = (f) => {
+
+  try {
+
+    // 🔥 NUMBER
+    if (
+      typeof f === "number"
+    ) {
+
+      return new Date(f);
+
+    }
+
+    // 🔥 FIREBASE TIMESTAMP
+    if (
+      f?.seconds
+    ) {
+
+      return new Date(
+        f.seconds * 1000
+      );
+
+    }
+
+    // 🔥 STRING COLOMBIA
+    if (
+      typeof f === "string"
+    ) {
+
+      const limpia =
+        f
+
+          .replace(
+            "p. m.",
+            "PM"
+          )
+
+          .replace(
+            "a. m.",
+            "AM"
+          )
+
+          .trim();
+
+      const partes =
+        limpia.split(",");
+
+      if (
+        partes.length < 2
+      ) {
+
+        return null;
+
+      }
+
+      const fechaPart =
+        partes[0].trim();
+
+      const horaPart =
+        partes[1].trim();
+
+      const [
+
+        dia,
+
+        mes,
+
+        anio
+
+      ] =
+        fechaPart.split("/");
+
+      const horaSplit =
+        horaPart.split(":");
+
+      let hora =
+        Number(
+          horaSplit[0]
+        );
+
+      const minutos =
+        Number(
+          horaSplit[1]
+        );
+
+      const segundos =
+        Number(
+          horaSplit[2]
+            .slice(0,2)
+        );
+
+      const ampm =
+        horaSplit[2]
+          .slice(2)
+          .trim();
+
+      if (
+        ampm === "PM" &&
+        hora !== 12
+      ) {
+
+        hora += 12;
+
+      }
+
+      if (
+        ampm === "AM" &&
+        hora === 12
+      ) {
+
+        hora = 0;
+
+      }
+
+      return new Date(
+
+        Number(anio),
+
+        Number(mes) - 1,
+
+        Number(dia),
+
+        hora,
+
+        minutos,
+
+        segundos
+
+      );
+    }
+
+    return null;
+
+  } catch {
+
+    return null;
+
+  }
+
+};
+
 export default function Dashboard() {
 
   const [ventas, setVentas] =
