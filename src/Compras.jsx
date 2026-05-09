@@ -39,7 +39,7 @@ export default function Compras() {
       tipo: "compra",
       producto: p.nombre,
       cantidad: Number(cantidad),
-      fecha: new Date().toLocaleString()
+      fecha: Date.now()
     });
 
     alert("Compra registrada");
