@@ -268,8 +268,6 @@ function Item({
 
           type="number"
 
-          autoFocus
-
           placeholder="Cantidad"
 
           className="input-cantidad"
