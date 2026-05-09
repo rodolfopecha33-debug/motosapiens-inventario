@@ -415,8 +415,11 @@ await crearMovimiento({
               Date.now(),
 
             fechaTexto:
-  new Date()
-    .toLocaleString(),
+
+              new Date()
+  .toLocaleString(
+    "es-CO"
+  ),
 
             usuario: user,
 
