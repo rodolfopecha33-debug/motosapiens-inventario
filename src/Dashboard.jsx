@@ -274,12 +274,8 @@ const cargarVentas = async () => {
     const fecha =
 
 
-      typeof v.fecha === "number"
-
-  ? new Date(v.fecha)
-
-  : new Date()
-    
+     const fecha =
+  parseFecha(v.fecha);
 
     const ahora =
       new Date();
