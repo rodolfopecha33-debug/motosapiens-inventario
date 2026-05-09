@@ -54,11 +54,7 @@ export const crearMovimiento =
           fecha:
             serverTimestamp(),
 
-          fechaTexto:
-            new Date()
-              .toLocaleString(
-                "es-CO"
-              )
+          
 
         }
 
