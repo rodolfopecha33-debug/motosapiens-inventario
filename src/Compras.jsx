@@ -283,19 +283,23 @@ function Item({
           }
         />
 
+
         <button
 
-          className="btn-comprar"
+  className="btn-comprar"
 
-          onClick={()=>
+  onClick={async ()=>{
 
-            comprar(
-              p,
-              cant
-            )
+    await comprar(
+      p,
+      cant
+    );
 
-          }
-        >
+    setCant("");
+
+  }}
+>
+        
 
           📦 Comprar
 
