@@ -455,9 +455,11 @@ const cargarVentas = async () => {
 
   ventasFiltradas.forEach((v) => {
 
-    const fecha =
-      new Date(v.fecha)
-        .toLocaleDateString();
+   const fecha =
+  parseFecha(v.fecha)
+    ?.toLocaleDateString(
+      "es-CO"
+    );
 
     mapaDias[fecha] =
 
