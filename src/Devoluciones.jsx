@@ -571,6 +571,8 @@ setFileKey(
 
       </button>
 
+
+      
       {/* HISTORIAL */}
 <div className="historial-box">
 
@@ -651,9 +653,7 @@ setFileKey(
 
 </div>
 
-    </div>
-
-  </div>
+     </div>
 
 );
 }
