@@ -578,8 +578,13 @@ export default function Devoluciones({ user }) {
     Array.isArray(historial)
 
     &&
-
+    
+    
+    
    historial
+  slice()
+  .reverse()
+    
   .filter(
 
     (d) =>
