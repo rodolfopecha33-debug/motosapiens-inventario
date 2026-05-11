@@ -630,18 +630,17 @@ setFileKey(
 
           {Array.isArray(d.imagenes) &&
 
-            d.imagenes.map((img, i) => (
+           d.imagenes.map((img, i) => (
 
-              <img
-                key={i}
-                src={img}
-                alt="garantia"
-                width="100"
-                className="img-garantia"
-              />
+  <img
+    key={i}
+    src={img}
+    alt="garantia"
+    width="100"
+    className="img-garantia"
+  />
 
-          ))}
-
+))}
         </div>
 
       </div>
