@@ -18,6 +18,10 @@ export default function SeguimientoGarantias() {
     setGarantias] =
       useState([]);
 
+  const [filtro,
+  setFiltro] =
+    useState("todos");
+
   // 🚀 CARGAR
   useEffect(() => {
 
