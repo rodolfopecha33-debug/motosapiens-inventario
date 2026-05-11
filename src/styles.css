@@ -1162,3 +1162,40 @@ body {
   background:#00e676;
 
 }
+
+
+.historial-item {
+
+  background: #111;
+
+  border: 1px solid #222;
+
+  border-radius: 14px;
+
+  padding: 15px;
+
+  margin-bottom: 15px;
+
+}
+
+.historial-imagenes {
+
+  display: flex;
+
+  gap: 10px;
+
+  margin-top: 10px;
+
+  flex-wrap: wrap;
+
+}
+
+.historial-imagenes img {
+
+  border-radius: 10px;
+
+  object-fit: cover;
+
+  border: 1px solid #333;
+
+}
