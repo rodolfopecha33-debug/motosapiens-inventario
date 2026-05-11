@@ -637,6 +637,19 @@ export default function Devoluciones({ user }) {
 
           <br />
 
+          <br />
+
+Fecha:
+{" "}
+
+{
+  d.fecha?.toDate
+    ? d.fecha
+        .toDate()
+        .toLocaleString()
+    : ""
+}
+
           <div className="historial-imagenes">
 
             {
