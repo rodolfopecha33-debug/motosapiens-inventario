@@ -196,6 +196,20 @@ export default function SeguimientoGarantias() {
 
               </p>
 
+              <p>
+
+  📅 {
+
+    g.fecha?.toDate
+      ? g.fecha
+          .toDate()
+          .toLocaleString()
+      : "-"
+
+  }
+
+</p>
+
               {/* DETALLE */}
               <p>
 
