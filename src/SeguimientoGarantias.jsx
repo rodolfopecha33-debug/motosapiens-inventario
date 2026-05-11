@@ -148,6 +148,78 @@ export default function SeguimientoGarantias() {
         className="
         devoluciones-title
       ">
+
+
+        <div
+  style={{
+
+    display: "flex",
+
+    gap: 10,
+
+    marginBottom: 20,
+
+    flexWrap: "wrap"
+
+  }}
+>
+
+  <button
+    className="btn-devolucion"
+    onClick={()=>
+      setFiltro("todos")
+    }
+  >
+    Todos
+  </button>
+
+  <button
+    className="btn-devolucion"
+    onClick={()=>
+      setFiltro("pendiente")
+    }
+  >
+    Pendientes
+  </button>
+
+  <button
+    className="btn-devolucion"
+    onClick={()=>
+      setFiltro("enviada")
+    }
+  >
+    Enviadas
+  </button>
+
+  <button
+    className="btn-devolucion"
+    onClick={()=>
+      setFiltro("aprobada")
+    }
+  >
+    Aprobadas
+  </button>
+
+  <button
+    className="btn-devolucion"
+    onClick={()=>
+      setFiltro("rechazada")
+    }
+  >
+    Rechazadas
+  </button>
+
+  <button
+    className="btn-devolucion"
+    onClick={()=>
+      setFiltro("entregada")
+    }
+  >
+    Entregadas
+  </button>
+
+</div>
+        
         🛡 Seguimiento Garantías
       </h1>
 
