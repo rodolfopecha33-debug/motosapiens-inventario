@@ -624,11 +624,10 @@ setFileKey(
 
         <br />
 
-        {/* 🔥 IMÁGENES */}
+       {/* 🔥 IMÁGENES */}
 <div className="historial-imagenes">
 
   {Array.isArray(d.imagenes) &&
-
     d.imagenes.map((img, i) => (
 
       <img
