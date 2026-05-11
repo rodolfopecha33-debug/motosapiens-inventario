@@ -572,19 +572,17 @@ setFileKey(
 
       </button>
 
-      <div className="historial-box">
+      {/* HISTORIAL */}
+<div className="historial-box">
 
   <h2>
     📋 Historial devoluciones
   </h2>
 
   {historial
-
     .slice()
-
     .reverse()
-
-    .map((d)=>(
+    .map((d) => (
 
       <div
         key={d.id}
@@ -598,40 +596,53 @@ setFileKey(
         <br />
 
         Cliente:
+        {" "}
         {d.cliente || "N/A"}
 
         <br />
 
         Motivo:
+        {" "}
         {d.motivo}
 
         <br />
 
         Detalle:
+        {" "}
         {d.detalle}
 
         <br />
 
         Estado:
+        {" "}
         {d.estado}
 
         <br />
 
         Usuario:
+        {" "}
         {d.usuario}
 
         <br />
 
-        {d.imagenes?.map((img,i)=>(
+        {/* 🔥 IMÁGENES */}
+        <div className="historial-imagenes">
 
-          <img
-            key={i}
-            src={img}
-            alt=""
-            width="100"
-          />
+          {Array.isArray(d.imagenes) &&
 
-        ))}
+            d.imagenes.map((img, i) => (
+
+              <img
+                key={i}
+                src={img}
+                alt="garantia"
+                width="100"
+                className="img-garantia"
+              />
+
+          ))}
+
+        </div>
 
       </div>
 
