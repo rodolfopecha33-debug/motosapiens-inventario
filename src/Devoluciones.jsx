@@ -596,19 +596,23 @@ Usuario:
 
         </button>
 
-          {/* HISTORIAL */}
+         
+         {/* HISTORIAL */}
 <div className="historial-box">
 
   <h2>
     📋 Historial devoluciones
   </h2>
 
-  {Array.isArray(historial) &&
+  {
 
-    historial
-      .slice()
-      .reverse()
-      .map((d) => (
+    Array.isArray(historial)
+
+    &&
+
+    historial.map((d) => {
+
+      return (
 
         <div
           key={d.id}
@@ -651,41 +655,38 @@ Usuario:
 
           <br />
 
-          Fecha:
-          {" "}
-
-          {d.fecha?.toDate
-            ? d.fecha
-                .toDate()
-                .toLocaleString()
-            : ""}
-
-          <br />
-
-          {/* IMÁGENES */}
           <div className="historial-imagenes">
 
-            {Array.isArray(d.imagenes) &&
+            {
+
+              Array.isArray(d.imagenes)
+
+              &&
 
               d.imagenes.map((img, i) => (
 
                 <img
                   key={i}
                   src={img}
-                  alt="garantia"
+                  alt=""
                   width="100"
-                  className="img-garantia"
                 />
 
-            ))}
+              ))
+
+            }
 
           </div>
 
         </div>
 
-    ))}
+      );
 
-</div>       
+    })
+
+  }
+
+</div>
       
       </div>
 
