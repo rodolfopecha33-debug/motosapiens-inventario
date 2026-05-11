@@ -22,14 +22,11 @@ import {
   ref,
   uploadBytes,
   getDownloadURL
-}
-from "firebase/storage";
+} from "firebase/storage";
 
 import {
   storage
-}
-from "./firebase";
-
+} from "./firebase";
 
 export default function Devoluciones({ user }) {
 
@@ -53,31 +50,29 @@ export default function Devoluciones({ user }) {
     setDetalle] =
       useState("");
 
-const [busqueda,
-  setBusqueda] =
-    useState("");
+  const [busqueda,
+    setBusqueda] =
+      useState("");
 
   const [cliente,
-  setCliente] =
-    useState("");
+    setCliente] =
+      useState("");
 
-const [telefono,
-  setTelefono] =
-    useState("");
+  const [telefono,
+    setTelefono] =
+      useState("");
 
   const [imagenes,
-  setImagenes] =
-    useState([]);
+    setImagenes] =
+      useState([]);
 
   const [fileKey,
-  setFileKey] =
-    useState(Date.now());
+    setFileKey] =
+      useState(Date.now());
 
   const [historial,
-  setHistorial] =
-    useState([]);
-  
-  
+    setHistorial] =
+      useState([]);
 
   // 🔥 CARGAR
   useEffect(() => {
@@ -87,6 +82,7 @@ const [telefono,
 
   }, []);
 
+  // 🔥 PRODUCTOS
   const cargarProductos =
     async () => {
 
@@ -115,40 +111,40 @@ const [telefono,
       });
 
       setProductos(datos);
+
     };
 
-        const cargarHistorial =
-  async () => {
+  // 🔥 HISTORIAL
+  const cargarHistorial =
+    async () => {
 
-    const snap =
-      await getDocs(
+      const snap =
+        await getDocs(
 
-        collection(
-          db,
-          "devoluciones"
-        )
+          collection(
+            db,
+            "devoluciones"
+          )
 
-      );
+        );
 
-    const datos = [];
+      const datos = [];
 
-    snap.forEach((d) => {
+      snap.forEach((d) => {
 
-      datos.push({
+        datos.push({
 
-        id: d.id,
+          id: d.id,
 
-        ...d.data()
+          ...d.data()
+
+        });
 
       });
 
-    });
+      setHistorial(datos);
 
-    setHistorial(datos);
-
-};
-
-  
+    };
 
   // 🚀 GUARDAR
   const guardar =
@@ -173,7 +169,7 @@ const [telefono,
           return;
         }
 
-        // 🔥 GARANTIA
+        // 🔥 REINTEGRA STOCK
         const reintegraStock =
 
           motivo ===
@@ -184,13 +180,12 @@ const [telefono,
             producto.stock || 0
           );
 
-        // ✅ DEVOLUCIÓN NORMAL
+        // ✅ ACTUALIZAR STOCK
         if (reintegraStock) {
 
           nuevoStock +=
             Number(cantidad);
 
-          // 🔥 UPDATE STOCK
           await updateDoc(
 
             doc(
@@ -209,33 +204,32 @@ const [telefono,
           );
         }
 
+        // 🔥 SUBIR IMÁGENES
         const urls = [];
 
-for (const img of imagenes) {
+        for (const img of imagenes) {
 
-  const ruta = ref(
+          const ruta = ref(
 
-    storage,
+            storage,
 
-    `garantias/${Date.now()}-${img.name}`
+            `garantias/${Date.now()}-${img.name}`
 
-  );
+          );
 
-  await uploadBytes(
-    ruta,
-    img
-  );
+          await uploadBytes(
+            ruta,
+            img
+          );
 
-  const url =
-    await getDownloadURL(
-      ruta
-    );
+          const url =
+            await getDownloadURL(
+              ruta
+            );
 
-  urls.push(url);
+          urls.push(url);
 
-}
-        
-        
+        }
 
         // 🔥 GUARDAR DEVOLUCIÓN
         await addDoc(
@@ -259,18 +253,21 @@ for (const img of imagenes) {
             motivo,
 
             detalle,
+
             cliente,
+
             telefono,
 
-            estado: "pendiente",
-            
+            estado:
+              "pendiente",
 
             usuario:
               user || "Sistema",
 
             reintegraStock,
 
-            imagenes: urls,
+            imagenes:
+              urls,
 
             fecha:
               serverTimestamp()
@@ -313,29 +310,25 @@ for (const img of imagenes) {
         );
 
         await cargarHistorial();
-        
 
-
+        // 🔥 LIMPIAR
         setProductoId("");
 
-setCantidad(1);
+        setCantidad(1);
 
-setDetalle("");
+        setDetalle("");
 
-setCliente("");
+        setCliente("");
 
-setTelefono("");
+        setTelefono("");
 
-setBusqueda("");
+        setBusqueda("");
 
-setImagenes([]);
+        setImagenes([]);
 
-setFileKey(
-  Date.now()
-);
-
-
-        
+        setFileKey(
+          Date.now()
+        );
 
       } catch (error) {
 
@@ -348,312 +341,309 @@ setFileKey(
       }
     };
 
- return (
+  return (
 
-  <div className="devoluciones-container">
+    <div className="devoluciones-container">
 
-    <h1 className="devoluciones-title">
-      🔄 Devoluciones PRO
-    </h1>
+      <h1 className="devoluciones-title">
+        🔄 Devoluciones PRO
+      </h1>
 
-    <div className="devolucion-card">
+      <div className="devolucion-card">
 
-      {/* BUSQUEDA */}
-      <input
-        className="busqueda-pro"
-        placeholder="Buscar producto..."
-        value={busqueda}
-        onChange={(e)=>
-          setBusqueda(
-            e.target.value
-          )
-        }
-      />
+        {/* BUSQUEDA */}
+        <input
+          className="busqueda-pro"
+          placeholder="Buscar producto..."
+          value={busqueda}
+          onChange={(e) =>
+            setBusqueda(
+              e.target.value
+            )
+          }
+        />
 
-      {/* RESULTADOS */}
-      <div className="resultados-productos">
+        {/* RESULTADOS */}
+        <div className="resultados-productos">
 
-        {productos
+          {productos
 
-          .filter((p)=>
+            .filter((p) =>
 
-            p.nombre
-              ?.toLowerCase()
-              .includes(
-                busqueda.toLowerCase()
-              )
-
-          )
-
-          .slice(0,20)
-
-          .map((p)=>(
-
-            <div
-
-              key={p.id}
-
-              className="producto-dev"
-
-              onClick={()=>
-                setProductoId(
-                  p.id
+              p.nombre
+                ?.toLowerCase()
+                .includes(
+                  busqueda.toLowerCase()
                 )
-              }
-            >
 
-              <div>
+            )
 
-                <strong>
-                  {p.nombre}
-                </strong>
+            .slice(0, 20)
 
-                <br />
+            .map((p) => (
 
-                <small>
-                  Ref:
-                  {p.codigo || "N/A"}
-                </small>
+              <div
+
+                key={p.id}
+
+                className="producto-dev"
+
+                onClick={() =>
+                  setProductoId(
+                    p.id
+                  )
+                }
+              >
+
+                <div>
+
+                  <strong>
+                    {p.nombre}
+                  </strong>
+
+                  <br />
+
+                  <small>
+                    Ref:
+                    {p.codigo || "N/A"}
+                  </small>
+
+                </div>
+
+                <span className="badge-stock">
+
+                  Stock:
+                  {p.stock}
+
+                </span>
 
               </div>
 
-              <span className="badge-stock">
-
-                Stock:
-                {p.stock}
-
-              </span>
-
-            </div>
-
-        ))}
-
-      </div>
-
-      {/* PRODUCTO SELECCIONADO */}
-      {productoId && (
-
-        <div className="producto-selected">
-
-          <h3>
-            Producto seleccionado
-          </h3>
-
-          <p>
-
-            {
-
-              productos.find(
-                (p)=>
-                  p.id === productoId
-              )?.nombre
-
-            }
-
-          </p>
+          ))}
 
         </div>
 
-      )}
+        {/* PRODUCTO */}
+        {productoId && (
 
-      {/* GRID */}
-      <div className="devolucion-grid">
+          <div className="producto-selected">
 
-        {/* CANTIDAD */}
-        <input
-          type="number"
-          className="devolucion-input"
-          placeholder="Cantidad"
-          value={cantidad}
-          onChange={(e)=>
+            <h3>
+              Producto seleccionado
+            </h3>
 
-            setCantidad(
+            <p>
+
+              {
+
+                productos.find(
+                  (p) =>
+                    p.id === productoId
+                )?.nombre
+
+              }
+
+            </p>
+
+          </div>
+
+        )}
+
+        {/* GRID */}
+        <div className="devolucion-grid">
+
+          <input
+            type="number"
+            className="devolucion-input"
+            placeholder="Cantidad"
+            value={cantidad}
+            onChange={(e) =>
+
+              setCantidad(
+                e.target.value
+              )
+
+            }
+          />
+
+          <input
+            className="devolucion-input"
+            placeholder="Cliente"
+            value={cliente}
+            onChange={(e) =>
+
+              setCliente(
+                e.target.value
+              )
+
+            }
+          />
+
+          <input
+            className="devolucion-input"
+            placeholder="Teléfono"
+            value={telefono}
+            onChange={(e) =>
+
+              setTelefono(
+                e.target.value
+              )
+
+            }
+          />
+
+          {/* MOTIVO */}
+          <select
+            className="devolucion-select"
+            value={motivo}
+            onChange={(e) =>
+
+              setMotivo(
+                e.target.value
+              )
+
+            }
+          >
+
+            <option value="garantia">
+              Garantía
+            </option>
+
+            <option value="insatisfaccion">
+              Insatisfacción Cliente
+            </option>
+
+          </select>
+
+        </div>
+
+        {/* DETALLE */}
+        <textarea
+          className="devolucion-textarea"
+          placeholder="Describe el motivo..."
+          value={detalle}
+          onChange={(e) =>
+
+            setDetalle(
               e.target.value
             )
 
           }
         />
 
+        {/* IMÁGENES */}
         <input
-  className="devolucion-input"
-  placeholder="Cliente"
-  value={cliente}
-  onChange={(e)=>
 
-    setCliente(
-      e.target.value
-    )
+          key={fileKey}
 
-  }
-/>
+          type="file"
 
-<input
-  className="devolucion-input"
-  placeholder="Teléfono"
-  value={telefono}
-  onChange={(e)=>
+          multiple
 
-    setTelefono(
-      e.target.value
-    )
+          accept="image/*"
 
-  }
-/>
+          onChange={(e) =>
 
-        {/* MOTIVO */}
-        <select
-          className="devolucion-select"
-          value={motivo}
-          onChange={(e)=>
+            setImagenes(
 
-            setMotivo(
-              e.target.value
+              [...e.target.files]
+
             )
 
           }
+
+        />
+
+        {/* BOTÓN */}
+        <button
+          className="btn-devolucion"
+          onClick={guardar}
         >
 
-          <option value="garantia">
-            Garantía
-          </option>
+          Guardar devolución
 
-          <option value="insatisfaccion">
-            Insatisfacción Cliente
-          </option>
+        </button>
 
-        </select>
+        {/* HISTORIAL */}
+        <div className="historial-box">
 
-      </div>
+          <h2>
+            📋 Historial devoluciones
+          </h2>
 
-      {/* DETALLE */}
-      <textarea
-        className="devolucion-textarea"
-        placeholder="Describe el motivo..."
-        value={detalle}
-        onChange={(e)=>
+          {historial
+            .slice()
+            .reverse()
+            .map((d) => (
 
-          setDetalle(
-            e.target.value
-          )
+              <div
+                key={d.id}
+                className="historial-item"
+              >
 
-        }
-      />
+                <strong>
+                  {d.producto}
+                </strong>
 
-    <input
+                <br />
 
-  key={fileKey}
+                Cliente:
+                {" "}
+                {d.cliente || "N/A"}
 
-  type="file"
+                <br />
 
-  multiple
+                Motivo:
+                {" "}
+                {d.motivo}
 
-  accept="image/*"
+                <br />
 
-  onChange={(e)=>
+                Detalle:
+                {" "}
+                {d.detalle}
 
-    setImagenes(
+                <br />
 
-      [...e.target.files]
+                Estado:
+                {" "}
+                {d.estado}
 
-    )
+                <br />
 
-  }
+                Usuario:
+                {" "}
+                {d.usuario}
 
-/>
+                <br />
 
-      {/* BTN */}
-      <button
-        className="btn-devolucion"
-        onClick={guardar}
-      >
+                {/* 🔥 IMÁGENES */}
+                <div className="historial-imagenes">
 
-        Guardar devolución
+                  {Array.isArray(d.imagenes) &&
+                    d.imagenes.map((img, i) => (
 
-      </button>
+                      <img
+                        key={i}
+                        src={img}
+                        alt="garantia"
+                        width="100"
+                        className="img-garantia"
+                      />
 
+                  ))}
 
-      
-      {/* HISTORIAL */}
-<div className="historial-box">
+                </div>
 
-  <h2>
-    📋 Historial devoluciones
-  </h2>
+              </div>
 
-  {historial
-    .slice()
-    .reverse()
-    .map((d) => (
+          ))}
 
-      <div
-        key={d.id}
-        className="historial-item"
-      >
-
-        <strong>
-          {d.producto}
-        </strong>
-
-        <br />
-
-        Cliente:
-        {" "}
-        {d.cliente || "N/A"}
-
-        <br />
-
-        Motivo:
-        {" "}
-        {d.motivo}
-
-        <br />
-
-        Detalle:
-        {" "}
-        {d.detalle}
-
-        <br />
-
-        Estado:
-        {" "}
-        {d.estado}
-
-        <br />
-
-        Usuario:
-        {" "}
-        {d.usuario}
-
-        <br />
-
-       {/* 🔥 IMÁGENES */}
-<div className="historial-imagenes">
-
-  {Array.isArray(d.imagenes) &&
-    d.imagenes.map((img, i) => (
-
-      <img
-        key={i}
-        src={img}
-        alt="garantia"
-        width="100"
-        className="img-garantia"
-      />
-
-  ))}
-
-         
-        
-            
         </div>
 
       </div>
 
-  ))}
-
-</div>
-</div>
     </div>
 
-);
+  );
 }
