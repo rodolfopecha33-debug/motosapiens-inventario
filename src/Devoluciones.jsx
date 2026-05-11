@@ -397,9 +397,41 @@ export default function Devoluciones({ user }) {
 
                 <div>
 
-                  <strong>
-                    {p.nombre}
-                  </strong>
+
+                    <strong>
+  {String(d.producto || "")}
+</strong>
+
+<br />
+
+Cliente:
+{" "}
+{String(d.cliente || "")}
+
+<br />
+
+Motivo:
+{" "}
+{String(d.motivo || "")}
+
+<br />
+
+Detalle:
+{" "}
+{String(d.detalle || "")}
+
+<br />
+
+Estado:
+{" "}
+{String(d.estado || "")}
+
+<br />
+
+Usuario:
+{" "}
+{String(d.usuario || "")}
+                  
 
                   <br />
 
