@@ -627,9 +627,13 @@ export default function Devoluciones({ user }) {
 
           <br />
 
-          Usuario:
-          {" "}
-          {String(d.usuario || "")}
+         Usuario:
+{" "}
+{
+  typeof d.usuario === "string"
+    ? d.usuario
+    : "Sistema"
+}
 
           <br />
 
