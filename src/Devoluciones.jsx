@@ -579,7 +579,16 @@ export default function Devoluciones({ user }) {
 
     &&
 
-    historial.map((d) => {
+   historial
+  .filter(
+
+    (d) =>
+
+      d.motivo ===
+      "insatisfaccion"
+
+  )
+  .map((d) => {
 
       return (
 
