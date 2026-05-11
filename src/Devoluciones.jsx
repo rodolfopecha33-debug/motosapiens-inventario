@@ -118,6 +118,39 @@ const [telefono,
       setProductos(datos);
     };
 
+        const cargarHistorial =
+  async () => {
+
+    const snap =
+      await getDocs(
+
+        collection(
+          db,
+          "devoluciones"
+        )
+
+      );
+
+    const datos = [];
+
+    snap.forEach((d) => {
+
+      datos.push({
+
+        id: d.id,
+
+        ...d.data()
+
+      });
+
+    });
+
+    setHistorial(datos);
+
+};
+
+  
+
   // 🚀 GUARDAR
   const guardar =
     async () => {
