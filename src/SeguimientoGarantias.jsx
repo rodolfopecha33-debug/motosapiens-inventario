@@ -392,6 +392,27 @@ export default function SeguimientoGarantias() {
 
               </div>
 
+
+              <p>
+
+  🕒 Último cambio:
+  {" "}
+
+  {
+
+    g.fechaEstado?.toDate
+
+      ? g.fechaEstado
+          .toDate()
+          .toLocaleString()
+
+      : "-"
+
+  }
+
+</p>
+              
+
               {/* BOTONES */}
               <div
                 style={{
