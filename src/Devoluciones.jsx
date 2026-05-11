@@ -625,26 +625,24 @@ setFileKey(
         <br />
 
         {/* 🔥 IMÁGENES */}
-        <div className="historial-imagenes">
+<div className="historial-imagenes">
 
-          {Array.isArray(d.imagenes) &&
+  {Array.isArray(d.imagenes) &&
 
+    d.imagenes.map((img, i) => (
 
-            {Array.isArray(d.imagenes) &&
+      <img
+        key={i}
+        src={img}
+        alt="garantia"
+        width="100"
+        className="img-garantia"
+      />
 
-  d.imagenes.map((img, i) => (
+  ))}
 
-    <img
-      key={i}
-      src={img}
-      alt="garantia"
-      width="100"
-      className="img-garantia"
-    />
-
-  ))
-
-}
+</div>
+         
         
             
         </div>
