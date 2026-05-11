@@ -634,10 +634,13 @@ export default function Devoluciones({ user }) {
 
          Usuario:
 {" "}
+
 {
-  typeof d.usuario === "string"
-    ? d.usuario
-    : "Sistema"
+  typeof d.usuario === "object"
+
+    ? d.usuario.nombre
+
+    : d.usuario || "Sistema"
 }
 
           <br />
