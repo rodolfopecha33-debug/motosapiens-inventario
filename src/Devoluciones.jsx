@@ -582,7 +582,7 @@ export default function Devoluciones({ user }) {
     
     
    historial
-  slice()
+  .slice()
   .reverse()
     
   .filter(
