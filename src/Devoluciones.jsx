@@ -596,83 +596,97 @@ Usuario:
 
         </button>
 
-        {/* HISTORIAL */}
-        <div className="historial-box">
+          {/* HISTORIAL */}
+<div className="historial-box">
 
-          <h2>
-            📋 Historial devoluciones
-          </h2>
+  <h2>
+    📋 Historial devoluciones
+  </h2>
 
-          {historial
-            .slice()
-            .reverse()
-            .map((d) => (
+  {Array.isArray(historial) &&
 
-              <div
-                key={d.id}
-                className="historial-item"
-              >
+    historial
+      .slice()
+      .reverse()
+      .map((d) => (
 
-                <strong>
-                  {d.producto}
-                </strong>
+        <div
+          key={d.id}
+          className="historial-item"
+        >
 
-                <br />
+          <strong>
+            {String(d.producto || "")}
+          </strong>
 
-                Cliente:
-                {" "}
-                {d.cliente || "N/A"}
+          <br />
 
-                <br />
+          Cliente:
+          {" "}
+          {String(d.cliente || "")}
 
-                Motivo:
-                {" "}
-                {d.motivo}
+          <br />
 
-                <br />
+          Motivo:
+          {" "}
+          {String(d.motivo || "")}
 
-                Detalle:
-                {" "}
-                {d.detalle}
+          <br />
 
-                <br />
+          Detalle:
+          {" "}
+          {String(d.detalle || "")}
 
-                Estado:
-                {" "}
-                {d.estado}
+          <br />
 
-                <br />
+          Estado:
+          {" "}
+          {String(d.estado || "")}
 
-                Usuario:
-                {" "}
-                {d.usuario}
+          <br />
 
-                <br />
+          Usuario:
+          {" "}
+          {String(d.usuario || "")}
 
-                {/* 🔥 IMÁGENES */}
-                <div className="historial-imagenes">
+          <br />
 
-                  {Array.isArray(d.imagenes) &&
-                    d.imagenes.map((img, i) => (
+          Fecha:
+          {" "}
 
-                      <img
-                        key={i}
-                        src={img}
-                        alt="garantia"
-                        width="100"
-                        className="img-garantia"
-                      />
+          {d.fecha?.toDate
+            ? d.fecha
+                .toDate()
+                .toLocaleString()
+            : ""}
 
-                  ))}
+          <br />
 
-                </div>
+          {/* IMÁGENES */}
+          <div className="historial-imagenes">
 
-              </div>
+            {Array.isArray(d.imagenes) &&
 
-          ))}
+              d.imagenes.map((img, i) => (
+
+                <img
+                  key={i}
+                  src={img}
+                  alt="garantia"
+                  width="100"
+                  className="img-garantia"
+                />
+
+            ))}
+
+          </div>
 
         </div>
 
+    ))}
+
+</div>       
+      
       </div>
 
     </div>
