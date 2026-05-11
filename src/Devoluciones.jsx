@@ -84,6 +84,7 @@ const [telefono,
   useEffect(() => {
 
     cargarProductos();
+    cargarHistorial();
 
   }, []);
 
