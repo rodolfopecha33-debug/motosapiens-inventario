@@ -96,7 +96,10 @@ export default function SeguimientoGarantias() {
           ),
 
           {
-            estado
+            estado,
+
+          fechaEstado:
+          new Date()
           }
 
         );
