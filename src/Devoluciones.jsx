@@ -73,6 +73,10 @@ const [telefono,
   const [fileKey,
   setFileKey] =
     useState(Date.now());
+
+  const [historial,
+  setHistorial] =
+    useState([]);
   
   
 
