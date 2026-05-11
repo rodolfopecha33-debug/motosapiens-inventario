@@ -313,6 +313,9 @@ for (const img of imagenes) {
           "Devolución registrada"
         );
 
+        await cargarHistorial();
+        
+
 
         setProductoId("");
 
@@ -568,6 +571,73 @@ setFileKey(
         Guardar devolución
 
       </button>
+
+      <div className="historial-box">
+
+  <h2>
+    📋 Historial devoluciones
+  </h2>
+
+  {historial
+
+    .slice()
+
+    .reverse()
+
+    .map((d)=>(
+
+      <div
+        key={d.id}
+        className="historial-item"
+      >
+
+        <strong>
+          {d.producto}
+        </strong>
+
+        <br />
+
+        Cliente:
+        {d.cliente || "N/A"}
+
+        <br />
+
+        Motivo:
+        {d.motivo}
+
+        <br />
+
+        Detalle:
+        {d.detalle}
+
+        <br />
+
+        Estado:
+        {d.estado}
+
+        <br />
+
+        Usuario:
+        {d.usuario}
+
+        <br />
+
+        {d.imagenes?.map((img,i)=>(
+
+          <img
+            key={i}
+            src={img}
+            alt=""
+            width="100"
+          />
+
+        ))}
+
+      </div>
+
+  ))}
+
+</div>
 
     </div>
 
