@@ -156,7 +156,21 @@ export default function SeguimientoGarantias() {
         resultados-productos
       ">
 
-        {garantias.map((g) => (
+       {
+
+  garantias
+
+    .filter((g)=>
+
+      filtro === "todos"
+
+        ? true
+
+        : g.estado === filtro
+
+    )
+
+    .map((g) => (
 
           <div
 
