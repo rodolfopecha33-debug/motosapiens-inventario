@@ -167,6 +167,86 @@ const [busquedaCambio,
   const guardar =
     async () => {
 
+      if (reintegraStock) {
+
+  nuevoStock +=
+    Number(cantidad);
+
+  await updateDoc(
+
+    doc(
+      db,
+      "inventario",
+      producto.id
+    ),
+
+    {
+
+      stock:
+        nuevoStock
+
+    }
+
+  );
+}
+
+
+
+      // 🔥 DESCONTAR
+// PRODUCTO NUEVO
+
+if (
+
+  tipoResolucion ===
+  "cambio"
+
+  &&
+
+  productoCambio
+
+) {
+
+  const nuevoProducto =
+
+    productos.find(
+
+      (p)=>
+
+        p.id ===
+        productoCambio
+
+    );
+
+  if (nuevoProducto) {
+
+    const nuevoStockCambio =
+
+      Number(
+        nuevoProducto.stock || 0
+      ) - Number(cantidad);
+
+    await updateDoc(
+
+      doc(
+        db,
+        "inventario",
+        nuevoProducto.id
+      ),
+
+      {
+
+        stock:
+          nuevoStockCambio
+
+      }
+
+    );
+
+  }
+
+}
+      
+
       try {
 
         const producto =
