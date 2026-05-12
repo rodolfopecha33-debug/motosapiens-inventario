@@ -163,283 +163,300 @@ const [busquedaCambio,
 
     };
 
-  // 🚀 GUARDAR
-  const guardar =
-    async () => {
 
+      // 🚀 GUARDAR
+const guardar =
+  async () => {
+
+    try {
+
+      const producto =
+        productos.find(
+
+          (p) =>
+            p.id === productoId
+
+        );
+
+      if (!producto) {
+
+        alert(
+          "Producto inválido"
+        );
+
+        return;
+      }
+
+      // 🔥 REINTEGRA STOCK
+      const reintegraStock =
+
+        motivo ===
+        "insatisfaccion";
+
+      let nuevoStock =
+        Number(
+          producto.stock || 0
+        );
+
+      // ✅ DEVOLUCIÓN
+      // SUMAR STOCK
       if (reintegraStock) {
 
-  nuevoStock +=
-    Number(cantidad);
+        nuevoStock +=
+          Number(cantidad);
 
-  await updateDoc(
+        await updateDoc(
 
-    doc(
-      db,
-      "inventario",
-      producto.id
-    ),
+          doc(
+            db,
+            "inventario",
+            producto.id
+          ),
 
-    {
+          {
 
-      stock:
-        nuevoStock
+            stock:
+              nuevoStock
 
-    }
+          }
 
-  );
-}
-
-
-
-      // 🔥 DESCONTAR
-// PRODUCTO NUEVO
-
-if (
-
-  tipoResolucion ===
-  "cambio"
-
-  &&
-
-  productoCambio
-
-) {
-
-  const nuevoProducto =
-
-    productos.find(
-
-      (p)=>
-
-        p.id ===
-        productoCambio
-
-    );
-
-  if (nuevoProducto) {
-
-    const nuevoStockCambio =
-
-      Number(
-        nuevoProducto.stock || 0
-      ) - Number(cantidad);
-
-    await updateDoc(
-
-      doc(
-        db,
-        "inventario",
-        nuevoProducto.id
-      ),
-
-      {
-
-        stock:
-          nuevoStockCambio
+        );
 
       }
 
-    );
+      // 🔥 CAMBIO PRODUCTO
+      // DESCONTAR STOCK
+      let productoCambioNombre =
+        "";
 
-  }
+      if (
 
-}
-      
+        tipoResolucion ===
+        "cambio"
 
-      try {
+        &&
 
-        const producto =
+        productoCambio
+
+      ) {
+
+        const nuevoProducto =
+
           productos.find(
 
-            (p) =>
-              p.id === productoId
+            (p)=>
+
+              p.id ===
+              productoCambio
 
           );
 
-        if (!producto) {
+        if (nuevoProducto) {
 
-          alert(
-            "Producto inválido"
-          );
+          productoCambioNombre =
+            nuevoProducto.nombre;
 
-          return;
-        }
+          const nuevoStockCambio =
 
-        // 🔥 REINTEGRA STOCK
-        const reintegraStock =
-
-          motivo ===
-          "insatisfaccion";
-
-        let nuevoStock =
-          Number(
-            producto.stock || 0
-          );
-
-        // ✅ ACTUALIZAR STOCK
-        if (reintegraStock) {
-
-          nuevoStock +=
-            Number(cantidad);
+            Number(
+              nuevoProducto.stock || 0
+            ) - Number(cantidad);
 
           await updateDoc(
 
             doc(
               db,
               "inventario",
-              producto.id
+              nuevoProducto.id
             ),
 
             {
 
               stock:
-                nuevoStock
+                nuevoStockCambio
 
             }
 
           );
-        }
 
-        // 🔥 SUBIR IMÁGENES
-        const urls = [];
-
-        for (const img of imagenes) {
-
-          const ruta = ref(
-
-            storage,
-
-            `garantias/${Date.now()}-${img.name}`
-
-          );
-
-          await uploadBytes(
-            ruta,
-            img
-          );
-
-          const url =
-            await getDownloadURL(
-              ruta
-            );
-
-          urls.push(url);
-
-        }
-
-        // 🔥 GUARDAR DEVOLUCIÓN
-        await addDoc(
-
-          collection(
-            db,
-            "devoluciones"
-          ),
-
-          {
-
-            productoId:
-              producto.id,
+          // 🔥 KARDEX CAMBIO
+          await crearMovimiento({
 
             producto:
-              producto.nombre,
+              nuevoProducto.nombre,
+
+            productoId:
+              nuevoProducto.id,
+
+            tipo:
+              "CAMBIO_PRODUCTO",
 
             cantidad:
               Number(cantidad),
 
-            motivo,
-
-            detalle,
-
-            tipoResolucion,
-
-            cliente,
-
-            telefono,
-
-            estado:
-              "pendiente",
+            stockFinal:
+              nuevoStockCambio,
 
             usuario:
-              user || "Sistema",
+              user || "Sistema"
 
-            reintegraStock,
+          });
 
-            imagenes:
-              urls,
+        }
 
-            
-            fecha:
-              serverTimestamp()
+      }
 
-          }
+      // 🔥 SUBIR IMÁGENES
+      const urls = [];
+
+      for (const img of imagenes) {
+
+        const ruta = ref(
+
+          storage,
+
+          `garantias/${Date.now()}-${img.name}`
 
         );
 
-        // 🔥 KARDEX
-        await crearMovimiento({
+        await uploadBytes(
+          ruta,
+          img
+        );
 
-          producto:
-            producto.nombre,
+        const url =
+          await getDownloadURL(
+            ruta
+          );
+
+        urls.push(url);
+
+      }
+
+      // 🔥 GUARDAR DEVOLUCIÓN
+      await addDoc(
+
+        collection(
+          db,
+          "devoluciones"
+        ),
+
+        {
 
           productoId:
             producto.id,
 
-          tipo:
-
-            motivo ===
-            "garantia"
-
-              ? "GARANTIA"
-
-              : "DEVOLUCION",
+          producto:
+            producto.nombre,
 
           cantidad:
             Number(cantidad),
 
-          stockFinal:
-            nuevoStock,
+          motivo,
+
+          detalle,
+
+          tipoResolucion,
+
+          cliente,
+
+          telefono,
+
+          estado:
+            "pendiente",
 
           usuario:
-            user || "Sistema"
+            user || "Sistema",
 
-        });
+          reintegraStock,
 
-        alert(
-          "Devolución registrada"
-        );
+          imagenes:
+            urls,
 
-        await cargarHistorial();
+          productoCambio,
 
-        // 🔥 LIMPIAR
-        setProductoId("");
+          productoCambioNombre,
 
-        setCantidad(1);
+          fecha:
+            serverTimestamp()
 
-        setDetalle("");
+        }
 
-        setCliente("");
+      );
 
-        setTelefono("");
+      // 🔥 KARDEX DEVOLUCIÓN
+      await crearMovimiento({
 
-        setBusqueda("");
+        producto:
+          producto.nombre,
 
-        setImagenes([]);
+        productoId:
+          producto.id,
 
-        setFileKey(
-          Date.now()
-        );
+        tipo:
 
-      } catch (error) {
+          motivo ===
+          "garantia"
 
-        console.log(error);
+            ? "GARANTIA"
 
-        alert(
-          "Error guardando devolución"
-        );
+            : "DEVOLUCION",
 
-      }
-    };
+        cantidad:
+          Number(cantidad),
+
+        stockFinal:
+          nuevoStock,
+
+        usuario:
+          user || "Sistema"
+
+      });
+
+      alert(
+        "Devolución registrada"
+      );
+
+      await cargarHistorial();
+
+      // 🔥 LIMPIAR
+      setProductoId("");
+
+      setProductoCambio("");
+
+      setBusquedaCambio("");
+
+      setCantidad(1);
+
+      setDetalle("");
+
+      setCliente("");
+
+      setTelefono("");
+
+      setBusqueda("");
+
+      setImagenes([]);
+
+      setTipoResolucion("");
+
+      setFileKey(
+        Date.now()
+      );
+
+    } catch (error) {
+
+      console.log(error);
+
+      alert(
+        "Error guardando devolución"
+      );
+
+    }
+
+  };
+
+  
 
   return (
 
