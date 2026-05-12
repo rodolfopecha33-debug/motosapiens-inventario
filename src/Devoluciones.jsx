@@ -459,50 +459,52 @@ export default function Devoluciones({ user }) {
 
         )}
 
-        {/* GRID */}
-        <div className="devolucion-grid">
+       {/* GRID */}
+<div className="devolucion-grid">
 
-          <input
-            type="number"
-            className="devolucion-input"
-            placeholder="Cantidad"
-            value={cantidad}
-            onChange={(e) =>
+  <input
+    type="number"
+    className="devolucion-input"
+    placeholder="Cantidad"
+    value={cantidad}
+    onChange={(e)=>
 
-              setCantidad(
-                e.target.value
-              )
+      setCantidad(
+        e.target.value
+      )
 
-            }
-          />
+    }
+  />
 
-          <input
-            className="devolucion-input"
-            placeholder="Cliente"
-            value={cliente}
-            onChange={(e) =>
+  <input
+    className="devolucion-input"
+    placeholder="Cliente"
+    value={cliente}
+    onChange={(e)=>
 
-              setCliente(
-                e.target.value
-              )
+      setCliente(
+        e.target.value
+      )
 
-            }
-          />
+    }
+  />
 
-          <input
-            className="devolucion-input"
-            placeholder="Teléfono"
-            value={telefono}
-            onChange={(e) =>
+  <input
+    className="devolucion-input"
+    placeholder="Teléfono"
+    value={telefono}
+    onChange={(e)=>
 
-              setTelefono(
-                e.target.value
-              )
+      setTelefono(
+        e.target.value
+      )
 
-            }
-          />
+    }
+  />
 
-         {/* MOTIVO */}
+</div>
+
+{/* MOTIVO */}
 <select
   className="devolucion-select"
   value={motivo}
@@ -524,6 +526,96 @@ export default function Devoluciones({ user }) {
   </option>
 
 </select>
+
+{/* 🔥 RESOLUCIÓN VISUAL */}
+{
+
+  motivo ===
+  "insatisfaccion"
+
+  &&
+
+  <div
+    className="resolucion-box"
+  >
+
+    {/* CAMBIO */}
+    <div
+
+      className={
+
+        tipoResolucion ===
+        "cambio"
+
+          ? "res-card active"
+
+          : "res-card"
+
+      }
+
+      onClick={()=>
+
+        setTipoResolucion(
+          "cambio"
+        )
+
+      }
+    >
+
+      <div
+        style={{
+          fontSize: 35
+        }}
+      >
+        🔄
+      </div>
+
+      <h3>
+        Cambio producto
+      </h3>
+
+    </div>
+
+    {/* DINERO */}
+    <div
+
+      className={
+
+        tipoResolucion ===
+        "dinero"
+
+          ? "res-card active red"
+
+          : "res-card red"
+
+      }
+
+      onClick={()=>
+
+        setTipoResolucion(
+          "dinero"
+        )
+
+      }
+    >
+
+      <div
+        style={{
+          fontSize: 35
+        }}
+      >
+        💵
+      </div>
+
+      <h3>
+        Devolución dinero
+      </h3>
+
+    </div>
+
+  </div>
+
+}
 
             {
 
