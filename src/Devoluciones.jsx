@@ -782,11 +782,22 @@ const guardar =
 
               
 
-         <div
-  className="
-  resultados-productos
-  "
->
+        {
+
+  tipoResolucion ===
+  "cambio"
+
+  &&
+
+  busquedaCambio
+
+  &&
+
+  <div
+    className="
+    resultados-productos
+    "
+  >
 
   {
 
