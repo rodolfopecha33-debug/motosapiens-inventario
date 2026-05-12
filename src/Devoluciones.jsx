@@ -49,9 +49,7 @@ export default function Devoluciones({ user }) {
 
   const [tipoResolucion,
   setTipoResolucion] =
-    useState(
-      "cambio"
-    );
+    useState("");
   
 
   const [detalle,
