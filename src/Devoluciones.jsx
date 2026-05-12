@@ -738,9 +738,27 @@ export default function Devoluciones({ user }) {
 
           
 
-Resolución:
-{" "}
-{d.tipoResolucion}
+<p>
+
+  🔄 Resolución:
+  {" "}
+
+  <strong>
+
+    {
+
+      d.tipoResolucion ===
+      "cambio"
+
+        ? "Cambio producto"
+
+        : "Devolución dinero"
+
+    }
+
+  </strong>
+
+</p>
 
             <br />
 
