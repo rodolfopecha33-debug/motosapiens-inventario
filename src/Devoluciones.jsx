@@ -628,6 +628,47 @@ const [busquedaCambio,
 
 }
 
+
+        {
+
+  tipoResolucion ===
+  "cambio"
+
+  &&
+
+  <div
+    className="
+    cambio-box
+    "
+  >
+
+    <h3>
+      🔄 Producto reemplazo
+    </h3>
+
+    <input
+      className="
+      busqueda-pro
+      "
+      placeholder="
+      Buscar producto nuevo...
+      "
+      value={
+        busquedaCambio
+      }
+      onChange={(e)=>
+
+        setBusquedaCambio(
+          e.target.value
+        )
+
+      }
+    />
+
+  </div>
+
+}
+
               
 
          
