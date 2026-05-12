@@ -333,6 +333,16 @@ const guardar =
 
       }
 
+
+      const estadoInicial =
+
+  motivo ===
+  "garantia"
+
+    ? "pendiente"
+
+    : "finalizado";
+
       // 🔥 GUARDAR DEVOLUCIÓN
       await addDoc(
 
