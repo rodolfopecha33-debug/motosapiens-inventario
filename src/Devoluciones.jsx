@@ -262,6 +262,8 @@ export default function Devoluciones({ user }) {
 
             detalle,
 
+            tipoResolucion,
+
             cliente,
 
             telefono,
@@ -277,8 +279,7 @@ export default function Devoluciones({ user }) {
             imagenes:
               urls,
 
-            tipoResolucion,
-
+            
             fecha:
               serverTimestamp()
 
