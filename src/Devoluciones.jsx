@@ -671,7 +671,104 @@ const [busquedaCambio,
 
               
 
-         
+         <div
+  className="
+  resultados-productos
+  "
+>
+
+  {
+
+    productos
+
+      .filter((p)=>
+
+        p.nombre
+          ?.toLowerCase()
+          .includes(
+
+            busquedaCambio
+              .toLowerCase()
+
+          )
+
+      )
+
+      .slice(0, 10)
+
+      .map((p)=>(
+
+        <div
+
+          key={p.id}
+
+          className="
+          producto-dev
+          "
+
+          onClick={()=>
+
+            setProductoCambio(
+              p.id
+            )
+
+          }
+        >
+
+          <strong>
+            {p.nombre}
+          </strong>
+
+          <br />
+
+          Stock:
+          {p.stock}
+
+        </div>
+
+      ))
+
+  }
+
+</div>
+
+
+        {
+
+  productoCambio
+
+  &&
+
+  <div
+    className="
+    producto-selected
+    "
+  >
+
+    <h3>
+      Producto reemplazo:
+    </h3>
+
+    <p>
+
+      {
+
+        productos.find(
+
+          (p)=>
+
+            p.id ===
+            productoCambio
+
+        )?.nombre
+
+      }
+
+    </p>
+
+  </div>
+
+}
            
 
        
