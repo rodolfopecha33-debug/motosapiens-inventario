@@ -514,6 +514,35 @@ export default function Devoluciones({ user }) {
             }
           >
 
+
+            <select
+  className="
+  devolucion-select
+  "
+  value={tipoResolucion}
+  onChange={(e)=>
+
+    setTipoResolucion(
+      e.target.value
+    )
+
+  }
+>
+
+  <option value="cambio">
+    Cambio producto
+  </option>
+
+  <option value="dinero">
+    Devolución dinero
+  </option>
+
+  <option value="saldo">
+    Saldo a favor
+  </option>
+
+</select>
+
             <option value="garantia">
               Garantía
             </option>
