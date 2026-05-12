@@ -631,6 +631,8 @@ export default function Devoluciones({ user }) {
 
 </select>
 
+          <select
+
             <option value="garantia">
               Garantía
             </option>
