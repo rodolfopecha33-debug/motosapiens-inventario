@@ -622,7 +622,7 @@ export default function Devoluciones({ user }) {
          
            
 
-        </div>
+       
 
         {/* DETALLE */}
         <textarea
