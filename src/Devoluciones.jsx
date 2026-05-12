@@ -38,6 +38,17 @@ export default function Devoluciones({ user }) {
     setProductoId] =
       useState("");
 
+
+      const [productoCambio,
+  setProductoCambio] =
+    useState("");
+
+const [busquedaCambio,
+  setBusquedaCambio] =
+    useState("");
+  
+  
+
   const [cantidad,
     setCantidad] =
       useState(1);
