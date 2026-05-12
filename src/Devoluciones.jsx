@@ -372,8 +372,8 @@ const guardar =
 
           telefono,
 
-          estado:
-            "pendiente",
+         estado:
+  estadoInicial,
 
           usuario:
             user || "Sistema",
