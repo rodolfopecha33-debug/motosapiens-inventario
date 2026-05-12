@@ -1199,3 +1199,64 @@ body {
   border: 1px solid #333;
 
 }
+
+
+
+
+.resolucion-box {
+
+  display: flex;
+
+  gap: 15px;
+
+  margin-top: 15px;
+
+  margin-bottom: 15px;
+
+}
+
+.res-card {
+
+  flex: 1;
+
+  background: #111;
+
+  border: 2px solid #333;
+
+  border-radius: 18px;
+
+  padding: 20px;
+
+  text-align: center;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+
+  font-size: 22px;
+
+  font-weight: bold;
+
+}
+
+.res-card:hover {
+
+  transform: scale(1.03);
+
+}
+
+.res-card.active {
+
+  border-color: #00c853;
+
+  background: #0d2818;
+
+}
+
+.res-card.red.active {
+
+  border-color: #ff4444;
+
+  background: #2b1010;
+
+}
