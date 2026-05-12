@@ -661,12 +661,13 @@ export default function Devoluciones({ user }) {
           <br />
 
 
-            <br />
+          
 
 Resolución:
 {" "}
 {d.tipoResolucion}
-          
+
+            <br />
 
           Detalle:
           {" "}
