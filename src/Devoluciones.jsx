@@ -46,6 +46,14 @@ export default function Devoluciones({ user }) {
     setMotivo] =
       useState("garantia");
 
+
+  const [tipoResolucion,
+  setTipoResolucion] =
+    useState(
+      "cambio"
+    );
+  
+
   const [detalle,
     setDetalle] =
       useState("");
