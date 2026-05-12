@@ -502,18 +502,28 @@ export default function Devoluciones({ user }) {
             }
           />
 
-          {/* MOTIVO */}
-          <select
-            className="devolucion-select"
-            value={motivo}
-            onChange={(e) =>
+         {/* MOTIVO */}
+<select
+  className="devolucion-select"
+  value={motivo}
+  onChange={(e)=>
 
-              setMotivo(
-                e.target.value
-              )
+    setMotivo(
+      e.target.value
+    )
 
-            }
-          >
+  }
+>
+
+  <option value="garantia">
+    Garantía
+  </option>
+
+  <option value="insatisfaccion">
+    Insatisfacción Cliente
+  </option>
+
+</select>
 
             {
 
