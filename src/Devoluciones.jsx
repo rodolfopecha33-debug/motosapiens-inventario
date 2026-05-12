@@ -857,7 +857,12 @@ const guardar =
 }
 
 
-        {
+       {
+
+  tipoResolucion ===
+  "cambio"
+
+  &&
 
   productoCambio
 
