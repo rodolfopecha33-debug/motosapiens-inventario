@@ -440,6 +440,10 @@ const guardar =
 
       setTipoResolucion("");
 
+      setMotivo(
+  "garantia"
+);
+
       setFileKey(
         Date.now()
       );
