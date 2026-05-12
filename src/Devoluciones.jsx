@@ -515,6 +515,83 @@ export default function Devoluciones({ user }) {
             }
           >
 
+            {
+
+  motivo ===
+  "insatisfaccion"
+
+  &&
+
+  <div
+    className="
+    resolucion-box
+    "
+  >
+
+    <div
+
+      className={
+
+        tipoResolucion ===
+        "cambio"
+
+          ? "res-card active"
+
+          : "res-card"
+
+      }
+
+      onClick={()=>
+
+        setTipoResolucion(
+          "cambio"
+        )
+
+      }
+    >
+
+      🔄
+
+      <h3>
+        Cambio producto
+      </h3>
+
+    </div>
+
+    <div
+
+      className={
+
+        tipoResolucion ===
+        "dinero"
+
+          ? "res-card active red"
+
+          : "res-card red"
+
+      }
+
+      onClick={()=>
+
+        setTipoResolucion(
+          "dinero"
+        )
+
+      }
+    >
+
+      💵
+
+      <h3>
+        Devolución dinero
+      </h3>
+
+    </div>
+
+  </div>
+
+}
+
 
             <select
   className="
