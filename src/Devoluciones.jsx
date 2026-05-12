@@ -997,6 +997,31 @@ const guardar =
 
 </p>
 
+        {
+
+  d.tipoResolucion ===
+  "cambio"
+
+  &&
+
+  <p>
+
+    📦 Producto entregado:
+    {" "}
+
+    <strong>
+
+      {
+        d.productoCambioNombre
+      }
+
+    </strong>
+
+  </p>
+
+}
+          
+
             <br />
 
           Detalle:
