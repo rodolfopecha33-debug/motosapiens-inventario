@@ -660,6 +660,14 @@ export default function Devoluciones({ user }) {
 
           <br />
 
+
+            <br />
+
+Resolución:
+{" "}
+{d.tipoResolucion}
+          
+
           Detalle:
           {" "}
           {String(d.detalle || "")}
