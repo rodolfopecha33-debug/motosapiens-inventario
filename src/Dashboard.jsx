@@ -1030,7 +1030,7 @@ const cargarVentas = async () => {
 
 
                   
-          {ventasFiltradas.map(
+          {ventasOrdenadas.map(
             (v, i) => (
 
             <tr key={i}>
