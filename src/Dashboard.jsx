@@ -974,6 +974,16 @@ const cargarVentas = async () => {
   }
 
 </td>
+              <span
+  style={{
+    maxWidth: "75%",
+    overflow: "hidden",
+    textOverflow:
+      "ellipsis",
+    whiteSpace:
+      "nowrap"
+  }}
+>
               
               
               <td>
