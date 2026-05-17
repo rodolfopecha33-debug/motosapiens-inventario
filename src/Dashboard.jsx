@@ -99,36 +99,42 @@ const parseFecha = (f) => {
 
           .trim();
 
-      const partes =
-        limpia.split(",");
+      const [fechaPart, horaPart] =
 
-      if (
-        partes.length < 2
-      ) {
+  limpia.split(",");
 
-        return null;
+if (
+  !fechaPart ||
+  !horaPart
+) {
 
-      }
+  return null;
 
-      const fechaPart =
-        partes[0].trim();
+}
 
-      const horaPart =
-        partes[1].trim();
+      const partesFecha =
 
-      const [
+  fechaPart
+    .trim()
+    .split("/");
 
-        dia,
+if (
+  partesFecha.length !== 3
+) {
 
-        mes,
+  return null;
 
-        anio
+}
 
-      ] =
-        fechaPart.split("/");
+const dia =
+  Number(partesFecha[0]);
 
-      const horaSplit =
-        horaPart.split(":");
+const mes =
+  Number(partesFecha[1]);
+
+const anio =
+  Number(partesFecha[2]);
+      
 
       let hora =
         Number(
