@@ -5,7 +5,8 @@ import React, {
 
 import { db } from "./firebase";
 
-
+import * as XLSX
+  from "xlsx";
 
 
 import { resetVentas } from "./resetDB";
@@ -567,47 +568,96 @@ const cargarVentas = async () => {
       .slice(0, 5);
 
   // 🔥 EXPORTAR CSV
-  const exportarCSV = () => {
+  const exportarExcel =
+  () => {
 
-    let csv =
+    const datos =
 
-      "Fecha,Usuario,Productos,Items,Total,Metodo\n";
+      ventasFiltradas.map(
+        (v) => ({
 
-    ventasFiltradas
-      .forEach((v) => {
+          Fecha:
 
-        csv +=
+            parseFecha(v.fecha)
+              ?.toLocaleString(
+                "es-CO"
+              ),
 
-          `${v.fecha},`
+          Usuario:
+            v.usuario,
 
-          + `${v.usuario},`
+          Productos:
 
-          + `${v.total},`
+            (v.productos || [])
 
-          + `${v.metodoPago}\n`;
+              .map(
+                (p) =>
+                  p.nombre
+              )
 
-      });
+              .join(" | "),
 
-    const blob = new Blob(
-      [csv],
-      {
-        type: "text/csv"
-      }
+          Items:
+
+            (v.productos || [])
+              .reduce(
+
+                (a, p)=>
+
+                  a +
+
+                  Number(
+                    p.cantidad || 0
+                  ),
+
+                0
+
+              ),
+
+          Total:
+            Number(
+              v.total || 0
+            ),
+
+          Metodo:
+            v.metodoPago
+
+        }))
+;
+
+    // 🔥 CREAR HOJA
+    const ws =
+      XLSX.utils
+        .json_to_sheet(
+          datos
+        );
+
+    // 🔥 CREAR LIBRO
+    const wb =
+      XLSX.utils
+        .book_new();
+
+    XLSX.utils.book_append_sheet(
+
+      wb,
+
+      ws,
+
+      "Ventas"
+
     );
 
-    const url =
-      URL.createObjectURL(blob);
+    // 🔥 DESCARGAR
+    XLSX.writeFile(
 
-    const a =
-      document.createElement("a");
+      wb,
 
-    a.href = url;
+      "dashboard.xlsx"
 
-    a.download =
-      "dashboard.csv";
+    );
 
-    a.click();
   };
+  
 
   return (
 
