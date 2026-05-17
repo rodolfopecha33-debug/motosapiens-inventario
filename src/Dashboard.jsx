@@ -493,19 +493,29 @@ const cargarVentas = async () => {
 
   });
 
-  Object.keys(mapaDias)
-    .forEach((f) => {
+ Object.keys(mapaDias)
 
-      ventasPorDia.push({
+  .sort(
 
-        fecha: f,
+    (a, b)=>
 
-        ventas:
-          mapaDias[f]
+      new Date(a) -
+      new Date(b)
 
-      });
+  )
+
+  .forEach((f) => {
+
+    ventasPorDia.push({
+
+      fecha: f,
+
+      ventas:
+        mapaDias[f]
 
     });
+
+  });
 
   // 🔥 MÉTODOS PAGO
   const metodosPago = [];
