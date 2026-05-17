@@ -904,9 +904,33 @@ const cargarVentas = async () => {
           >
 
            <div
+
   key={i}
+
   className="top-row"
+
+  style={{
+
+    display: "flex",
+
+    justifyContent:
+      "space-between",
+
+    alignItems:
+      "center",
+
+    gap: "10px",
+
+    padding:
+      "12px 0",
+
+    borderBottom:
+      "1px solid #222"
+
+  }}
+
 >
+             
 
   <span
 
