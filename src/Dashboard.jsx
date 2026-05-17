@@ -560,19 +560,22 @@ const cargarVentas = async () => {
 });
   
 
-  Object.keys(mapaPago)
-    .forEach((m) => {
+ Object.values(mapaDias)
 
-      metodosPago.push({
+  .sort(
 
-        metodo: m,
+    (a, b)=>
 
-        valor:
-          mapaPago[m]
+      a.fechaReal -
+      b.fechaReal
 
-      });
+  )
 
-    });
+  .forEach((d) => {
+
+    ventasPorDia.push(d);
+
+  });
 
   // 🔥 TOP PRODUCTOS
   const mapaProductos = {};
