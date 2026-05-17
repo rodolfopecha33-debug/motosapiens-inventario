@@ -499,12 +499,12 @@ const cargarVentas = async () => {
 
   .sort(
 
-    (a, b)=>
+  (a, b)=>
 
-      new Date(a) -
-      new Date(b)
+    parseFecha(a) -
+    parseFecha(b)
 
-  )
+)
 
   .forEach((f) => {
 
