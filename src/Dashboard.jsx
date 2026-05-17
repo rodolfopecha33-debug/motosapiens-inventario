@@ -830,7 +830,19 @@ const cargarVentas = async () => {
               dataKey="fecha"
             />
 
-            <YAxis />
+          <YAxis
+
+  tickFormatter={
+    (v)=>
+
+      `$${(
+        v / 1000
+      ).toFixed(0)}k`
+  }
+
+/>
+            
+            
 
             <Tooltip />
 
