@@ -898,11 +898,7 @@ const cargarVentas = async () => {
         {topProductos.map(
           (p, i) => (
 
-          <div
-            key={i}
-            className="top-row"
-          >
-
+         
            <div
 
   key={i}
@@ -934,29 +930,43 @@ const cargarVentas = async () => {
 
   <span
 
-    style={{
+  style={{
 
-      maxWidth: "75%",
+    flex: 1,
 
-      overflow: "hidden",
+    overflow: "hidden",
 
-      textOverflow:
-        "ellipsis",
+    textOverflow:
+      "ellipsis",
 
-      whiteSpace:
-        "nowrap"
+    whiteSpace:
+      "nowrap"
 
-    }}
+  }}
 
-  >
+>
 
-    {p.producto}
+  {p.producto}
 
-  </span>
+</span>
+             
 
-  <strong>
-    {p.cantidad}
-  </strong>
+  <strong
+
+  style={{
+
+    minWidth: "40px",
+
+    textAlign: "right"
+
+  }}
+
+>
+
+  {p.cantidad}
+
+</strong>
+             
 
 </div>
             
