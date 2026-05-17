@@ -518,6 +518,83 @@ console.log(
   "USER POS:",
   user
 );
+
+const stockBajo =
+  (producto) => {
+
+    const nombre =
+
+      producto.nombre
+        ?.toLowerCase() || "";
+
+    // 🔥 LLANTAS
+    if (
+
+      nombre.includes(
+        "llanta"
+      )
+
+      ||
+
+      nombre.includes(
+        "neumatico"
+      )
+
+    ) {
+
+      return (
+        Number(
+          producto.stock
+        ) < 3
+      );
+
+    }
+
+    // 🔥 ACEITES
+    if (
+
+      nombre.includes(
+        "aceite"
+      )
+
+      ||
+
+      nombre.includes(
+        "motul"
+      )
+
+      ||
+
+      nombre.includes(
+        "castrol"
+      )
+
+      ||
+
+      nombre.includes(
+        "shell"
+      )
+
+    ) {
+
+      return (
+        Number(
+          producto.stock
+        ) < 5
+      );
+
+    }
+
+    // 🔥 RESTO
+    return (
+      Number(
+        producto.stock
+      ) < 4
+    );
+
+  };
+  
+  
   
   return (
 
