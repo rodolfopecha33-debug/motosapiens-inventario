@@ -902,7 +902,22 @@ const cargarVentas = async () => {
 
         
         <button
-          onClick={resetVentas}
+          onClick={() => {
+
+  const ok =
+    window.confirm(
+
+      "¿Eliminar ventas?"
+
+    );
+
+  if (ok) {
+
+    resetVentas();
+
+  }
+
+}}
           style={btnDanger()}
         >
           🧨 Reset Ventas
