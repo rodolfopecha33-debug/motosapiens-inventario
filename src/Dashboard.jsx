@@ -571,7 +571,7 @@ const cargarVentas = async () => {
 
     let csv =
 
-      "Fecha,Usuario,Total,Metodo\n";
+      "Fecha,Usuario,Productos,Items,Total,Metodo\n";
 
     ventasFiltradas
       .forEach((v) => {
