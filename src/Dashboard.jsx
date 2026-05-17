@@ -844,7 +844,15 @@ const cargarVentas = async () => {
             
             
 
-            <Tooltip />
+           <Tooltip
+
+  formatter={(v)=>
+
+    `$${Number(v)
+      .toLocaleString()}`
+  }
+
+/>
 
             <Legend />
 
