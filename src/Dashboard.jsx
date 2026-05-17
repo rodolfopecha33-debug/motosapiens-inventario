@@ -1,3 +1,6 @@
+# Dashboard.jsx corregido
+
+```jsx
 import React, {
   useEffect,
   useState
@@ -8,7 +11,6 @@ import { db } from "./firebase";
 import * as XLSX
   from "xlsx";
 
-
 import { resetVentas } from "./resetDB";
 
 import {
@@ -17,41 +19,24 @@ import {
 } from "firebase/firestore";
 
 import {
-
   ResponsiveContainer,
-
-  LineChart,
-  Line,
-
+  AreaChart,
+  Area,
   PieChart,
   Pie,
-
   Cell,
-
   CartesianGrid,
-
   XAxis,
   YAxis,
-
-  Tooltip,
-  AreaChart,
-Area,
-
-  Legend
-
+  Tooltip
 } from "recharts";
 
 // 🔥 COLORES
 const COLORS = [
-
   "#00ff88",
-
   "#a855f7",
-
   "#ff4444",
-
   "#3b82f6"
-
 ];
 
 // 🔥 FECHA SEGURA
@@ -100,56 +85,54 @@ const parseFecha = (f) => {
           .trim();
 
       const [fechaPart, horaPart] =
+        limpia.split(",");
 
-  limpia.split(",");
+      if (
+        !fechaPart ||
+        !horaPart
+      ) {
 
-if (
-  !fechaPart ||
-  !horaPart
-) {
+        return null;
 
-  return null;
-
-}
+      }
 
       const partesFecha =
+        fechaPart
+          .trim()
+          .split("/");
 
-  fechaPart
-    .trim()
-    .split("/");
+      if (
+        partesFecha.length !== 3
+      ) {
 
-if (
-  partesFecha.length !== 3
-) {
+        return null;
 
-  return null;
+      }
 
-}
+      const dia =
+        Number(partesFecha[0]);
 
-const dia =
-  Number(partesFecha[0]);
+      const mes =
+        Number(partesFecha[1]);
 
-const mes =
-  Number(partesFecha[1]);
+      const anio =
+        Number(partesFecha[2]);
 
-const anio =
-  Number(partesFecha[2]);
-      
+      const horaSplit =
+        horaPart
+          .trim()
+          .split(":");
 
       let hora =
-        Number(
-          horaSplit[0]
-        );
+        Number(horaSplit[0]);
 
       const minutos =
-        Number(
-          horaSplit[1]
-        );
+        Number(horaSplit[1]);
 
       const segundos =
         Number(
           horaSplit[2]
-            .slice(0,2)
+            .slice(0, 2)
         );
 
       const ampm =
@@ -177,11 +160,11 @@ const anio =
 
       return new Date(
 
-        Number(anio),
+        anio,
 
-        Number(mes) - 1,
+        mes - 1,
 
-        Number(dia),
+        dia,
 
         hora,
 
@@ -199,7 +182,6 @@ const anio =
     return null;
 
   }
-
 };
 
 export default function Dashboard() {
@@ -208,10 +190,10 @@ export default function Dashboard() {
     useState([]);
 
   const [fechaInicio, setFechaInicio] =
-  useState("");
+    useState("");
 
-const [fechaFin, setFechaFin] =
-  useState("");
+  const [fechaFin, setFechaFin] =
+    useState("");
 
   const [filtro, setFiltro] =
     useState("mes");
@@ -224,171 +206,141 @@ const [fechaFin, setFechaFin] =
   }, []);
 
   // 🔥 CARGAR
+  const cargarVentas = async () => {
 
+    try {
 
-
-const cargarVentas = async () => {
-
-  try {
-
-    console.log("🔥 Cargando ventas Firebase...");
-
-    const snap = await getDocs(
-      collection(db, "ventas")
-    );
-
-    console.log(
-      "TOTAL FIREBASE:",
-      snap.size
-    );
-
-    const datos = [];
-
-    snap.forEach((docu) => {
-
-      const venta = {
-
-        id: docu.id,
-
-        ...docu.data()
-
-      };
-
-      console.log(
-        "VENTA:",
-        venta
+      const snap = await getDocs(
+        collection(db, "ventas")
       );
 
-      datos.push(venta);
+      const datos = [];
 
-    });
+      snap.forEach((docu) => {
 
-    setVentas(datos);
+        datos.push({
 
-  } catch (error) {
+          id: docu.id,
 
-    console.error(error);
+          ...docu.data()
 
-  }
-};
+        });
 
-  
+      });
+
+      setVentas(datos);
+
+    } catch (error) {
+
+      console.error(error);
+
+    }
+  };
 
   // 🔥 FILTRAR
   const ventasFiltradas =
-  ventas.filter((v) => {
+    ventas.filter((v) => {
 
-    if (!v.fecha) return false;
+      if (!v.fecha)
+        return false;
 
-   
+      const fecha =
+        parseFecha(v.fecha);
 
-     const fecha =
-  parseFecha(v.fecha);
+      if (!fecha)
+        return false;
 
-    if (!fecha)
-  return false;
-    
-    const ahora =
-      new Date();
-
-    // 🔥 RANGO PERSONALIZADO
-    if (
-      fechaInicio &&
-      fechaFin
-    ) {
-
-      const inicio =
-        new Date(fechaInicio);
-
-      const fin =
-        new Date(fechaFin);
-
-      // 🔥 FIN DEL DÍA
-      fin.setHours(
-        23,
-        59,
-        59,
-        999
-      );
-
-      return (
-        fecha >= inicio &&
-        fecha <= fin
-      );
-    }
-
-    // 🔥 HOY
-    if (filtro === "hoy") {
-
-      return (
-
-        fecha.toDateString() ===
-        ahora.toDateString()
-
-      );
-    }
-
-    // 🔥 SEMANA
-    if (filtro === "semana") {
-
-      const hace7 =
+      const ahora =
         new Date();
 
-      hace7.setDate(
-        ahora.getDate() - 7
-      );
+      // 🔥 RANGO PERSONALIZADO
+      if (
+        fechaInicio &&
+        fechaFin
+      ) {
 
-      return fecha >= hace7;
-    }
+        const inicio =
+          new Date(fechaInicio);
 
-    // 🔥 MES
-    if (filtro === "mes") {
+        const fin =
+          new Date(fechaFin);
 
-      return (
+        fin.setHours(
+          23,
+          59,
+          59,
+          999
+        );
 
-        fecha.getMonth() ===
-        ahora.getMonth() &&
+        return (
+          fecha >= inicio &&
+          fecha <= fin
+        );
+      }
 
-        fecha.getFullYear() ===
-        ahora.getFullYear()
+      // 🔥 HOY
+      if (filtro === "hoy") {
 
-      );
-    }
+        return (
+          fecha.toDateString() ===
+          ahora.toDateString()
+        );
+      }
 
-    // 🔥 AÑO
-    if (filtro === "año") {
+      // 🔥 SEMANA
+      if (filtro === "semana") {
 
-      return (
+        const hace7 =
+          new Date();
 
-        fecha.getFullYear() ===
-        ahora.getFullYear()
+        hace7.setDate(
+          ahora.getDate() - 7
+        );
 
-      );
-    }
+        return fecha >= hace7;
+      }
 
-    return true;
+      // 🔥 MES
+      if (filtro === "mes") {
 
-  });
+        return (
+          fecha.getMonth() ===
+            ahora.getMonth() &&
+          fecha.getFullYear() ===
+            ahora.getFullYear()
+        );
+      }
 
+      // 🔥 AÑO
+      if (filtro === "año") {
 
+        return (
+          fecha.getFullYear() ===
+          ahora.getFullYear()
+        );
+      }
+
+      return true;
+    });
+
+  // 🔥 ORDENAR
   const ventasOrdenadas =
 
-  [...ventasFiltradas]
+    [...ventasFiltradas]
 
-    .sort(
+      .sort(
 
-      (a, b)=>
+        (a, b) =>
 
-        parseFecha(
-          b.fecha
-        ) -
+          parseFecha(
+            b.fecha
+          ) -
 
-        parseFecha(
-          a.fecha
-        )
+          parseFecha(
+            a.fecha
+          )
 
-    );
-  
+      );
 
   // 🔥 KPIS
   const totalVentas =
@@ -443,7 +395,6 @@ const cargarVentas = async () => {
               g +
 
               (
-
                 Number(
                   p.venta || 0
                 ) -
@@ -451,7 +402,6 @@ const cargarVentas = async () => {
                 Number(
                   p.compra || 0
                 )
-
               ) *
 
               Number(
@@ -473,7 +423,6 @@ const cargarVentas = async () => {
       ? Math.round(
 
           totalVentas /
-
           ventasFiltradas.length
 
         )
@@ -487,36 +436,65 @@ const cargarVentas = async () => {
 
   ventasFiltradas.forEach((v) => {
 
-   const fecha =
-  parseFecha(v.fecha)
-    ?.toLocaleDateString(
-      "es-CO"
-    );
+    const fechaObj =
+      parseFecha(v.fecha);
 
-    mapaDias[fecha] =
+    if (!fechaObj)
+      return;
 
-      (mapaDias[fecha] || 0)
+    const fechaKey =
 
-      + Number(v.total || 0);
+      `${fechaObj.getFullYear()}-${String(
+
+        fechaObj.getMonth() + 1
+
+      ).padStart(2, "0")}-${String(
+
+        fechaObj.getDate()
+
+      ).padStart(2, "0")}`;
+
+    if (!mapaDias[fechaKey]) {
+
+      mapaDias[fechaKey] = {
+
+        fecha:
+
+          fechaObj.toLocaleDateString(
+            "es-CO"
+          ),
+
+        fechaReal:
+          fechaObj.getTime(),
+
+        ventas: 0
+
+      };
+    }
+
+    mapaDias[
+      fechaKey
+    ].ventas +=
+      Number(v.total || 0);
 
   });
 
- Object.values(mapaDias)
+  Object.values(mapaDias)
 
-  .sort(
+    .sort(
 
-    (a, b)=>
+      (a, b) =>
 
-      a.fechaReal -
-      b.fechaReal
+        Number(a.fechaReal) -
+        Number(b.fechaReal)
 
-  )
+    )
 
-  .forEach((d) => {
+    .forEach((d) => {
 
-    ventasPorDia.push(d);
+      ventasPorDia.push(d);
 
-  });
+    });
 
   // 🔥 MÉTODOS PAGO
   const metodosPago = [];
@@ -525,68 +503,40 @@ const cargarVentas = async () => {
 
   ventasFiltradas.forEach((v) => {
 
-  const fechaObj =
-    parseFecha(v.fecha);
+    const metodo =
+      v.metodoPago ||
+      "otro";
 
-  if (!fechaObj)
-    return;
+    mapaPago[metodo] =
 
- const fechaKey =
+      (mapaPago[metodo] || 0)
 
-  `${fechaObj.getFullYear()}-${String(
-
-    fechaObj.getMonth() + 1
-
-  ).padStart(2, "0")}-${String(
-
-    fechaObj.getDate()
-
-  ).padStart(2, "0")}`;
-    
-
-  if (!mapaDias[fechaKey]) {
-
-    mapaDias[fechaKey] = {
-
-      fecha:
-
-        fechaObj.toLocaleDateString(
-          "es-CO"
-        ),
-
-      fechaReal:
-        fechaObj,
-
-      ventas: 0
-
-    };
-
-  }
-
-  mapaDias[
-    fechaKey
-  ].ventas +=
-    Number(v.total || 0);
-
-});
-  
-
- Object.values(mapaDias)
-
-  .sort(
-
-    (a, b)=>
-
-      a.fechaReal -
-      b.fechaReal
-
-  )
-
-  .forEach((d) => {
-
-    ventasPorDia.push(d);
+      + parseFloat(
+          v.total || 0
+        );
 
   });
+
+  Object.keys(mapaPago)
+    .forEach((m) => {
+
+      if (
+        !isNaN(
+          mapaPago[m]
+        )
+      ) {
+
+        metodosPago.push({
+
+          metodo: m,
+
+          valor:
+            mapaPago[m]
+
+        });
+      }
+
+    });
 
   // 🔥 TOP PRODUCTOS
   const mapaProductos = {};
@@ -635,97 +585,92 @@ const cargarVentas = async () => {
 
       .slice(0, 5);
 
-  // 🔥 EXPORTAR CSV
+  // 🔥 EXPORTAR EXCEL
   const exportarExcel =
-  () => {
+    () => {
 
-    const datos =
+      const datos =
 
-      ventasOrdenadas.map(
-        (v) => ({
+        ventasOrdenadas.map(
+          (v) => ({
 
-          Fecha:
+            Fecha:
 
-            parseFecha(v.fecha)
-              ?.toLocaleString(
-                "es-CO"
+              parseFecha(v.fecha)
+                ?.toLocaleString(
+                  "es-CO"
+                ),
+
+            Usuario:
+              v.usuario,
+
+            Productos:
+
+              (v.productos || [])
+
+                .map(
+                  (p) =>
+                    p.nombre
+                )
+
+                .join(" | "),
+
+            Items:
+
+              (v.productos || [])
+                .reduce(
+
+                  (a, p) =>
+
+                    a +
+
+                    Number(
+                      p.cantidad || 0
+                    ),
+
+                  0
+
+                ),
+
+            Total:
+              Number(
+                v.total || 0
               ),
 
-          Usuario:
-            v.usuario,
+            Metodo:
+              v.metodoPago
 
-          Productos:
-
-            (v.productos || [])
-
-              .map(
-                (p) =>
-                  p.nombre
-              )
-
-              .join(" | "),
-
-          Items:
-
-            (v.productos || [])
-              .reduce(
-
-                (a, p)=>
-
-                  a +
-
-                  Number(
-                    p.cantidad || 0
-                  ),
-
-                0
-
-              ),
-
-          Total:
-            Number(
-              v.total || 0
-            ),
-
-          Metodo:
-            v.metodoPago
-
-        }))
-;
-
-    // 🔥 CREAR HOJA
-    const ws =
-      XLSX.utils
-        .json_to_sheet(
-          datos
+          })
         );
 
-    // 🔥 CREAR LIBRO
-    const wb =
-      XLSX.utils
-        .book_new();
+      const ws =
+        XLSX.utils
+          .json_to_sheet(
+            datos
+          );
 
-    XLSX.utils.book_append_sheet(
+      const wb =
+        XLSX.utils
+          .book_new();
 
-      wb,
+      XLSX.utils.book_append_sheet(
 
-      ws,
+        wb,
 
-      "Ventas"
+        ws,
 
-    );
+        "Ventas"
 
-    // 🔥 DESCARGAR
-    XLSX.writeFile(
+      );
 
-      wb,
+      XLSX.writeFile(
 
-      "dashboard.xlsx"
+        wb,
 
-    );
+        "dashboard.xlsx"
 
-  };
-  
+      );
+    };
 
   return (
 
@@ -775,49 +720,43 @@ const cargarVentas = async () => {
           Año
         </button>
 
-
-        
-
       </div>
-
-
 
       <div className="filtro-fechas">
 
-  <input
-    type="date"
-    value={fechaInicio}
-    onChange={(e) =>
-      setFechaInicio(
-        e.target.value
-      )
-    }
-  />
+        <input
+          type="date"
+          value={fechaInicio}
+          onChange={(e) =>
+            setFechaInicio(
+              e.target.value
+            )
+          }
+        />
 
-  <input
-    type="date"
-    value={fechaFin}
-    onChange={(e) =>
-      setFechaFin(
-        e.target.value
-      )
-    }
-  />
+        <input
+          type="date"
+          value={fechaFin}
+          onChange={(e) =>
+            setFechaFin(
+              e.target.value
+            )
+          }
+        />
 
-  <button
-    onClick={() => {
+        <button
+          onClick={() => {
 
-      setFechaInicio("");
+            setFechaInicio("");
 
-      setFechaFin("");
+            setFechaFin("");
 
-    }}
-  >
-    Limpiar
-  </button>
+          }}
+        >
+          Limpiar
+        </button>
 
-</div>
-      
+      </div>
 
       {/* KPIS */}
       <div className="cards-grid">
@@ -844,7 +783,7 @@ const cargarVentas = async () => {
 
       </div>
 
-      {/* GRÁFICAS */}
+      {/* GRÁFICA */}
       <div className="chart-card">
 
         <h3>
@@ -857,8 +796,8 @@ const cargarVentas = async () => {
         >
 
           <AreaChart
-  data={ventasPorDia}
->
+            data={ventasPorDia}
+          >
 
             <CartesianGrid
               strokeDasharray="3 3"
@@ -866,47 +805,41 @@ const cargarVentas = async () => {
 
             <XAxis
               dataKey="fecha"
+              type="category"
+              interval={0}
             />
 
-          <YAxis
+            <YAxis
+              tickFormatter={
+                (v) =>
 
-  tickFormatter={
-    (v)=>
+                  `$${(
+                    v / 1000
+                  ).toFixed(0)}k`
+              }
+            />
 
-      `$${(
-        v / 1000
-      ).toFixed(0)}k`
-  }
+            <Tooltip
+              formatter={(v) =>
 
-/>
-            
-            
-
-           <Tooltip
-
-  formatter={(v)=>
-
-    `$${Number(v)
-      .toLocaleString()}`
-  }
-
-/>
-
-            <Legend />
+                `$${Number(v)
+                  .toLocaleString()}`
+              }
+            />
 
             <Area
 
-  type="monotone"
+              type="monotone"
 
-  dataKey="ventas"
+              dataKey="ventas"
 
-  stroke="#00ff88"
+              stroke="#00ff88"
 
-  fill="#00ff8822"
+              fill="#00ff8822"
 
-  strokeWidth={3}
+              strokeWidth={3}
 
-/>
+            />
 
           </AreaChart>
 
@@ -926,7 +859,10 @@ const cargarVentas = async () => {
           height={320}
         >
 
-          <PieChart>
+          <PieChart
+            width={400}
+            height={320}
+          >
 
             <Pie
               data={metodosPago}
@@ -939,23 +875,21 @@ const cargarVentas = async () => {
               {metodosPago.map(
                 (_, i) => (
 
-                <Cell
-                  key={i}
-                  fill={
-                    COLORS[
-                      i %
-                      COLORS.length
-                    ]
-                  }
-                />
+                  <Cell
+                    key={i}
+                    fill={
+                      COLORS[
+                        i %
+                        COLORS.length
+                      ]
+                    }
+                  />
 
-              ))}
+                ))}
 
             </Pie>
 
             <Tooltip />
-
-            <Legend />
 
           </PieChart>
 
@@ -973,83 +907,75 @@ const cargarVentas = async () => {
         {topProductos.map(
           (p, i) => (
 
-         
-           <div
+            <div
 
-  key={i}
+              key={i}
 
-  className="top-row"
+              className="top-row"
 
-  style={{
+              style={{
 
-    display: "flex",
+                display: "flex",
 
-    justifyContent:
-      "space-between",
+                justifyContent:
+                  "space-between",
 
-    alignItems:
-      "center",
+                alignItems:
+                  "center",
 
-    gap: "10px",
+                gap: "10px",
 
-    padding:
-      "12px 0",
+                padding:
+                  "12px 0",
 
-    borderBottom:
-      "1px solid #222"
+                borderBottom:
+                  "1px solid #222"
 
-  }}
+              }}
 
->
-             
+            >
 
-  <span
+              <span
 
-  style={{
+                style={{
 
-    flex: 1,
+                  flex: 1,
 
-    overflow: "hidden",
+                  overflow: "hidden",
 
-    textOverflow:
-      "ellipsis",
+                  textOverflow:
+                    "ellipsis",
 
-    whiteSpace:
-      "nowrap"
+                  whiteSpace:
+                    "nowrap"
 
-  }}
+                }}
 
->
+              >
 
-  {p.producto}
+                {p.producto}
 
-</span>
-             
+              </span>
 
-  <strong
+              <strong
 
-  style={{
+                style={{
 
-    minWidth: "40px",
+                  minWidth: "40px",
 
-    textAlign: "right"
+                  textAlign: "right"
 
-  }}
+                }}
 
->
+              >
 
-  {p.cantidad}
+                {p.cantidad}
 
-</strong>
-             
+              </strong>
 
-</div>
-            
+            </div>
 
-           
-        
-
-        ))}
+          ))}
 
       </div>
 
@@ -1069,31 +995,21 @@ const cargarVentas = async () => {
           📥 Exportar Excel
         </button>
 
-
-      
-
-  
-        
-
-
-        
         <button
           onClick={() => {
 
-  const ok =
-    window.confirm(
+            const ok =
+              window.confirm(
+                "¿Eliminar ventas?"
+              );
 
-      "¿Eliminar ventas?"
+            if (ok) {
 
-    );
+              resetVentas();
 
-  if (ok) {
+            }
 
-    resetVentas();
-
-  }
-
-}}
+          }}
           style={btnDanger()}
         >
           🧨 Reset Ventas
@@ -1134,103 +1050,95 @@ const cargarVentas = async () => {
 
         <tbody>
 
-
-                  
           {ventasOrdenadas.map(
             (v, i) => (
 
-            <tr key={i}>
+              <tr key={i}>
 
-            <td>
+                <td>
 
-        {
-  parseFecha(v.fecha)
-    ?.toLocaleString(
-      "es-CO"
-    )
-}
+                  {
+                    parseFecha(v.fecha)
+                      ?.toLocaleString(
+                        "es-CO"
+                      )
+                  }
 
-</td>
+                </td>
 
-              <td>{v.usuario}</td>
+                <td>
+                  {v.usuario}
+                </td>
 
-              <td>
+                <td>
 
-  {
+                  {
+                    v.productos?.[0]
+                      ?.nombre || "-"
+                  }
 
-    v.productos?.[0]
-      ?.nombre || "-"
+                  {
+                    v.productos
+                      ?.length > 1
 
-  }
+                      &&
 
-  {
+                      ` +${
+                        v.productos.length - 1
+                      }`
+                  }
 
-    v.productos
-      ?.length > 1
+                </td>
 
-      &&
+                <td>
 
-      ` +${
-        v.productos.length - 1
-      }`
+                  {
+                    (v.productos || [])
+                      .reduce(
 
-  }
+                        (a, p) =>
 
-</td>
+                          a +
 
-<td>
+                          Number(
+                            p.cantidad || 0
+                          ),
 
-  {
+                        0
 
-    (v.productos || [])
-      .reduce(
+                      )
+                  }
 
-        (a, p)=>
+                </td>
 
-          a +
+                <td>
+                  $
+                  {Number(
+                    v.total || 0
+                  ).toLocaleString()}
+                </td>
 
-          Number(
-            p.cantidad || 0
-          ),
+                <td>
 
-        0
+                  <span
+                    className={`pago ${v.metodoPago}`}
+                  >
 
-      )
+                    {v.metodoPago}
 
-  }
+                  </span>
 
-</td>
-                         
-              
-              <td>
-                $
-                {Number(
-                  v.total || 0
-                ).toLocaleString()}
-              </td>
+                </td>
 
-              <td>
+              </tr>
 
-                <span
-                  className={`pago ${v.metodoPago}`}
-                >
-
-                  {v.metodoPago}
-
-                </span>
-
-              </td>
-
-            </tr>
-
-          ))}
+            ))}
 
         </tbody>
 
       </table>
 
     </div>
-
   );
 }
 
@@ -1251,7 +1159,6 @@ function Card({
       <h2>{valor}</h2>
 
     </div>
-
   );
 }
 
@@ -1294,3 +1201,4 @@ function btnDanger() {
 
   };
 }
+```
