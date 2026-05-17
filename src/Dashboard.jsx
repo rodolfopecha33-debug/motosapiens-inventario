@@ -1,6 +1,3 @@
-# Dashboard.jsx corregido
-
-```jsx
 import React, {
   useEffect,
   useState
@@ -1201,4 +1198,4 @@ function btnDanger() {
 
   };
 }
-```
+
