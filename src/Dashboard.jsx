@@ -276,6 +276,9 @@ const cargarVentas = async () => {
      const fecha =
   parseFecha(v.fecha);
 
+    if (!fecha)
+  return false;
+    
     const ahora =
       new Date();
 
