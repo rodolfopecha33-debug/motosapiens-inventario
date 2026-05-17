@@ -896,6 +896,10 @@ const cargarVentas = async () => {
 
             <th>Usuario</th>
 
+            <th>Productos</th>
+
+            <th>Items</th>
+
             <th>Total</th>
 
             <th>Método</th>
