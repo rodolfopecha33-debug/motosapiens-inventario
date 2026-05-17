@@ -525,13 +525,18 @@ const cargarVentas = async () => {
   if (!fechaObj)
     return;
 
-  const fechaKey =
+ const fechaKey =
 
-    `${fechaObj.getFullYear()}-${
-      fechaObj.getMonth() + 1
-    }-${
-      fechaObj.getDate()
-    }`;
+  `${fechaObj.getFullYear()}-${String(
+
+    fechaObj.getMonth() + 1
+
+  ).padStart(2, "0")}-${String(
+
+    fechaObj.getDate()
+
+  ).padStart(2, "0")}`;
+    
 
   if (!mapaDias[fechaKey]) {
 
