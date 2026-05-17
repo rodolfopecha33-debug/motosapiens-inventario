@@ -929,6 +929,54 @@ const cargarVentas = async () => {
               <td>{v.usuario}</td>
 
               <td>
+
+  {
+
+    v.productos?.[0]
+      ?.nombre || "-"
+
+  }
+
+  {
+
+    v.productos
+      ?.length > 1
+
+      &&
+
+      ` +${
+        v.productos.length - 1
+      }`
+
+  }
+
+</td>
+
+<td>
+
+  {
+
+    (v.productos || [])
+      .reduce(
+
+        (a, p)=>
+
+          a +
+
+          Number(
+            p.cantidad || 0
+          ),
+
+        0
+
+      )
+
+  }
+
+</td>
+              
+              
+              <td>
                 $
                 {Number(
                   v.total || 0
