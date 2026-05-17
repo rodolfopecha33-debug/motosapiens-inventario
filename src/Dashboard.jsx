@@ -830,9 +830,39 @@ const cargarVentas = async () => {
             className="top-row"
           >
 
-            <span>
-              {p.producto}
-            </span>
+           <div
+  key={i}
+  className="top-row"
+>
+
+  <span
+
+    style={{
+
+      maxWidth: "75%",
+
+      overflow: "hidden",
+
+      textOverflow:
+        "ellipsis",
+
+      whiteSpace:
+        "nowrap"
+
+    }}
+
+  >
+
+    {p.producto}
+
+  </span>
+
+  <strong>
+    {p.cantidad}
+  </strong>
+
+</div>
+            
 
             <strong>
               {p.cantidad}
