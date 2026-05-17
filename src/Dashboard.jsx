@@ -362,6 +362,26 @@ const cargarVentas = async () => {
 
   });
 
+
+  const ventasOrdenadas =
+
+  [...ventasFiltradas]
+
+    .sort(
+
+      (a, b)=>
+
+        parseFecha(
+          b.fecha
+        ) -
+
+        parseFecha(
+          a.fecha
+        )
+
+    );
+  
+
   // 🔥 KPIS
   const totalVentas =
     ventasFiltradas.reduce(
