@@ -538,17 +538,46 @@ const cargarVentas = async () => {
 
   ventasFiltradas.forEach((v) => {
 
-    const metodo =
-      v.metodoPago ||
-      "otro";
+  const fechaObj =
+    parseFecha(v.fecha);
 
-    mapaPago[metodo] =
+  if (!fechaObj)
+    return;
 
-      (mapaPago[metodo] || 0)
+  const fechaKey =
 
-      + Number(v.total || 0);
+    `${fechaObj.getFullYear()}-${
+      fechaObj.getMonth() + 1
+    }-${
+      fechaObj.getDate()
+    }`;
 
-  });
+  if (!mapaDias[fechaKey]) {
+
+    mapaDias[fechaKey] = {
+
+      fecha:
+
+        fechaObj.toLocaleDateString(
+          "es-CO"
+        ),
+
+      fechaReal:
+        fechaObj,
+
+      ventas: 0
+
+    };
+
+  }
+
+  mapaDias[
+    fechaKey
+  ].ventas +=
+    Number(v.total || 0);
+
+});
+  
 
   Object.keys(mapaPago)
     .forEach((m) => {
