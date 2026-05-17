@@ -34,6 +34,8 @@ import {
   YAxis,
 
   Tooltip,
+  AreaChart,
+Area,
 
   Legend
 
