@@ -426,6 +426,27 @@ export default function Dashboard() {
 
       : 0;
 
+  // 🔥 PROMEDIO DIARIO
+const diasConVentas =
+
+  Object.keys(
+    mapaDias
+  ).length;
+
+const promedioDiario =
+
+  diasConVentas > 0
+
+    ? Math.round(
+
+        totalVentas /
+        diasConVentas
+
+      )
+
+    : 0;
+  
+
   // 🔥 VENTAS POR DÍA
   const ventasPorDia = [];
 
