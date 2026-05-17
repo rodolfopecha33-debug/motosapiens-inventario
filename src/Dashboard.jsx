@@ -799,6 +799,15 @@ const promedioDiario =
           valor={`$${ticketPromedio.toLocaleString()}`}
         />
 
+        <Card
+
+  titulo="📅 Promedio Día"
+
+  valor={`$${promedioDiario.toLocaleString()}`}
+
+/>
+        
+
       </div>
 
       {/* GRÁFICA */}
