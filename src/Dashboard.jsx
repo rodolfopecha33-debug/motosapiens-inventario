@@ -971,10 +971,7 @@ const cargarVentas = async () => {
 </div>
             
 
-            <strong>
-              {p.cantidad}
-            </strong>
-
+           
           </div>
 
         ))}
