@@ -593,7 +593,7 @@ const cargarVentas = async () => {
 
     const datos =
 
-      ventasFiltradas.map(
+      ventasOrdenadas.map(
         (v) => ({
 
           Fecha:
