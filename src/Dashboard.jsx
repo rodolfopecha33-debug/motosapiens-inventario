@@ -937,7 +937,7 @@ const cargarVentas = async () => {
       >
 
         <button
-          onClick={exportarCSV}
+          onClick={exportarExcel}
           style={btn()}
         >
           📥 Exportar Excel
