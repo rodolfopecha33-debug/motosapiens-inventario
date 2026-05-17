@@ -690,7 +690,7 @@ const stockBajo =
 
                 </div>
 
-                {stock(p) <= 5 && (
+                {stockBajo(p) && (
 
                   <span className="badge-stock-max">
 
