@@ -522,6 +522,15 @@ const cargarVentas = async () => {
 
   });
 
+  ventasPorDia.sort(
+
+  (a, b)=>
+
+    a.fechaReal -
+    b.fechaReal
+
+);
+
   // 🔥 MÉTODOS PAGO
   const metodosPago = [];
 
