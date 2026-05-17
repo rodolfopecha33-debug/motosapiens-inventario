@@ -510,12 +510,15 @@ const cargarVentas = async () => {
 
     ventasPorDia.push({
 
-      fecha: f,
+  fecha: f,
 
-      ventas:
-        mapaDias[f]
+  fechaReal:
+    parseFecha(f),
 
-    });
+  ventas:
+    mapaDias[f]
+
+});
 
   });
 
