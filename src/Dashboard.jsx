@@ -820,9 +820,9 @@ const cargarVentas = async () => {
           height={320}
         >
 
-          <LineChart
-            data={ventasPorDia}
-          >
+          <AreaChart
+  data={ventasPorDia}
+>
 
             <CartesianGrid
               strokeDasharray="3 3"
@@ -858,14 +858,21 @@ const cargarVentas = async () => {
 
             <Legend />
 
-            <Line
-              type="monotone"
-              dataKey="ventas"
-              stroke="#00ff88"
-              strokeWidth={3}
-            />
+            <Area
 
-          </LineChart>
+  type="monotone"
+
+  dataKey="ventas"
+
+  stroke="#00ff88"
+
+  fill="#00ff8822"
+
+  strokeWidth={3}
+
+/>
+
+          </AreaChart>
 
         </ResponsiveContainer>
 
