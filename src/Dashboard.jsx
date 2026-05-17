@@ -972,7 +972,7 @@ const cargarVentas = async () => {
             
 
            
-          </div>
+        
 
         ))}
 
