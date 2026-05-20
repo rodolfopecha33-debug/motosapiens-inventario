@@ -12,7 +12,15 @@ import { resetVentas } from "./resetDB";
 
 import {
   collection,
-  getDocs
+  getDocs,
+  deleteDoc,
+  doc,
+  query,
+  where,
+  writeBatch,
+  increment,
+  limit,
+  orderBy
 } from "firebase/firestore";
 
 import {
@@ -198,6 +206,9 @@ export default function Dashboard() {
   const [filtro, setFiltro] =
     useState("mes");
 
+  const [mensajeExito, setMensajeExito] =
+    useState("");
+
   // 🔥 LOAD
   useEffect(() => {
 
@@ -236,6 +247,120 @@ export default function Dashboard() {
 
     }
   };
+
+  const eliminarVenta =
+    async (id) => {
+
+      if (!window.confirm("¿Eliminar esta venta?")) {
+        return;
+      }
+
+      const venta = ventas.find((v) => v.id === id);
+
+      if (!venta) {
+        alert("No se encontró la venta para eliminar");
+        return;
+      }
+
+      try {
+        const batch = writeBatch(db);
+
+        // Restaurar stock del inventario
+        venta.productos?.forEach((item) => {
+          if (!item.id || !item.cantidad) return;
+
+          const ref = doc(db, "inventario", item.id);
+          batch.update(ref, {
+            stock: increment(Number(item.cantidad) || 0)
+          });
+        });
+
+        // Eliminar movimientos asociados
+        const movimientosQuery = query(
+          collection(db, "movimientos"),
+          where("ventaId", "==", id)
+        );
+
+        const movimientosSnap = await getDocs(movimientosQuery);
+
+        movimientosSnap.forEach((mov) => {
+          batch.delete(doc(db, "movimientos", mov.id));
+        });
+
+        // Eliminar venta
+        batch.delete(doc(db, "ventas", id));
+
+        await batch.commit();
+
+        setVentas(
+          ventas.filter((v) => v.id !== id)
+        );
+
+        setMensajeExito("Venta eliminada correctamente");
+        setTimeout(() => {
+          setMensajeExito("");
+        }, 3000);
+      } catch (error) {
+        console.error(error);
+        alert("Error al eliminar la venta");
+      }
+    };
+
+  const limpiarUltimoMovimiento =
+    async (id) => {
+
+      if (!window.confirm("¿Eliminar solo el último movimiento asociado a esta venta?")) {
+        return;
+      }
+
+      try {
+        const movimientosQuery = query(
+          collection(db, "movimientos"),
+          where("ventaId", "==", id),
+          orderBy("fecha", "desc"),
+          limit(1)
+        );
+
+        const movimientosSnap = await getDocs(movimientosQuery);
+
+        if (movimientosSnap.empty) {
+          alert("No se encontró ningún movimiento asociado a esta venta.");
+          return;
+        }
+
+        const batch = writeBatch(db);
+
+        movimientosSnap.forEach((mov) => {
+          const data = mov.data();
+
+          if (
+            data.productoId &&
+            Number(data.cantidad)
+          ) {
+            const ref = doc(db, "inventario", data.productoId);
+            batch.update(ref, {
+              stock: increment(
+                Number(data.cantidad) * -1
+              )
+            });
+          }
+
+          batch.delete(doc(db, "movimientos", mov.id));
+        });
+
+        await batch.commit();
+
+        setMensajeExito(
+          "Último movimiento limpiado correctamente"
+        );
+        setTimeout(() => {
+          setMensajeExito("");
+        }, 3000);
+      } catch (error) {
+        console.error(error);
+        alert("Error limpiando el último movimiento");
+      }
+    };
 
   // 🔥 FILTRAR
   const ventasFiltradas =
@@ -355,6 +480,18 @@ export default function Dashboard() {
 
     );
 
+  const totalComision =
+    ventasFiltradas.reduce(
+
+      (sum, v) =>
+
+        sum +
+        Number(v.comision || 0),
+
+      0
+
+    );
+
   const totalItems =
     ventasFiltradas.reduce(
 
@@ -469,7 +606,9 @@ export default function Dashboard() {
         fechaReal:
           fechaObj.getTime(),
 
-        ventas: 0
+        ventas: 0,
+
+        comision: 0
 
       };
     }
@@ -478,6 +617,11 @@ export default function Dashboard() {
       fechaKey
     ].ventas +=
       Number(v.total || 0);
+
+    mapaDias[
+      fechaKey
+    ].comision +=
+      Number(v.comision || 0);
 
   });
 
@@ -695,6 +839,11 @@ const promedioDiario =
                 v.total || 0
               ),
 
+            Comisión:
+              Number(
+                v.comision || 0
+              ),
+
             Metodo:
               v.metodoPago
 
@@ -742,6 +891,21 @@ const promedioDiario =
       <h1>
         📊 Dashboard PRO MAX
       </h1>
+
+      {mensajeExito && (
+        <div
+          style={{
+            margin: "16px 0",
+            padding: "12px 16px",
+            background: "#10b981",
+            color: "white",
+            borderRadius: 8,
+            fontWeight: 600
+          }}
+        >
+          {mensajeExito}
+        </div>
+      )}
 
       {/* FILTROS */}
       <div className="filtros">
@@ -835,6 +999,11 @@ const promedioDiario =
         />
 
         <Card
+          titulo="💼 Comisiones"
+          valor={`$${totalComision.toLocaleString()}`}
+        />
+
+        <Card
           titulo="🧾 Ticket"
           valor={`$${ticketPromedio.toLocaleString()}`}
         />
@@ -911,6 +1080,69 @@ const promedioDiario =
               stroke="#00ff88"
 
               fill="#00ff8822"
+
+              strokeWidth={3}
+
+            />
+
+          </AreaChart>
+
+        </ResponsiveContainer>
+
+      </div>
+
+      <div className="chart-card">
+
+        <h3>
+          💰 Comisiones por Día
+        </h3>
+
+        <ResponsiveContainer
+          width="100%"
+          height={320}
+        >
+
+          <AreaChart
+            data={ventasPorDia}
+          >
+
+            <CartesianGrid
+              strokeDasharray="3 3"
+            />
+
+            <XAxis
+              dataKey="fecha"
+              type="category"
+              interval={0}
+            />
+
+            <YAxis
+              tickFormatter={
+                (v) =>
+
+                  `$${(
+                    v / 1000
+                  ).toFixed(0)}k`
+              }
+            />
+
+            <Tooltip
+              formatter={(v) =>
+
+                `$${Number(v)
+                  .toLocaleString()}`
+              }
+            />
+
+            <Area
+
+              type="monotone"
+
+              dataKey="comision"
+
+              stroke="#ffb703"
+
+              fill="#ffb703aa"
 
               strokeWidth={3}
 
@@ -1197,7 +1429,11 @@ const promedioDiario =
 
             <th>Total</th>
 
+            <th>Comisión</th>
+
             <th>Método</th>
+
+            <th>Acción</th>
 
           </tr>
 
@@ -1274,6 +1510,13 @@ const promedioDiario =
                 </td>
 
                 <td>
+                  $
+                  {Number(
+                    v.comision || 0
+                  ).toLocaleString()}
+                </td>
+
+                <td>
 
                   <span
                     className={`pago ${v.metodoPago}`}
@@ -1283,6 +1526,35 @@ const promedioDiario =
 
                   </span>
 
+                </td>
+
+                <td style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                  <button
+                    onClick={() => eliminarVenta(v.id)}
+                    style={{
+                      background: "#e03d3d",
+                      color: "white",
+                      border: "none",
+                      padding: "8px 12px",
+                      borderRadius: "8px",
+                      cursor: "pointer"
+                    }}
+                  >
+                    Eliminar
+                  </button>
+                  <button
+                    onClick={() => limpiarUltimoMovimiento(v.id)}
+                    style={{
+                      background: "#f59e0b",
+                      color: "white",
+                      border: "none",
+                      padding: "8px 12px",
+                      borderRadius: "8px",
+                      cursor: "pointer"
+                    }}
+                  >
+                    Limpiar último movimiento
+                  </button>
                 </td>
 
               </tr>

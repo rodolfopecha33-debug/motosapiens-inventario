@@ -68,6 +68,10 @@ const [clienteCedula, setClienteCedula] = useState("");
     setRecibido] =
       useState("");
 
+  const [comision,
+    setComision] =
+      useState("");
+
   // 🔥 CARGAR INVENTARIO
   useEffect(() => {
     cargarInventario();
@@ -297,6 +301,9 @@ const [clienteCedula, setClienteCedula] = useState("");
 
   );
 
+  const comisionNum = Math.max(0, Number(comision || 0));
+  const totalNeto = Math.max(0, total - comisionNum);
+
   // 💵 CAMBIO
   const cambio =
 
@@ -359,50 +366,13 @@ const [clienteCedula, setClienteCedula] = useState("");
 
           });
 
-         
-          
-
-            // 🔥 MOVIMIENTO
-
-
-          // 🔥 NUEVO STOCK
-const nuevoStock =
-
-  stock(item) -
-  item.cantidad;
-
-// 🔥 KARDEX PRO
-await crearMovimiento({
-
-  producto:
-    item.nombre,
-
-  productoId:
-    item.id,
-
-  tipo: "VENTA",
-
-  cantidad:
-    -item.cantidad,
-
-  stockFinal:
-    nuevoStock,
-
-  usuario:
-    user || "Sistema",
-
-  metodoPago
-
-});
-          
-          
         }
 
         // 🔥 EJECUTAR BATCH
         await batch.commit();
 
         // 🔥 GUARDAR VENTA
-        await addDoc(
+        const ventaRef = await addDoc(
 
           collection(
             db,
@@ -414,14 +384,16 @@ await crearMovimiento({
             fecha:
               Date.now(),
 
-           
-
             usuario: user,
 
             productos:
               carrito,
 
-            total,
+            total: totalNeto,
+
+            totalBruto: total,
+
+            comision: comisionNum,
 
             metodoPago,
 
@@ -435,6 +407,42 @@ await crearMovimiento({
           }
 
         );
+
+        // 🔥 MOVIMIENTOS
+        for (const item of carrito) {
+
+          const nuevoStock =
+
+            stock(item) -
+            item.cantidad;
+
+          await crearMovimiento({
+
+            producto:
+              item.nombre,
+
+            productoId:
+              item.id,
+
+            tipo: "VENTA",
+
+            cantidad:
+              -item.cantidad,
+
+            stockFinal:
+              nuevoStock,
+
+            usuario:
+              user || "Sistema",
+
+            metodoPago,
+
+            ventaId:
+              ventaRef.id
+
+          });
+
+        }
 
         // 🔥 STOCK LOCAL
         const nuevaLista =
@@ -781,7 +789,19 @@ const stockBajo =
         ))}
 
         <h3>
-          Total: ${total}
+          Total bruto: ${total}
+        </h3>
+
+        <input
+          placeholder="Comisión del vendedor"
+          value={comision}
+          onChange={(e) =>
+            setComision(e.target.value)
+          }
+        />
+
+        <h3>
+          Total neto: ${totalNeto}
         </h3>
 
         {/* PAGO */}

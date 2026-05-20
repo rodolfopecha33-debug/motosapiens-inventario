@@ -15,7 +15,8 @@ export const crearMovimiento =
     cantidad,
     stockFinal,
     usuario,
-    metodoPago
+    metodoPago,
+    ventaId
 
   }) => {
 
@@ -51,10 +52,10 @@ export const crearMovimiento =
           metodoPago:
             metodoPago || "",
 
+          ...(ventaId ? { ventaId } : {}),
+
           fecha:
             serverTimestamp(),
-
-          
 
         }
 
