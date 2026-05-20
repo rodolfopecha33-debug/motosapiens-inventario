@@ -25,7 +25,10 @@ import {
   CartesianGrid,
   XAxis,
   YAxis,
-  Tooltip
+  Tooltip,
+  LineChart,
+  Line,
+  Legend
 } from "recharts";
 
 // 🔥 COLORES
@@ -514,6 +517,41 @@ const promedioDiario =
       )
 
     : 0;
+
+  // 🔥 PROYECCIÓN MENSUAL
+  const proyeccionMensual = 
+    Math.round(promedioDiario * 30);
+
+  const ventasProyectadas = [];
+
+  for (let i = 1; i <= 30; i++) {
+
+    ventasProyectadas.push({
+
+      dia: `Día ${i}`,
+
+      real: i <= diasConVentas 
+
+        ? Math.round(
+
+            ventasPorDia
+              .slice(0, i)
+              .reduce(
+                (sum, d) => 
+                  sum + d.ventas, 
+                0
+              )
+            ) 
+
+        : null,
+
+      proyectado: Math.round(
+        promedioDiario * i
+      )
+
+    });
+
+  }
   
 
   // 🔥 MÉTODOS PAGO
@@ -808,6 +846,14 @@ const promedioDiario =
   valor={`$${promedioDiario.toLocaleString()}`}
 
 />
+
+        <Card
+
+  titulo="🎯 Proyección Mes"
+
+  valor={`$${proyeccionMensual.toLocaleString()}`}
+
+/>
         
 
       </div>
@@ -871,6 +917,86 @@ const promedioDiario =
             />
 
           </AreaChart>
+
+        </ResponsiveContainer>
+
+      </div>
+
+      {/* PROYECCIÓN MENSUAL */}
+      <div className="chart-card">
+
+        <h3>
+          🎯 Proyección de Ventas Mensuales
+        </h3>
+
+        <ResponsiveContainer
+          width="100%"
+          height={320}
+        >
+
+          <LineChart
+            data={ventasProyectadas}
+          >
+
+            <CartesianGrid
+              strokeDasharray="3 3"
+            />
+
+            <XAxis
+              dataKey="dia"
+              type="category"
+              interval={2}
+            />
+
+            <YAxis
+              tickFormatter={
+                (v) =>
+
+                  `$${(
+                    v / 1000
+                  ).toFixed(0)}k`
+              }
+            />
+
+            <Tooltip
+              formatter={(v) =>
+
+                v ? `$${Number(v)
+                  .toLocaleString()}` : "N/A"
+              }
+            />
+
+            <Legend />
+
+            <Line
+
+              type="monotone"
+
+              dataKey="proyectado"
+
+              stroke="#3b82f6"
+
+              strokeWidth={2}
+
+              name="Proyectado"
+
+            />
+
+            <Line
+
+              type="monotone"
+
+              dataKey="real"
+
+              stroke="#00ff88"
+
+              strokeWidth={2}
+
+              name="Real"
+
+            />
+
+          </LineChart>
 
         </ResponsiveContainer>
 
