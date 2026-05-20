@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import Login from "./Login";
 import POS from "./POS";
 import Dashboard from "./Dashboard";
+import Caja from "./Caja";
 import CargadorFirebase from "./CargadorFirebase";
 import InventarioAdmin from "./InventarioAdmin";
 import Compras from "./Compras";
@@ -104,6 +105,17 @@ export default function App() {
             <button
               style={btn()}
               onClick={() =>
+                setVista("caja")
+              }
+            >
+              💼 Caja
+            </button>
+          )}
+
+          {esAdmin && (
+            <button
+              style={btn()}
+              onClick={() =>
                 setVista("inventario")
               }
             >
@@ -169,6 +181,10 @@ export default function App() {
       {vista === "dashboard" &&
         esAdmin && (
           <Dashboard />
+      )}
+
+      {vista === "caja" && esAdmin && (
+        <Caja />
       )}
 
      {vista === "inventario" && esAdmin && (
