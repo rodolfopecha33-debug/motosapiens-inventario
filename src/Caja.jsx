@@ -487,6 +487,15 @@ export default function Caja() {
         <SummaryCard titulo="📈 Ingresos" valor={`$${totalIngresos.toLocaleString()}`} />
         <SummaryCard titulo="📉 Costo" valor={`$${totalCosto.toLocaleString()}`} />
         <SummaryCard titulo="📊 Ganancia" valor={`$${totalGanancia.toLocaleString()}`} />
+        <SummaryCard
+  titulo="💸 Gastos"
+  valor={`$${totalGastos.toLocaleString()}`}
+/>
+
+<SummaryCard
+  titulo="💰 Utilidad Neta"
+  valor={`$${utilidadNeta.toLocaleString()}`}
+/>
         <SummaryCard titulo="📦 Margen" valor={`${margenUtilidad}%`} />
         <SummaryCard titulo="⏳ Pendiente" valor={`$${deudaTotal.toLocaleString()}`} />
         <SummaryCard titulo="💳 Créditos" valor={`$${totalCreditos.toLocaleString()}`} />
