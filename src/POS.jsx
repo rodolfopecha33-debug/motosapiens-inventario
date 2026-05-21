@@ -151,6 +151,19 @@ const [clienteCedula, setClienteCedula] = useState("");
     String(p.codigo || "");
 
   // 🔥 FILTRO OPTIMIZADO
+  const stockDisponible = (id) => {
+
+    const producto =
+      lista.find((p) => p.id === id);
+
+    return stock(producto || {});
+
+  };
+
+  const puedeAumentar = (item) =>
+    item.cantidad <
+    stockDisponible(item.id);
+
   const productosFiltrados =
     useMemo(() => {
 
@@ -185,6 +198,18 @@ const [clienteCedula, setClienteCedula] = useState("");
       );
 
     if (existe) {
+
+      if (
+        existe.cantidad >=
+        stockDisponible(p.id)
+      ) {
+
+        alert(
+          "No hay mas stock disponible"
+        );
+
+        return;
+      }
 
       setCarrito(
 
@@ -222,6 +247,22 @@ const [clienteCedula, setClienteCedula] = useState("");
 
   // ➕ AUMENTAR
   const aumentar = (id) => {
+
+    const item =
+      carrito.find(
+        (i) => i.id === id
+      );
+
+    if (!item) return;
+
+    if (!puedeAumentar(item)) {
+
+      alert(
+        "No hay mas stock disponible"
+      );
+
+      return;
+    }
 
     setCarrito(
 
@@ -323,6 +364,28 @@ const [clienteCedula, setClienteCedula] = useState("");
       ) return;
 
       // 💵 VALIDAR
+      if (
+
+        carrito.find((item) =>
+          item.cantidad >
+          stockDisponible(item.id)
+        )
+
+      ) {
+
+        const sinStock =
+          carrito.find((item) =>
+            item.cantidad >
+            stockDisponible(item.id)
+          );
+
+        alert(
+          `Stock insuficiente para ${nombre(sinStock)}`
+        );
+
+        return;
+      }
+
       if (
 
         metodoPago === "efectivo" &&
@@ -754,6 +817,14 @@ const stockBajo =
 
               </span>
 
+              <br />
+
+              <span className="stock-mini">
+
+                Disponible: {stockDisponible(x.id)}
+
+              </span>
+
             </div>
 
             <div className="acciones">
@@ -769,6 +840,9 @@ const stockBajo =
               <button
                 onClick={() =>
                   aumentar(x.id)
+                }
+                disabled={
+                  !puedeAumentar(x)
                 }
               >
                 +

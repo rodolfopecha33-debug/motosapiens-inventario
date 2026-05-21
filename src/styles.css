@@ -118,10 +118,20 @@ body {
   color: #00ff88;
 }
 
+.stock-mini {
+  color: #aaa;
+  font-size: 12px;
+}
+
 .acciones button {
   margin-left: 5px;
   background: #1f1f1f;
   color: white;
+}
+
+.acciones button:disabled {
+  opacity: .35;
+  cursor: not-allowed;
 }
 
 .btn-cobrar {
