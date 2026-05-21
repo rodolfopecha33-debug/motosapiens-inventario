@@ -344,6 +344,8 @@ const [clienteCedula, setClienteCedula] = useState("");
 
   const comisionNum = Math.max(0, Number(comision || 0));
   const totalNeto = Math.max(0, total - comisionNum);
+  const comisionInvalida =
+    comisionNum > total;
 
   // 💵 CAMBIO
   const cambio =
@@ -351,7 +353,7 @@ const [clienteCedula, setClienteCedula] = useState("");
     metodoPago === "efectivo"
 
       ? Number(recibido || 0)
-          - total
+          - totalNeto
 
       : 0;
 
@@ -364,6 +366,15 @@ const [clienteCedula, setClienteCedula] = useState("");
       ) return;
 
       // 💵 VALIDAR
+      if (comisionInvalida) {
+
+        alert(
+          "La comision no puede superar el total"
+        );
+
+        return;
+      }
+
       if (
 
         carrito.find((item) =>
@@ -390,7 +401,7 @@ const [clienteCedula, setClienteCedula] = useState("");
 
         metodoPago === "efectivo" &&
 
-        Number(recibido) < total
+        Number(recibido) < totalNeto
 
       ) {
 
@@ -862,11 +873,31 @@ const stockBajo =
 
         ))}
 
-        <h3>
-          Total bruto: ${total}
-        </h3>
+        <div className="resumen-cobro">
+
+          <div>
+            <span>Total bruto</span>
+            <strong>${total}</strong>
+          </div>
+
+          <div>
+            <span>Comision</span>
+            <strong>${comisionNum}</strong>
+          </div>
+
+          <div>
+            <span>Total neto</span>
+            <strong>${totalNeto}</strong>
+          </div>
+
+        </div>
 
         <input
+          className={
+            comisionInvalida
+              ? "input-error"
+              : ""
+          }
           placeholder="Comisión del vendedor"
           value={comision}
           onChange={(e) =>
@@ -874,9 +905,13 @@ const stockBajo =
           }
         />
 
-        <h3>
-          Total neto: ${totalNeto}
-        </h3>
+        {comisionInvalida && (
+
+          <p className="mensaje-error">
+            La comision no puede superar el total.
+          </p>
+
+        )}
 
         {/* PAGO */}
         <select
@@ -970,7 +1005,8 @@ const stockBajo =
           }
 
           disabled={
-            carrito.length === 0
+            carrito.length === 0 ||
+            comisionInvalida
           }
 
           className="btn-cobrar"
@@ -1018,7 +1054,7 @@ const stockBajo =
       {/* MODAL */}
       <ConfirmModal
         open={mostrarConfirm}
-        total={total}
+        total={totalNeto}
         message="¿Confirmar venta?"
         onCancel={() =>
 

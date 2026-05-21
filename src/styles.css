@@ -155,6 +155,41 @@ body {
   color: #00ff88;
 }
 
+.resumen-cobro {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.resumen-cobro div {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  background: #151515;
+  border: 1px solid #222;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.resumen-cobro span {
+  color: #aaa;
+}
+
+.resumen-cobro strong {
+  color: #00ff88;
+}
+
+.input-error {
+  border: 1px solid #ff2a2a !important;
+}
+
+.mensaje-error {
+  color: #ff6b6b;
+  font-size: 13px;
+  margin: 6px 0 10px;
+}
+
 .pago {
   padding: 4px 8px;
   border-radius: 6px;
