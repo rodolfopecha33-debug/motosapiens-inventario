@@ -214,6 +214,19 @@ export default function Caja() {
   );
 
   const totalGanancia = totalIngresos - totalCosto;
+  const totalGastos =
+  gastos.reduce(
+
+    (sum, g)=>
+
+      sum +
+      Number(
+        g.valor || 0
+      ),
+
+    0
+
+  );
   const margenUtilidad =
     totalIngresos > 0
       ? Math.round((totalGanancia / totalIngresos) * 100)
