@@ -121,6 +121,39 @@ export default function Caja() {
     }
   };
 
+
+  const cargarGastos = async () => {
+
+  try {
+
+    const snap =
+      await getDocs(
+        collection(
+          db,
+          "gastos"
+        )
+      );
+
+    const datos = [];
+
+    snap.forEach((docu) =>
+      datos.push({
+        id: docu.id,
+        ...docu.data()
+      })
+    );
+
+    setGastos(datos);
+
+  } catch (error) {
+
+    console.error(error);
+
+  }
+
+};
+  
+
   const ventasFiltradas = ventas.filter((v) => {
     if (!v.fecha) return false;
     const fecha = parseFecha(v.fecha);
