@@ -232,6 +232,12 @@ export default function Caja() {
       ? Math.round((totalGanancia / totalIngresos) * 100)
       : 0;
 
+  const utilidadNeta =
+
+  totalGanancia -
+  totalGastos;
+  
+
   const pendientesFiltrados = pagosPendientes.filter((p) => {
     const proveedor = String(p.proveedor || "").toLowerCase();
     const descripcion = String(p.descripcion || "").toLowerCase();
