@@ -188,7 +188,7 @@ export default function App() {
       )}
 
      {vista === "inventario" && esAdmin && (
-  <InventarioAdmin />
+  <InventarioAdmin user={user} />
 )}
       {vista === "compras" && esAdmin && <Compras />}
 {vista === "kardex" && esAdmin && <Kardex />}

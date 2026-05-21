@@ -219,6 +219,8 @@ body {
 
   0.8fr   /* stock */
 
+  0.8fr   /* minimo */
+
   1.2fr   /* categoría */
 
   1fr     /* marca */
@@ -749,6 +751,7 @@ body {
 }
 
 .btn-excel,
+.btn-reposicion,
 .btn-import {
 
   background: #16b84e;
@@ -779,7 +782,103 @@ body {
   background: #1e90ff;
 }
 
+.btn-reposicion {
+
+  background: #ff9f1a;
+}
+
+.inventario-resumen {
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(auto-fit, minmax(160px, 1fr));
+
+  gap: 12px;
+
+  margin-bottom: 18px;
+
+  max-width: 900px;
+}
+
+.inventario-resumen div {
+
+  background: #111;
+
+  border: 1px solid #222;
+
+  border-radius: 12px;
+
+  padding: 14px;
+}
+
+.inventario-resumen span {
+
+  display: block;
+
+  color: #aaa;
+
+  font-size: 12px;
+
+  margin-bottom: 6px;
+}
+
+.inventario-resumen strong {
+
+  color: #00ff88;
+
+  font-size: 24px;
+}
+
+.inventario-filtros {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  margin-bottom: 18px;
+
+  flex-wrap: wrap;
+}
+
+.inventario-filtros button {
+
+  background: #111;
+
+  color: white;
+
+  border: 1px solid #222;
+
+  padding: 10px 14px;
+
+  border-radius: 10px;
+
+  cursor: pointer;
+
+  transition: .2s;
+}
+
+.inventario-filtros button:hover,
+.inventario-filtros button.activo {
+
+  background: #00ff88;
+
+  border-color: #00ff88;
+
+  color: #050505;
+}
+
+.inventario-filtros span {
+
+  color: #aaa;
+
+  font-size: 13px;
+}
+
 .btn-excel:hover,
+.btn-reposicion:hover,
 .btn-import:hover {
 
   transform: scale(1.03);

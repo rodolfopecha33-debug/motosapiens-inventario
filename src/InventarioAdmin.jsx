@@ -17,13 +17,20 @@ import {
 
 import * as XLSX from "xlsx";
 
-export default function InventarioAdmin() {
+import {
+  crearMovimiento
+} from "./kardexUtils";
+
+export default function InventarioAdmin({ user }) {
 
   const [lista, setLista] =
     useState([]);
 
   const [busqueda, setBusqueda] =
     useState("");
+
+  const [filtroStock, setFiltroStock] =
+    useState("todos");
 
   // 🔥 ORDENAMIENTO
   const [ordenCampo, setOrdenCampo] =
@@ -44,6 +51,8 @@ export default function InventarioAdmin() {
       venta: "",
 
       stock: "",
+
+      minimo: "5",
 
       categoria: "",
 
@@ -82,7 +91,10 @@ export default function InventarioAdmin() {
 
           id: d.id,
 
-          ...d.data()
+          ...d.data(),
+
+          stockOriginal:
+            Number(d.data().stock || 0)
 
         });
 
@@ -124,6 +136,38 @@ export default function InventarioAdmin() {
   };
 
   // 🔥 CAMBIOS LOCALES
+  const esStockBajo = (p) =>
+    Number(p.stock || 0) > 0 &&
+    Number(p.stock || 0) <=
+      Number(p.minimo ?? 5);
+
+  const estadisticas = useMemo(() => {
+
+    const totalProductos = lista.length;
+
+    const unidadesTotales = lista.reduce(
+      (sum, p) =>
+        sum + Number(p.stock || 0),
+      0
+    );
+
+    const agotados = lista.filter(
+      (p) => Number(p.stock || 0) <= 0
+    ).length;
+
+    const bajoStock = lista.filter(
+      esStockBajo
+    ).length;
+
+    return {
+      totalProductos,
+      unidadesTotales,
+      agotados,
+      bajoStock
+    };
+
+  }, [lista]);
+
   const cambiarLocal = (
     id,
     campo,
@@ -156,6 +200,14 @@ export default function InventarioAdmin() {
 
     try {
 
+      const stockAnterior =
+        Number(
+          p.stockOriginal ?? p.stock ?? 0
+        );
+
+      const stockNuevo =
+        Number(p.stock || 0);
+
       await updateDoc(
 
         doc(
@@ -180,8 +232,11 @@ export default function InventarioAdmin() {
             ),
 
           stock:
+            stockNuevo,
+
+          minimo:
             Number(
-              p.stock || 0
+              p.minimo ?? 5
             ),
 
           categoria:
@@ -196,6 +251,58 @@ export default function InventarioAdmin() {
         }
 
       );
+
+      const diferencia =
+        stockNuevo - stockAnterior;
+
+      if (diferencia !== 0) {
+
+        await crearMovimiento({
+
+          producto:
+            p.nombre || "",
+
+          productoId:
+            p.codigo || p.id,
+
+          tipo:
+            "AJUSTE",
+
+          cantidad:
+            diferencia,
+
+          stockFinal:
+            stockNuevo,
+
+          usuario:
+            user || "Admin"
+
+        });
+
+        setLista((prev) =>
+
+          prev.map((item) =>
+
+            item.id === p.id
+
+              ? {
+
+                  ...item,
+
+                  stock:
+                    stockNuevo,
+
+                  stockOriginal:
+                    stockNuevo
+
+                }
+
+              : item
+
+          )
+
+        );
+      }
 
       alert(
         "✅ Guardado"
@@ -323,6 +430,11 @@ export default function InventarioAdmin() {
             nuevo.stock || 0
           ),
 
+        minimo:
+          Number(
+            nuevo.minimo || 5
+          ),
+
         categoria:
           nuevo.categoria || "",
 
@@ -355,7 +467,10 @@ export default function InventarioAdmin() {
 
           id: ref.id,
 
-          ...nuevoProducto
+          ...nuevoProducto,
+
+          stockOriginal:
+            nuevoProducto.stock
 
         }
 
@@ -371,6 +486,8 @@ export default function InventarioAdmin() {
         venta: "",
 
         stock: "",
+
+        minimo: "5",
 
         categoria: "",
 
@@ -396,35 +513,42 @@ export default function InventarioAdmin() {
   };
 
   // 🚀 EXPORTAR EXCEL
+  const filaInventarioExcel = (p) => ({
+
+    Codigo:
+      p.codigo || "",
+
+    Nombre:
+      p.nombre || "",
+
+    Compra:
+      p.compra || 0,
+
+    Venta:
+      p.venta || 0,
+
+    Stock:
+      p.stock || 0,
+
+    Minimo:
+      p.minimo ?? 5,
+
+    Categoria:
+      p.categoria || "",
+
+    Marca:
+      p.marca || "",
+
+    Proveedor:
+      p.proveedor || ""
+
+  });
+
   const exportarExcel = () => {
 
-    const datos = lista.map((p) => ({
-
-      Codigo:
-        p.codigo || "",
-
-      Nombre:
-        p.nombre || "",
-
-      Compra:
-        p.compra || 0,
-
-      Venta:
-        p.venta || 0,
-
-      Stock:
-        p.stock || 0,
-
-      Categoria:
-        p.categoria || "",
-
-      Marca:
-        p.marca || "",
-
-      Proveedor:
-        p.proveedor || ""
-
-    }));
+    const datos = lista.map(
+      filaInventarioExcel
+    );
 
     const ws =
       XLSX.utils.json_to_sheet(
@@ -458,6 +582,73 @@ export default function InventarioAdmin() {
 
 
   // 🚀 IMPORTADOR INTELIGENTE PRO MAX
+  const exportarReposicion = () => {
+
+    const productosReposicion =
+      lista.filter((p) =>
+        esStockBajo(p) ||
+        Number(p.stock || 0) <= 0
+      );
+
+    if (productosReposicion.length === 0) {
+
+      alert(
+        "No hay productos para reposicion"
+      );
+
+      return;
+    }
+
+    const datos =
+      productosReposicion.map((p) => {
+
+        const stockActual =
+          Number(p.stock || 0);
+
+        const minimo =
+          Number(p.minimo ?? 5);
+
+        return {
+
+          ...filaInventarioExcel(p),
+
+          Faltante:
+            Math.max(
+              minimo - stockActual,
+              0
+            )
+
+        };
+
+      });
+
+    const ws =
+      XLSX.utils.json_to_sheet(
+        datos
+      );
+
+    const wb =
+      XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(
+
+      wb,
+
+      ws,
+
+      "Reposicion"
+
+    );
+
+    XLSX.writeFile(
+
+      wb,
+
+      `Lista-reposicion-${Date.now()}.xlsx`
+
+    );
+  };
+
 const importarExcel = async (e) => {
 
   const file = e.target.files[0];
@@ -573,6 +764,11 @@ const importarExcel = async (e) => {
               p.Stock || 0
             ),
 
+          minimo:
+            Number(
+              p.Minimo ?? 5
+            ),
+
           categoria:
             p.Categoria || "",
 
@@ -659,15 +855,48 @@ const importarExcel = async (e) => {
   const filtrados =
     useMemo(() => {
 
-      let datos = lista.filter((p) =>
+      const texto =
+        busqueda.toLowerCase().trim();
 
-        (p.nombre || "")
-          .toLowerCase()
-          .includes(
-            busqueda.toLowerCase()
-          )
+      let datos = lista.filter((p) => {
 
-      );
+        const coincideBusqueda =
+          [
+            p.codigo,
+            p.nombre,
+            p.categoria,
+            p.marca,
+            p.proveedor
+          ]
+            .join(" ")
+            .toLowerCase()
+            .includes(texto);
+
+        const stockActual =
+          Number(p.stock || 0);
+
+        const coincideFiltro =
+          filtroStock === "todos" ||
+          (
+            filtroStock === "bajo" &&
+            esStockBajo(p)
+          ) ||
+          (
+            filtroStock === "agotado" &&
+            stockActual <= 0
+          ) ||
+          (
+            filtroStock === "disponible" &&
+            stockActual >
+              Number(p.minimo ?? 5)
+          );
+
+        return (
+          coincideBusqueda &&
+          coincideFiltro
+        );
+
+      });
 
       datos.sort((a, b) => {
 
@@ -722,6 +951,8 @@ const importarExcel = async (e) => {
 
       busqueda,
 
+      filtroStock,
+
       ordenCampo,
 
       ordenDireccion
@@ -737,9 +968,33 @@ const importarExcel = async (e) => {
       </h1>
 
       {/* BUSCAR */}
+      <div className="inventario-resumen">
+
+        <div>
+          <span>Productos</span>
+          <strong>{estadisticas.totalProductos}</strong>
+        </div>
+
+        <div>
+          <span>Unidades</span>
+          <strong>{estadisticas.unidadesTotales}</strong>
+        </div>
+
+        <div>
+          <span>Stock bajo</span>
+          <strong>{estadisticas.bajoStock}</strong>
+        </div>
+
+        <div>
+          <span>Agotados</span>
+          <strong>{estadisticas.agotados}</strong>
+        </div>
+
+      </div>
+
       <input
         className="buscar"
-        placeholder="Buscar producto..."
+        placeholder="Buscar por codigo, nombre, categoria, marca o proveedor..."
         value={busqueda}
         onChange={(e) =>
 
@@ -750,6 +1005,66 @@ const importarExcel = async (e) => {
         }
       />
 
+      <div className="inventario-filtros">
+
+        <button
+          className={
+            filtroStock === "todos"
+              ? "activo"
+              : ""
+          }
+          onClick={() =>
+            setFiltroStock("todos")
+          }
+        >
+          Todos
+        </button>
+
+        <button
+          className={
+            filtroStock === "disponible"
+              ? "activo"
+              : ""
+          }
+          onClick={() =>
+            setFiltroStock("disponible")
+          }
+        >
+          Disponibles
+        </button>
+
+        <button
+          className={
+            filtroStock === "bajo"
+              ? "activo"
+              : ""
+          }
+          onClick={() =>
+            setFiltroStock("bajo")
+          }
+        >
+          Stock bajo
+        </button>
+
+        <button
+          className={
+            filtroStock === "agotado"
+              ? "activo"
+              : ""
+          }
+          onClick={() =>
+            setFiltroStock("agotado")
+          }
+        >
+          Agotados
+        </button>
+
+        <span>
+          Mostrando {filtrados.length} de {lista.length}
+        </span>
+
+      </div>
+
       {/* EXCEL */}
       <div className="excel-actions">
 
@@ -758,6 +1073,13 @@ const importarExcel = async (e) => {
           className="btn-excel"
         >
           📥 Exportar Excel
+        </button>
+
+        <button
+          onClick={exportarReposicion}
+          className="btn-reposicion"
+        >
+          Lista de reposición
         </button>
 
         <label
@@ -823,6 +1145,14 @@ const importarExcel = async (e) => {
             }
           >
             Stock
+          </div>
+
+          <div
+            onClick={() =>
+              ordenarPor("minimo")
+            }
+          >
+            Mínimo
           </div>
 
           <div
@@ -925,6 +1255,23 @@ const importarExcel = async (e) => {
                 ...nuevo,
 
                 stock:
+                  e.target.value
+
+              })
+
+            }
+          />
+
+          <input
+            placeholder="Mínimo"
+            value={nuevo.minimo}
+            onChange={(e)=>
+
+              setNuevo({
+
+                ...nuevo,
+
+                minimo:
                   e.target.value
 
               })
@@ -1079,6 +1426,23 @@ const importarExcel = async (e) => {
             />
 
             <input
+              value={p.minimo ?? 5}
+              onChange={(e)=>
+
+                cambiarLocal(
+
+                  p.id,
+
+                  "minimo",
+
+                  e.target.value
+
+                )
+
+              }
+            />
+
+            <input
               value={
                 p.categoria || ""
               }
@@ -1136,7 +1500,8 @@ const importarExcel = async (e) => {
             {/* STOCK BAJO */}
             <div className="stock-bajo">
 
-              {Number(p.stock) <= 5
+              {esStockBajo(p) ||
+                Number(p.stock || 0) <= 0
                 ? "⚠"
                 : ""}
 
