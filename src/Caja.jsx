@@ -64,6 +64,8 @@ export default function Caja() {
   const [ventas, setVentas] = useState([]);
   const [pagosPendientes, setPagosPendientes] = useState([]);
   const [creditos, setCreditos] = useState([]);
+  const [gastos, setGastos] =
+  useState([]);
   const [busqueda, setBusqueda] = useState("");
   const [nuevo, setNuevo] = useState(defaultPendiente);
   const [nuevoCredito, setNuevoCredito] = useState({
@@ -83,6 +85,7 @@ export default function Caja() {
     cargarVentas();
     cargarPendientes();
     cargarCreditos();
+    cargarGastos();
   }, []);
 
   const cargarVentas = async () => {
