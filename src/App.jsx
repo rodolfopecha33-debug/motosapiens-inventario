@@ -159,7 +159,7 @@ export default function App() {
 
           <button
   onClick={() =>
-    setModulo("gastos")
+    setVista("gastos")
   }
 >
   💸 Gastos
@@ -221,6 +221,10 @@ export default function App() {
 
   )
 }
+
+      {vista === "gastos" && esAdmin && <Gastos />}
+
+      
       
     </div>
   );
