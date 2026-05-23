@@ -157,13 +157,9 @@ export default function App() {
 
 </button>
 
-          <button
-  onClick={() =>
-    setVista("gastos")
-  }
->
-  💸 Gastos
-</button>
+           {esAdmin && (
+           <button onClick={() => setVista("gastos")}>💸 Gastos</button>
+          )}
           
           
 
