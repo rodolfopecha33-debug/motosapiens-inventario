@@ -12,6 +12,8 @@ import Kardex from "./Kardex";
 import Devoluciones from "./Devoluciones";
 import SeguimientoGarantias
 from "./SeguimientoGarantias";
+import Gastos from "./Gastos";
+
 
 
 
@@ -153,6 +155,14 @@ export default function App() {
 
   🛡 Garantías
 
+</button>
+
+          <button
+  onClick={() =>
+    setModulo("gastos")
+  }
+>
+  💸 Gastos
 </button>
           
           
