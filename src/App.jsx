@@ -222,8 +222,9 @@ export default function App() {
   )
 }
 
-      {vista === "gastos" && esAdmin && <Gastos />}
-
+      {vista === "gastos" && esAdmin && (
+  <Gastos user={user} />
+)}
       
       
     </div>
