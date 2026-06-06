@@ -1,0 +1,97 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function userProfile() {
+      return get(
+        /databases/$(database)/documents/usuarios/$(request.auth.uid)
+      );
+    }
+
+    function hasProfile() {
+      return signedIn() &&
+        exists(
+          /databases/$(database)/documents/usuarios/$(request.auth.uid)
+        );
+    }
+
+    function isActive() {
+      return hasProfile() &&
+        userProfile().data.activo == true;
+    }
+
+    function isAdmin() {
+      return isActive() &&
+        userProfile().data.rol == "admin";
+    }
+
+    function canUsePOS() {
+      return isActive() &&
+        userProfile().data.rol in [
+          "admin",
+          "cajero"
+        ];
+    }
+
+    function onlyStockChanged() {
+      return request.resource.data
+        .diff(resource.data)
+        .affectedKeys()
+        .hasOnly(["stock"]);
+    }
+
+    match /usuarios/{userId} {
+      allow read: if isAdmin() ||
+        (signedIn() &&
+          request.auth.uid == userId);
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /inventario/{productoId} {
+      allow read: if isActive();
+      allow create, delete: if isAdmin();
+      allow update: if isAdmin() ||
+        (
+          canUsePOS() &&
+          onlyStockChanged() &&
+          request.resource.data.stock is number &&
+          request.resource.data.stock >= 0
+        );
+    }
+
+    match /ventas/{ventaId} {
+      allow read, update, delete: if isAdmin();
+      allow create: if canUsePOS();
+    }
+
+    match /movimientos/{movimientoId} {
+      allow read, update, delete: if isAdmin();
+      allow create: if canUsePOS();
+    }
+
+    match /devoluciones/{devolucionId} {
+      allow read, create, update: if canUsePOS();
+      allow delete: if isAdmin();
+    }
+
+    match /creditos/{creditoId} {
+      allow read, write: if isAdmin();
+    }
+
+    match /pagosPendientes/{pagoId} {
+      allow read, write: if isAdmin();
+    }
+
+    match /gastos/{gastoId} {
+      allow read, write: if isAdmin();
+    }
+
+    match /{document=**} {
+      allow read, write: if isAdmin();
+    }
+  }
+}
