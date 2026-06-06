@@ -353,7 +353,7 @@ const [clienteCedula, setClienteCedula] = useState("");
     metodoPago === "efectivo"
 
       ? Number(recibido || 0)
-          - totalNeto
+          - total
 
       : 0;
 
@@ -401,7 +401,7 @@ const [clienteCedula, setClienteCedula] = useState("");
 
         metodoPago === "efectivo" &&
 
-        Number(recibido) < totalNeto
+        Number(recibido) < total
 
       ) {
 
